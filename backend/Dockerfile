@@ -21,13 +21,21 @@ RUN groupadd -g ${GROUP_ID} appuser && \
 USER appuser
 WORKDIR /home/appuser
 
+# permitir ejecutar django-admin y otros binarios
+ENV PATH="/home/appuser/.local/bin:$PATH"
+
+# instalar oh-my-zsh
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 
+# plugins ligeros
 RUN git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions && \
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
 
-RUN sed -i 's/plugins=(git)/plugins=(git python zsh-autosuggestions zsh-syntax-highlighting)/' ~/.zshrc && \
-    echo 'alias py="python"' >> ~/.zshrc
+# activar plugins
+RUN sed -i 's/plugins=(git)/plugins=(git python zsh-autosuggestions zsh-syntax-highlighting)/' ~/.zshrc
+
+# prompt simple (usuario:ruta)
+RUN echo 'PROMPT="%n:%~$ "' >> ~/.zshrc
 
 WORKDIR /app
 
