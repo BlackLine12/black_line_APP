@@ -17,6 +17,9 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
     "django_filters",
+
+    # Local apps
+    "apps.users",
 ]
 
 MIDDLEWARE = [
