@@ -84,7 +84,7 @@ class LogoutView(APIView):
     Vista para cerrar sesión.
     En JWT, el logout se maneja en el cliente eliminando el token.
     """
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     
     def post(self, request):
         return Response(

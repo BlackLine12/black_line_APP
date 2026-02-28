@@ -1,5 +1,5 @@
 <!-- ═══════════════════ PORTFOLIO UPLOAD ═══════════════════ -->
-<div class="rounded-2xl border border-gray-800 bg-gray-900 p-6 shadow-lg">
+<div class="animate-fade-in-up rounded-2xl border border-gray-800 bg-gray-900 p-6 shadow-lg transition-all duration-300 hover:border-gray-700 delay-700">
   <h2 class="mb-5 text-lg font-semibold text-white">Mi Portafolio</h2>
 
   <!-- Description input -->
@@ -57,7 +57,7 @@
           <img
             [src]="img.image"
             [alt]="img.description || 'Portafolio'"
-            class="aspect-square w-full object-cover transition group-hover:scale-105"
+            class="aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-110"
           />
           <!-- Overlay on hover -->
           <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/60 opacity-0 transition group-hover:opacity-100">

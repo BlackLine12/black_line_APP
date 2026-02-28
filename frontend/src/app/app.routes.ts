@@ -1,25 +1,39 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
+import { LandingComponent } from './features/landing/landing.component';
+import { LayoutComponent } from './shared/layout/layout.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/auth/login', pathMatch: 'full' },
+  // ── Public ─────────────────────────────────────────────
+  { path: '', component: LandingComponent },
   {
     path: 'auth',
     loadChildren: () =>
-      import('./features/auth/pages/auth.routes').then(m => m.AUTH_ROUTES)
+      import('./features/auth/pages/auth.routes').then(m => m.AUTH_ROUTES),
   },
+
+  // ── Authenticated (wrapped with navbar + footer) ───────
   {
-    path: 'client',
-    canActivate: [authGuard, roleGuard('CLIENT')],
-    loadChildren: () =>
-      import('./features/client/pages/client.routes').then(m => m.CLIENT_ROUTES)
+    path: '',
+    component: LayoutComponent,
+    canActivate: [authGuard],
+    children: [
+      {
+        path: 'client',
+        canActivate: [roleGuard('CLIENT')],
+        loadChildren: () =>
+          import('./features/client/pages/client.routes').then(m => m.CLIENT_ROUTES),
+      },
+      {
+        path: 'studio',
+        canActivate: [roleGuard('STUDIO')],
+        loadChildren: () =>
+          import('./features/studio/pages/studio.routes').then(m => m.STUDIO_ROUTES),
+      },
+    ],
   },
-  {
-    path: 'studio',
-    canActivate: [authGuard, roleGuard('STUDIO')],
-    loadChildren: () =>
-      import('./features/studio/pages/studio.routes').then(m => m.STUDIO_ROUTES)
-  },
-  { path: '**', redirectTo: '/auth/login' }
+
+  // ── Fallback ───────────────────────────────────────────
+  { path: '**', redirectTo: '' },
 ];

@@ -1,9 +1,9 @@
 <!-- ═══════════════════ ARTIST DASHBOARD ═══════════════════ -->
-<section class="min-h-screen bg-gray-950 text-gray-100 px-4 py-8 sm:px-6 lg:px-8">
+<section class="text-gray-100 px-4 py-8 sm:px-6 lg:px-8">
   <div class="mx-auto max-w-4xl space-y-8">
 
     <!-- Header -->
-    <div>
+    <div class="animate-fade-in-down">
       <h1 class="text-3xl font-bold tracking-tight text-white">Mi Perfil de Artista</h1>
       <p class="mt-1 text-sm text-gray-400">Configura tu información pública, tarifas y estilos.</p>
     </div>
@@ -24,7 +24,7 @@
       <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="space-y-8">
 
         <!-- ── Info Card ─────────────────────────────────── -->
-        <div class="rounded-2xl border border-gray-800 bg-gray-900 p-6 shadow-lg">
+        <div class="animate-fade-in-up rounded-2xl border border-gray-800 bg-gray-900 p-6 shadow-lg transition-all duration-300 hover:border-gray-700 delay-100">
           <h2 class="mb-5 text-lg font-semibold text-white">Información General</h2>
           <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
 
@@ -55,7 +55,7 @@
         </div>
 
         <!-- ── Rates Card ────────────────────────────────── -->
-        <div class="rounded-2xl border border-gray-800 bg-gray-900 p-6 shadow-lg">
+        <div class="animate-fade-in-up rounded-2xl border border-gray-800 bg-gray-900 p-6 shadow-lg transition-all duration-300 hover:border-gray-700 delay-300">
           <h2 class="mb-5 text-lg font-semibold text-white">Tarifas</h2>
           <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
 
@@ -94,7 +94,7 @@
         </div>
 
         <!-- ── Styles Card ───────────────────────────────── -->
-        <div class="rounded-2xl border border-gray-800 bg-gray-900 p-6 shadow-lg">
+        <div class="animate-fade-in-up rounded-2xl border border-gray-800 bg-gray-900 p-6 shadow-lg transition-all duration-300 hover:border-gray-700 delay-500">
           <h2 class="mb-4 text-lg font-semibold text-white">Estilos de Tatuaje</h2>
           <p class="mb-4 text-sm text-gray-400">Selecciona los estilos en los que te especializas.</p>
           <div class="flex flex-wrap gap-3">
@@ -120,7 +120,7 @@
           <button
             type="submit"
             [disabled]="profileForm.invalid || saving"
-            class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-950 disabled:cursor-not-allowed disabled:opacity-50"
+            class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:bg-indigo-500 hover:shadow-xl hover:shadow-indigo-500/25 active:scale-95 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-950 disabled:cursor-not-allowed disabled:opacity-50"
           >
             @if (saving) {
               <svg class="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
