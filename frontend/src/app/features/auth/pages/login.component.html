@@ -12,27 +12,24 @@
 
       <!-- Error banner -->
       @if (errorMessage) {
-        <div class="mb-5 rounded-lg border border-red-800 bg-red-900/30 px-4 py-3 text-sm text-red-300">
+        <div role="alert" class="mb-5 rounded-lg border border-red-800 bg-red-900/30 px-4 py-3 text-sm text-red-300">
           {{ errorMessage }}
         </div>
       }
 
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5">
 
-        <!-- Email -->
+        <!-- Email or Username -->
         <div>
-          <label for="email" class="mb-1 block text-sm font-medium text-gray-300">Correo electrónico</label>
+          <label for="credential" class="mb-1 block text-sm font-medium text-gray-300">Email o nombre de usuario</label>
           <input
-            id="email"
-            formControlName="email"
-            type="email"
-            autocomplete="email"
-            placeholder="tu@email.com"
+            id="credential"
+            formControlName="credential"
+            type="text"
+            autocomplete="username"
+            placeholder="tu@email.com o tu_username"
             class="w-full rounded-lg border border-gray-700 bg-gray-800 px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           />
-          @if (loginForm.get('email')?.touched && loginForm.get('email')?.hasError('email')) {
-            <p class="mt-1 text-xs text-red-400">Ingresa un correo válido.</p>
-          }
         </div>
 
         <!-- Password -->

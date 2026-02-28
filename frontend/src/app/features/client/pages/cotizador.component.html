@@ -1,1 +1,328 @@
-<p>cotizador works!</p>
+<!-- ═══════════════════════════════════════════════════════
+     QUOTE WIZARD – BlackLine Cotizador Visual
+     ═══════════════════════════════════════════════════════ -->
+<div class="min-h-screen bg-gray-950 text-gray-100 px-4 py-8 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-2xl">
+
+    <!-- ── Header ─────────────────────────────────────── -->
+    <div class="mb-8 text-center">
+      <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">
+        Cotiza tu <span class="text-purple-400">Tatuaje</span>
+      </h1>
+      <p class="mt-2 text-sm text-gray-400">
+        Completa los pasos y encuentra al tatuador ideal para ti.
+      </p>
+    </div>
+
+    <!-- ── Stepper ────────────────────────────────────── -->
+    @if (!submitted()) {
+      <div class="mb-10 flex items-center justify-between">
+        @for (step of [1, 2, 3, 4]; track step) {
+          <button
+            (click)="goToStep(step)"
+            class="flex flex-col items-center gap-1 transition-colors"
+            [class.cursor-pointer]="step < currentStep()"
+            [class.cursor-default]="step >= currentStep()"
+          >
+            <span
+              class="flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold transition-all duration-300"
+              [ngClass]="{
+                'bg-purple-600 text-white shadow-lg shadow-purple-600/30': step === currentStep(),
+                'bg-purple-600/20 text-purple-400': step < currentStep(),
+                'bg-gray-800 text-gray-500': step > currentStep()
+              }"
+            >
+              @if (step < currentStep()) {
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+              } @else {
+                {{ step }}
+              }
+            </span>
+            <span class="text-[10px] sm:text-xs"
+              [ngClass]="{
+                'text-purple-400': step <= currentStep(),
+                'text-gray-600': step > currentStep()
+              }">
+              @switch (step) {
+                @case (1) { Estilo }
+                @case (2) { Zona }
+                @case (3) { Tamaño }
+                @case (4) { Resumen }
+              }
+            </span>
+          </button>
+          @if (step < 4) {
+            <div class="mx-1 h-0.5 flex-1 rounded transition-colors duration-300"
+              [ngClass]="step < currentStep() ? 'bg-purple-600/50' : 'bg-gray-800'">
+            </div>
+          }
+        }
+      </div>
+    }
+
+    <!-- ── Error Banner ───────────────────────────────── -->
+    @if (errorMsg()) {
+      <div role="alert" class="mb-6 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+        {{ errorMsg() }}
+      </div>
+    }
+
+    <!-- ██ FORM ██ -->
+    <form [formGroup]="quoteForm" (ngSubmit)="submit()">
+
+      <!-- ── STEP 1: Estilo ───────────────────────────── -->
+      @if (currentStep() === 1) {
+        <div class="animate-fade-in">
+          <h2 class="mb-1 text-xl font-semibold">¿Qué estilo buscas?</h2>
+          <p class="mb-6 text-sm text-gray-400">Elige el estilo que mejor represente tu idea.</p>
+
+          <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            @for (style of styles(); track style.id) {
+              <button
+                type="button"
+                (click)="selectStyle(style.id)"
+                class="group relative rounded-xl border-2 p-4 text-center transition-all duration-200"
+                [ngClass]="quoteForm.value.tattoo_style === style.id
+                  ? 'border-purple-500 bg-purple-500/10 shadow-lg shadow-purple-500/10'
+                  : 'border-gray-800 bg-gray-900 hover:border-gray-700 hover:bg-gray-800/70'"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto mb-2 h-7 w-7 text-purple-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42"/>
+                </svg>
+                <span class="text-sm font-medium"
+                  [ngClass]="quoteForm.value.tattoo_style === style.id ? 'text-purple-300' : 'text-gray-300'">
+                  {{ style.name }}
+                </span>
+                @if (quoteForm.value.tattoo_style === style.id) {
+                  <span class="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-purple-500 text-[10px] text-white">
+                    ✓
+                  </span>
+                }
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- ── STEP 2: Zona del cuerpo & Color ──────────── -->
+      @if (currentStep() === 2) {
+        <div class="animate-fade-in space-y-8">
+          <!-- Body Part -->
+          <div>
+            <h2 class="mb-1 text-xl font-semibold">¿Dónde irá tu tatuaje?</h2>
+            <p class="mb-6 text-sm text-gray-400">Selecciona la zona del cuerpo.</p>
+
+            <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              @for (part of bodyParts; track part.value) {
+                <button
+                  type="button"
+                  (click)="selectBodyPart(part.value)"
+                  class="flex items-center justify-center rounded-xl border-2 px-4 py-3 transition-all duration-200"
+                  [ngClass]="quoteForm.value.body_part === part.value
+                    ? 'border-purple-500 bg-purple-500/10'
+                    : 'border-gray-800 bg-gray-900 hover:border-gray-700'"
+                >
+                  <span class="text-sm font-medium"
+                    [ngClass]="quoteForm.value.body_part === part.value ? 'text-purple-300' : 'text-gray-300'">
+                    {{ part.label }}
+                  </span>
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Color Toggle -->
+          <div>
+            <h3 class="mb-4 text-lg font-semibold">¿A color o Black &amp; Grey?</h3>
+            <div class="flex gap-4">
+              <button
+                type="button"
+                (click)="toggleColor(false)"
+                class="flex-1 rounded-xl border-2 py-4 text-center transition-all duration-200"
+                [ngClass]="!quoteForm.value.is_color
+                  ? 'border-purple-500 bg-purple-500/10'
+                  : 'border-gray-800 bg-gray-900 hover:border-gray-700'"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto mb-1 h-7 w-7" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"/>
+                </svg>
+                <span class="text-sm font-medium">Black &amp; Grey</span>
+              </button>
+              <button
+                type="button"
+                (click)="toggleColor(true)"
+                class="flex-1 rounded-xl border-2 py-4 text-center transition-all duration-200"
+                [ngClass]="quoteForm.value.is_color
+                  ? 'border-purple-500 bg-purple-500/10'
+                  : 'border-gray-800 bg-gray-900 hover:border-gray-700'"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto mb-1 h-7 w-7" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.098 19.902a3.75 3.75 0 0 0 5.304 0l6.401-6.402M6.75 21A3.75 3.75 0 0 1 3 17.25V4.125C3 3.504 3.504 3 4.125 3h5.25c.621 0 1.125.504 1.125 1.125v4.072M6.75 21a3.75 3.75 0 0 0 3.75-3.75V8.197M6.75 21h13.125c.621 0 1.125-.504 1.125-1.125v-5.25c0-.621-.504-1.125-1.125-1.125h-4.072M10.5 8.197l2.88-2.88c.438-.439 1.15-.439 1.59 0l3.712 3.713c.44.44.44 1.152 0 1.59l-2.879 2.88M6.75 17.25h.008v.008H6.75v-.008Z"/>
+                </svg>
+                <span class="text-sm font-medium">A Color</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- ── STEP 3: Tamaño ──────────────────────────── -->
+      @if (currentStep() === 3) {
+        <div class="animate-fade-in">
+          <h2 class="mb-1 text-xl font-semibold">¿Qué tamaño tendrá?</h2>
+          <p class="mb-8 text-sm text-gray-400">Usa el slider o escribe los centímetros.</p>
+
+          <div class="flex flex-col items-center gap-6">
+            <!-- Size Display -->
+            <div class="flex flex-col items-center">
+              <span class="text-6xl font-bold text-purple-400">
+                {{ quoteForm.value.size_cm }}
+              </span>
+              <span class="text-sm text-gray-400 mt-1">centímetros</span>
+              <span class="mt-2 inline-block rounded-full bg-purple-600/20 px-3 py-1 text-xs font-medium text-purple-300">
+                {{ sizeLabel }}
+              </span>
+            </div>
+
+            <!-- Slider -->
+            <div class="w-full px-2">
+              <input
+                type="range"
+                formControlName="size_cm"
+                min="1"
+                max="200"
+                step="1"
+                class="range-slider w-full"
+              />
+              <div class="mt-2 flex justify-between text-xs text-gray-500">
+                <span>1 cm</span>
+                <span>50 cm</span>
+                <span>100 cm</span>
+                <span>150 cm</span>
+                <span>200 cm</span>
+              </div>
+            </div>
+
+            <!-- Numeric input -->
+            <div class="mt-4 flex items-center gap-3">
+              <label class="text-sm text-gray-400">Escribir valor:</label>
+              <input
+                type="number"
+                formControlName="size_cm"
+                min="1"
+                max="200"
+                class="w-24 rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-center text-white focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              />
+              <span class="text-sm text-gray-500">cm</span>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- ── STEP 4: Resumen ─────────────────────────── -->
+      @if (currentStep() === 4) {
+        <div class="animate-fade-in">
+          <h2 class="mb-1 text-xl font-semibold">Resumen de tu cotización</h2>
+          <p class="mb-6 text-sm text-gray-400">Verifica los datos antes de buscar a tu tatuador ideal.</p>
+
+          <div class="space-y-4 rounded-2xl border border-gray-800 bg-gray-900/60 p-6">
+            <!-- Style -->
+            <div class="flex items-center justify-between border-b border-gray-800 pb-4">
+              <span class="text-sm text-gray-400">Estilo</span>
+              <span class="font-medium text-purple-300">{{ selectedStyle?.name ?? '—' }}</span>
+            </div>
+            <!-- Body Part -->
+            <div class="flex items-center justify-between border-b border-gray-800 pb-4">
+              <span class="text-sm text-gray-400">Zona del cuerpo</span>
+              <span class="font-medium">
+                {{ selectedBodyPart?.label ?? '—' }}
+              </span>
+            </div>
+            <!-- Color -->
+            <div class="flex items-center justify-between border-b border-gray-800 pb-4">
+              <span class="text-sm text-gray-400">Tipo</span>
+              <span class="font-medium">
+                {{ quoteForm.value.is_color ? 'A Color' : 'Black & Grey' }}
+              </span>
+            </div>
+            <!-- Size -->
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-gray-400">Tamaño</span>
+              <span class="font-medium">
+                {{ quoteForm.value.size_cm }} cm
+                <span class="ml-1 text-xs text-gray-500">({{ sizeLabel }})</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Submit button -->
+          <button
+            type="submit"
+            [disabled]="loading() || !quoteForm.valid"
+            class="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-purple-600 py-4 text-lg font-bold text-white transition-all duration-200 hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-950 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            @if (loading()) {
+              <svg class="h-5 w-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+              </svg>
+              Enviando…
+            } @else {
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
+              </svg>
+              Buscar Tatuadores (Hacer Match)
+            }
+          </button>
+        </div>
+      }
+
+      <!-- ── Navigation Buttons ───────────────────────── -->
+      @if (!submitted() && currentStep() < 4) {
+        <div class="mt-8 flex items-center justify-between">
+          <button
+            type="button"
+            (click)="prev()"
+            [disabled]="currentStep() === 1"
+            class="rounded-lg border border-gray-700 bg-gray-900 px-5 py-2.5 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-30"
+          >
+            ← Anterior
+          </button>
+          <button
+            type="button"
+            (click)="next()"
+            [disabled]="!isCurrentStepValid()"
+            class="rounded-lg bg-purple-600 px-6 py-2.5 text-sm font-bold text-white transition-colors hover:bg-purple-500 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Siguiente →
+          </button>
+        </div>
+      }
+    </form>
+
+    <!-- ── Success State ──────────────────────────────── -->
+    @if (submitted()) {
+      <div class="animate-fade-in flex flex-col items-center gap-6 py-12 text-center">
+        <div class="flex h-20 w-20 items-center justify-center rounded-full bg-green-500/20">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-green-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+          </svg>
+        </div>
+        <h2 class="text-2xl font-bold">¡Cotización enviada!</h2>
+        <p class="text-gray-400">
+          Estamos buscando los mejores tatuadores para tu estilo. Recibirás tus matches muy pronto.
+        </p>
+        <button
+          type="button"
+          (click)="submitted.set(false); currentStep.set(1); quoteForm.reset({ size_cm: 10, is_color: false })"
+          class="rounded-lg border border-gray-700 px-6 py-2.5 text-sm font-medium text-gray-300 hover:bg-gray-800"
+        >
+          Crear otra cotización
+        </button>
+      </div>
+    }
+
+  </div>
+</div>

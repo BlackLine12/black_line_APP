@@ -8,9 +8,12 @@ class IsArtistOwnerOrReadOnly(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
+        if not (request.user and request.user.is_authenticated):
+            return False
         if request.method in permissions.SAFE_METHODS:
-            return request.user and request.user.is_authenticated
-        return request.user and request.user.is_authenticated
+            return True
+        # Solo STUDIO y ADMIN pueden crear/editar perfiles de artista
+        return request.user.user_type in ('STUDIO', 'ADMIN')
 
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:

@@ -20,9 +20,9 @@ export class AuthService {
   readonly isAuthenticated = computed(() => !!this._user());
   readonly userType = computed(() => this._user()?.user_type ?? null);
 
-  // ── Login ──────────────────────────────────────────────────
-  login(email: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.baseUrl}/login/`, { email, password }).pipe(
+  // ── Login (acepta email o username) ────────────────────────
+  login(credential: string, password: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.baseUrl}/login/`, { email: credential, password }).pipe(
       tap((res) => {
         this.tokenStorage.saveTokens(res.access, res.refresh);
         this.saveUser(res.user);
@@ -51,7 +51,9 @@ export class AuthService {
   // ── Helpers ────────────────────────────────────────────────
   redirectByRole(): void {
     const type = this._user()?.user_type;
-    if (type === 'STUDIO') {
+    if (type === 'ADMIN') {
+      this.router.navigate(['/client/cotizador']);
+    } else if (type === 'STUDIO') {
       this.router.navigate(['/studio/dashboard']);
     } else {
       this.router.navigate(['/client/cotizador']);
@@ -63,7 +65,12 @@ export class AuthService {
   }
 
   private loadUserFromStorage(): User | null {
-    const raw = localStorage.getItem('bl_user');
-    return raw ? JSON.parse(raw) : null;
+    try {
+      const raw = localStorage.getItem('bl_user');
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      localStorage.removeItem('bl_user');
+      return null;
+    }
   }
 }

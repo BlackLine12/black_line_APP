@@ -12,14 +12,14 @@
 
       <!-- Success -->
       @if (successMessage) {
-        <div class="mb-5 rounded-lg border border-green-800 bg-green-900/30 px-4 py-3 text-sm text-green-300">
+        <div role="alert" class="mb-5 rounded-lg border border-green-800 bg-green-900/30 px-4 py-3 text-sm text-green-300">
           {{ successMessage }}
         </div>
       }
 
       <!-- Error -->
       @if (errorMessage) {
-        <div class="mb-5 rounded-lg border border-red-800 bg-red-900/30 px-4 py-3 text-sm text-red-300">
+        <div role="alert" class="mb-5 rounded-lg border border-red-800 bg-red-900/30 px-4 py-3 text-sm text-red-300">
           {{ errorMessage }}
         </div>
       }

@@ -5,9 +5,57 @@ from .models import User
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     """
-    Serializer personalizado para obtener tokens JWT que incluye información adicional del usuario.
+    Serializer personalizado para obtener tokens JWT.
+    Acepta email o username en el campo 'email'.
     """
-    
+    username_field = "email"
+
+    def validate(self, attrs):
+        # Allow login with either email or username
+        credential = attrs.get("email", "")
+        password = attrs.get("password", "")
+
+        # Try to find user by email first, then by username
+        user = None
+        if "@" in credential:
+            try:
+                user = User.objects.get(email=credential)
+            except User.DoesNotExist:
+                pass
+        if user is None:
+            try:
+                user = User.objects.get(username=credential)
+            except User.DoesNotExist:
+                pass
+
+        if user is None or not user.check_password(password):
+            raise serializers.ValidationError(
+                "Credenciales inválidas. Verifica tu email/username y contraseña."
+            )
+
+        if not user.is_active:
+            raise serializers.ValidationError("Esta cuenta está desactivada.")
+
+        # Generate tokens
+        refresh = self.get_token(user)
+        data = {
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+            "user": {
+                "id": user.id,
+                "email": user.email,
+                "username": user.username,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "user_type": user.user_type,
+                "phone": getattr(user, "phone", None),
+                "is_active": user.is_active,
+                "created_at": user.created_at.isoformat(),
+                "updated_at": user.updated_at.isoformat(),
+            },
+        }
+        return data
+
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
@@ -19,33 +67,14 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         
         return token
     
-    def validate(self, attrs):
-        data = super().validate(attrs)
-
-        # Agregar informacion adicional a la respuesta
-        data.update({
-            'user': {
-                'id': self.user.id,
-                'email': self.user.email,
-                'username': self.user.username,
-                'user_type': self.user.user_type,
-                'first_name': self.user.first_name,
-                'last_name': self.user.last_name,
-                'user_type': self.user.user_type,
-                'phone': self.user.phone if hasattr(self.user, 'phone') else None,
-            }
-        })
-
-        return data
-    
 class UserSerializer(serializers.ModelSerializer):
     """
-    serializaer para mostrar informacion del usuario
+    Serializer para mostrar información del usuario.
     """
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'username', 'first_name', 'last_name', 'user_type', 'is_active', 'created_at', 'updated_at']
+        fields = ['id', 'email', 'username', 'first_name', 'last_name', 'user_type', 'phone', 'is_active', 'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at']
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -78,7 +107,11 @@ class RegisterSerializer(serializers.ModelSerializer):
         ]
     
     def validate(self, attrs):
-        """Validar que las contraseñas coincidan."""
+        """Validar que las contraseñas coincidan y bloquear tipo ADMIN."""
+        if attrs.get('user_type') == User.UserType.ADMIN:
+            raise serializers.ValidationError({
+                "user_type": "No es posible registrarse como administrador."
+            })
         if attrs['password'] != attrs['password_confirm']:
             raise serializers.ValidationError({
                 "password": "Las contraseñas no coinciden."

@@ -42,6 +42,11 @@ class ArtistProfileViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["get", "patch"], url_path="me")
     def me(self, request):
         """Endpoint de conveniencia: /api/artists/profiles/me/"""
+        if request.user.user_type not in ('STUDIO', 'ADMIN'):
+            return Response(
+                {"detail": "Solo artistas pueden tener perfil."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
         profile, created = ArtistProfile.objects.get_or_create(user=request.user)
         if request.method == "PATCH":
             serializer = self.get_serializer(profile, data=request.data, partial=True)

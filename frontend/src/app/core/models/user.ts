@@ -4,7 +4,7 @@ export interface User {
   username: string;
   first_name: string;
   last_name: string;
-  user_type: 'CLIENT' | 'STUDIO';
+  user_type: 'CLIENT' | 'STUDIO' | 'ADMIN';
   phone?: string;
   is_active: boolean;
   created_at: string;

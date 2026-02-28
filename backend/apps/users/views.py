@@ -2,6 +2,8 @@ from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
 from django.contrib.auth import get_user_model
 
 from .serializers import (
@@ -11,7 +13,7 @@ from .serializers import (
     ChangePasswordSerializer,
 )
 
-user =  get_user_model()
+User = get_user_model()
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     """
@@ -23,19 +25,19 @@ class RegisterView(generics.CreateAPIView):
     """
     Vista para registrar nuevos usuarios.
     """
-    queryset = user.objects.all()
+    queryset = User.objects.all()
     permission_classes = [permissions.AllowAny]
     serializer_class = RegisterSerializer
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.save()
+        new_user = serializer.save()
 
         return Response(
             {
                 "message": "Usuario registrado exitosamente.",
-                "user": UserSerializer(user).data
+                "user": UserSerializer(new_user).data
             },
             status=status.HTTP_201_CREATED
         )
@@ -81,13 +83,24 @@ class ChangePasswordView(APIView):
 
 class LogoutView(APIView):
     """
-    Vista para cerrar sesión.
-    En JWT, el logout se maneja en el cliente eliminando el token.
+    Vista para cerrar sesión invalidando el refresh token.
     """
-    permission_classes = [permissions.AllowAny]
-    
+    permission_classes = [permissions.IsAuthenticated]
+
     def post(self, request):
+        refresh = request.data.get("refresh")
+        if not refresh:
+            return Response(
+                {"detail": "Se requiere el refresh token."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        try:
+            token = RefreshToken(refresh)
+            token.blacklist()
+        except TokenError:
+            pass  # Token already expired or invalid — still a successful logout
+
         return Response(
             {"message": "Sesión cerrada exitosamente"},
-            status=status.HTTP_200_OK
+            status=status.HTTP_200_OK,
         )

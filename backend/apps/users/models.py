@@ -8,6 +8,7 @@ class User(AbstractUser):
     class UserType(models.TextChoices):
         CLIENT = "CLIENT", "Cliente"
         STUDIO = "STUDIO", "Estudio/Tatuador"
+        ADMIN = "ADMIN", "Administrador"
 
     email = models.EmailField(unique=True, verbose_name="Email")
     user_type = models.CharField(max_length=20, choices=UserType.choices,
@@ -38,7 +39,12 @@ class User(AbstractUser):
     def is_studio(self):
         """Retorna True si el usuario es un estudio/tatuador."""
         return self.user_type == self.UserType.STUDIO
-    
+
+    @property
+    def is_admin(self):
+        """Retorna True si el usuario es administrador."""
+        return self.user_type == self.UserType.ADMIN
+
     @property
     def full_name(self):
         """Retorna el nombre completo del usuario."""

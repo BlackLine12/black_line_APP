@@ -1,4 +1,4 @@
-<nav class="animate-fade-in-down sticky top-0 z-50 border-b border-gray-800 bg-gray-950/90 backdrop-blur-md">
+<nav aria-label="Navegación principal" class="animate-fade-in-down sticky top-0 z-50 border-b border-gray-800 bg-gray-950/90 backdrop-blur-md">
   <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
 
     <!-- Brand -->
@@ -10,7 +10,10 @@
     <div class="hidden items-center gap-1 sm:flex">
 
       <!-- Studio links -->
-      @if (isStudio) {
+      @if (isStudio()) {
+        @if (isAdmin()) {
+          <span class="mr-1 rounded bg-gray-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-indigo-400">Studio</span>
+        }
         <a routerLink="/studio/dashboard" routerLinkActive="text-indigo-400 bg-gray-800/60"
            class="rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition hover:bg-gray-800 hover:text-white">
           Dashboard
@@ -25,8 +28,15 @@
         </a>
       }
 
+      @if (isAdmin()) {
+        <span class="mx-1 h-5 w-px bg-gray-700"></span>
+      }
+
       <!-- Client links -->
-      @if (isClient) {
+      @if (isClient()) {
+        @if (isAdmin()) {
+          <span class="mr-1 rounded bg-gray-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-purple-400">Cliente</span>
+        }
         <a routerLink="/client/cotizador" routerLinkActive="text-indigo-400 bg-gray-800/60"
            class="rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition hover:bg-gray-800 hover:text-white">
           Cotizador
@@ -44,7 +54,7 @@
 
     <!-- Right side: user info + logout -->
     <div class="flex items-center gap-3">
-      <span class="hidden text-sm text-gray-400 sm:block">{{ userName }}</span>
+      <span class="hidden text-sm text-gray-400 sm:block">{{ userName() }}</span>
 
       <button (click)="logout()"
         class="rounded-lg border border-gray-700 px-3 py-1.5 text-sm font-medium text-gray-300 transition hover:border-red-500 hover:text-red-400">
@@ -52,9 +62,9 @@
       </button>
 
       <!-- Mobile hamburger -->
-      <button (click)="toggleMenu()" class="rounded-lg p-1.5 text-gray-400 hover:text-white sm:hidden">
-        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-          @if (mobileMenuOpen) {
+      <button (click)="toggleMenu()" aria-label="Abrir menú" [attr.aria-expanded]="mobileMenuOpen()" class="rounded-lg p-1.5 text-gray-400 hover:text-white sm:hidden">
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+          @if (mobileMenuOpen()) {
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
           } @else {
             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
@@ -65,22 +75,28 @@
   </div>
 
   <!-- Mobile menu -->
-  @if (mobileMenuOpen) {
+  @if (mobileMenuOpen()) {
     <div class="animate-fade-in-down border-t border-gray-800 px-4 pb-4 pt-2 sm:hidden">
-      @if (isStudio) {
-        <a routerLink="/studio/dashboard" (click)="mobileMenuOpen = false"
+      @if (isStudio()) {
+        @if (isAdmin()) {
+          <span class="mt-1 mb-1 block text-[10px] font-semibold uppercase tracking-wider text-indigo-400">Studio</span>
+        }
+        <a routerLink="/studio/dashboard" (click)="mobileMenuOpen.set(false)"
            class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white">Dashboard</a>
-        <a routerLink="/studio/portafolio" (click)="mobileMenuOpen = false"
+        <a routerLink="/studio/portafolio" (click)="mobileMenuOpen.set(false)"
            class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white">Portafolio</a>
-        <a routerLink="/studio/agenda" (click)="mobileMenuOpen = false"
+        <a routerLink="/studio/agenda" (click)="mobileMenuOpen.set(false)"
            class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white">Agenda</a>
       }
-      @if (isClient) {
-        <a routerLink="/client/cotizador" (click)="mobileMenuOpen = false"
+      @if (isClient()) {
+        @if (isAdmin()) {
+          <span class="mt-2 mb-1 block text-[10px] font-semibold uppercase tracking-wider text-purple-400">Cliente</span>
+        }
+        <a routerLink="/client/cotizador" (click)="mobileMenuOpen.set(false)"
            class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white">Cotizador</a>
-        <a routerLink="/client/match" (click)="mobileMenuOpen = false"
+        <a routerLink="/client/match" (click)="mobileMenuOpen.set(false)"
            class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white">Match</a>
-        <a routerLink="/client/mis-citas" (click)="mobileMenuOpen = false"
+        <a routerLink="/client/mis-citas" (click)="mobileMenuOpen.set(false)"
            class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white">Mis Citas</a>
       }
     </div>

@@ -1,5 +1,4 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ArtistService } from '../services/artist.service';
 import { PortfolioImage } from '../../../core/models/artist';
@@ -7,7 +6,7 @@ import { PortfolioImage } from '../../../core/models/artist';
 @Component({
   selector: 'app-portfolio-upload',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './portfolio-upload.component.html',
   styleUrl: './portfolio-upload.component.scss',
 })
@@ -26,6 +25,7 @@ export class PortfolioUploadComponent implements OnInit {
   private loadImages(): void {
     this.artistService.getPortfolioImages().subscribe({
       next: (imgs) => (this.images = imgs),
+      error: () => (this.images = []),
     });
   }
 
@@ -80,6 +80,7 @@ export class PortfolioUploadComponent implements OnInit {
   deleteImage(id: number): void {
     this.artistService.deletePortfolioImage(id).subscribe({
       next: () => (this.images = this.images.filter((i) => i.id !== id)),
+      error: () => {},
     });
   }
 }

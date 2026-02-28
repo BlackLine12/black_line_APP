@@ -24,6 +24,7 @@ export class DashboardComponent implements OnInit {
   loading = true;
   saving = false;
   saveMessage = '';
+  saveSuccess = false;
 
   ngOnInit(): void {
     this.initForm();
@@ -42,6 +43,7 @@ export class DashboardComponent implements OnInit {
   private loadData(): void {
     this.artistService.getStyles().subscribe({
       next: (styles) => (this.styles = styles),
+      error: () => (this.styles = []),
     });
 
     this.artistService.getMyProfile().subscribe({
@@ -83,11 +85,13 @@ export class DashboardComponent implements OnInit {
         this.profile = updated;
         this.saving = false;
         this.saveMessage = 'Perfil actualizado correctamente.';
+        this.saveSuccess = true;
         setTimeout(() => (this.saveMessage = ''), 3000);
       },
       error: () => {
         this.saving = false;
         this.saveMessage = 'Error al guardar. Intenta de nuevo.';
+        this.saveSuccess = false;
         setTimeout(() => (this.saveMessage = ''), 3000);
       },
     });

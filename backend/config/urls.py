@@ -32,6 +32,7 @@ def api_root(request):
         "endpoints": {
             "auth": "/api/auth/",
             "artists": "/api/artists/",
+            "quotes": "/api/quotes/",
         }
     })
 
@@ -41,6 +42,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/auth/", include("apps.users.urls")),
     path("api/artists/", include("apps.artists.urls")),
+    path("api/quotes/", include("apps.quotes.urls")),
 ]
 
 if settings.DEBUG:
