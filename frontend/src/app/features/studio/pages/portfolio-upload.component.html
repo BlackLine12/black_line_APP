@@ -1,0 +1,81 @@
+<!-- ═══════════════════ PORTFOLIO UPLOAD ═══════════════════ -->
+<div class="rounded-2xl border border-gray-800 bg-gray-900 p-6 shadow-lg">
+  <h2 class="mb-5 text-lg font-semibold text-white">Mi Portafolio</h2>
+
+  <!-- Description input -->
+  <div class="mb-4">
+    <label for="imgDesc" class="mb-1 block text-sm font-medium text-gray-300">Descripción (opcional)</label>
+    <input
+      id="imgDesc"
+      [(ngModel)]="description"
+      type="text"
+      maxlength="255"
+      placeholder="Ej. Realismo en brazo completo"
+      class="w-full rounded-lg border border-gray-700 bg-gray-800 px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+    />
+  </div>
+
+  <!-- Drop Zone -->
+  <div
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)"
+    [class]="dragging
+      ? 'flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-indigo-500 bg-indigo-600/10 p-10 transition'
+      : 'flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-700 bg-gray-800/50 p-10 transition hover:border-gray-500'"
+    (click)="fileInput.click()"
+  >
+    <input
+      #fileInput
+      type="file"
+      accept="image/jpeg,image/png,image/webp"
+      class="hidden"
+      (change)="onFileSelected($event)"
+    />
+
+    @if (uploading) {
+      <svg class="mb-3 h-10 w-10 animate-spin text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+      </svg>
+      <p class="text-sm text-gray-400">Subiendo imagen…</p>
+    } @else {
+      <!-- Upload icon -->
+      <svg class="mb-3 h-10 w-10 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
+      </svg>
+      <p class="text-sm text-gray-400">Arrastra una imagen aquí o <span class="font-medium text-indigo-400">haz clic para seleccionar</span></p>
+      <p class="mt-1 text-xs text-gray-500">JPG, PNG o WebP</p>
+    }
+  </div>
+
+  <!-- ── Gallery Grid ─────────────────────────────────────── -->
+  @if (images.length > 0) {
+    <div class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+      @for (img of images; track img.id) {
+        <div class="group relative overflow-hidden rounded-xl border border-gray-800 bg-gray-800">
+          <img
+            [src]="img.image"
+            [alt]="img.description || 'Portafolio'"
+            class="aspect-square w-full object-cover transition group-hover:scale-105"
+          />
+          <!-- Overlay on hover -->
+          <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/60 opacity-0 transition group-hover:opacity-100">
+            @if (img.description) {
+              <p class="mb-2 px-2 text-center text-xs text-gray-200">{{ img.description }}</p>
+            }
+            <button
+              type="button"
+              (click)="deleteImage(img.id)"
+              class="rounded-lg bg-red-600/80 px-3 py-1 text-xs font-semibold text-white transition hover:bg-red-500"
+            >
+              Eliminar
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <p class="mt-6 text-center text-sm text-gray-500">Tu portafolio está vacío. ¡Sube tu primera imagen!</p>
+  }
+</div>

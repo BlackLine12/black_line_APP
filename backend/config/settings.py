@@ -22,7 +22,8 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_filters",
     # Local apps
-    "apps.users", 
+    "apps.users",
+    "apps.artists",
 ]
 
 MIDDLEWARE = [
