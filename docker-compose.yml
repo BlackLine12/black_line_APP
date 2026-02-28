@@ -42,5 +42,19 @@ services:
     tty: true
     command: zsh
 
+  frontend:
+      build:
+        context: ./frontend
+      container_name: black_line_frontend
+      volumes:
+        - ./frontend:/app
+        - /app/node_modules
+      ports:
+        - "4200:4200"
+      environment:
+        - NODE_ENV=development
+      depends_on:
+        - backend
+
 volumes:
   postgres_data:

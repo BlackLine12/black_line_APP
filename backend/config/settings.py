@@ -108,7 +108,6 @@ REST_FRAMEWORK = {
 }
 
 # Simple JWT Settings
-from datetime import timedelta
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(
