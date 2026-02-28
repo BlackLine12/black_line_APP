@@ -1,1 +1,74 @@
-<p>login works!</p>
+<section class="flex min-h-screen items-center justify-center bg-gray-950 px-4">
+  <div class="w-full max-w-md space-y-8">
+
+    <!-- Logo / Brand -->
+    <div class="animate-fade-in-down text-center">
+      <h1 class="text-4xl font-extrabold tracking-tight text-white transition-transform hover:scale-105">Black<span class="text-indigo-500">Line</span></h1>
+      <p class="mt-2 text-sm text-gray-400">Inicia sesión para continuar</p>
+    </div>
+
+    <!-- Card -->
+    <div class="animate-fade-in-up rounded-2xl border border-gray-800 bg-gray-900 p-8 shadow-xl delay-200">
+
+      <!-- Error banner -->
+      @if (errorMessage) {
+        <div class="mb-5 rounded-lg border border-red-800 bg-red-900/30 px-4 py-3 text-sm text-red-300">
+          {{ errorMessage }}
+        </div>
+      }
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5">
+
+        <!-- Email -->
+        <div>
+          <label for="email" class="mb-1 block text-sm font-medium text-gray-300">Correo electrónico</label>
+          <input
+            id="email"
+            formControlName="email"
+            type="email"
+            autocomplete="email"
+            placeholder="tu@email.com"
+            class="w-full rounded-lg border border-gray-700 bg-gray-800 px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          />
+          @if (loginForm.get('email')?.touched && loginForm.get('email')?.hasError('email')) {
+            <p class="mt-1 text-xs text-red-400">Ingresa un correo válido.</p>
+          }
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label for="password" class="mb-1 block text-sm font-medium text-gray-300">Contraseña</label>
+          <input
+            id="password"
+            formControlName="password"
+            type="password"
+            autocomplete="current-password"
+            placeholder="••••••••"
+            class="w-full rounded-lg border border-gray-700 bg-gray-800 px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          />
+        </div>
+
+        <!-- Submit -->
+        <button
+          type="submit"
+          [disabled]="loginForm.invalid || loading"
+          class="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:bg-indigo-500 hover:shadow-xl hover:shadow-indigo-500/25 active:scale-95 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-950 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          @if (loading) {
+            <svg class="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+            </svg>
+          }
+          {{ loading ? 'Entrando…' : 'Iniciar Sesión' }}
+        </button>
+      </form>
+    </div>
+
+    <!-- Register link -->
+    <p class="animate-fade-in text-center text-sm text-gray-400 delay-400">
+      ¿No tienes cuenta?
+      <a routerLink="/auth/register" class="font-medium text-indigo-400 transition-colors hover:text-indigo-300">Regístrate aquí</a>
+    </p>
+  </div>
+</section>

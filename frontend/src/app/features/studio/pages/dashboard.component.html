@@ -1,1 +1,146 @@
-<p>dashboard works!</p>
+<!-- ═══════════════════ ARTIST DASHBOARD ═══════════════════ -->
+<section class="text-gray-100 px-4 py-8 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-4xl space-y-8">
+
+    <!-- Header -->
+    <div class="animate-fade-in-down">
+      <h1 class="text-3xl font-bold tracking-tight text-white">Mi Perfil de Artista</h1>
+      <p class="mt-1 text-sm text-gray-400">Configura tu información pública, tarifas y estilos.</p>
+    </div>
+
+    <!-- Loading state -->
+    @if (loading) {
+      <div class="flex items-center justify-center py-20">
+        <svg class="h-8 w-8 animate-spin text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+        </svg>
+        <span class="ml-3 text-gray-400">Cargando perfil…</span>
+      </div>
+    }
+
+    <!-- Profile form -->
+    @if (!loading) {
+      <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="space-y-8">
+
+        <!-- ── Info Card ─────────────────────────────────── -->
+        <div class="animate-fade-in-up rounded-2xl border border-gray-800 bg-gray-900 p-6 shadow-lg transition-all duration-300 hover:border-gray-700 delay-100">
+          <h2 class="mb-5 text-lg font-semibold text-white">Información General</h2>
+          <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+
+            <!-- City -->
+            <div class="sm:col-span-1">
+              <label for="city" class="mb-1 block text-sm font-medium text-gray-300">Ciudad</label>
+              <input
+                id="city"
+                formControlName="city"
+                type="text"
+                placeholder="Ej. CDMX, Guadalajara…"
+                class="w-full rounded-lg border border-gray-700 bg-gray-800 px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              />
+            </div>
+
+            <!-- Bio -->
+            <div class="sm:col-span-2">
+              <label for="bio" class="mb-1 block text-sm font-medium text-gray-300">Biografía</label>
+              <textarea
+                id="bio"
+                formControlName="bio"
+                rows="4"
+                placeholder="Cuéntale al mundo sobre tu estilo y experiencia…"
+                class="w-full rounded-lg border border-gray-700 bg-gray-800 px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Rates Card ────────────────────────────────── -->
+        <div class="animate-fade-in-up rounded-2xl border border-gray-800 bg-gray-900 p-6 shadow-lg transition-all duration-300 hover:border-gray-700 delay-300">
+          <h2 class="mb-5 text-lg font-semibold text-white">Tarifas</h2>
+          <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+
+            <!-- Hourly rate -->
+            <div>
+              <label for="hourly" class="mb-1 block text-sm font-medium text-gray-300">Tarifa por Hora (MXN)</label>
+              <div class="relative">
+                <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">$</span>
+                <input
+                  id="hourly"
+                  formControlName="base_hourly_rate"
+                  type="number"
+                  min="0"
+                  step="50"
+                  class="w-full rounded-lg border border-gray-700 bg-gray-800 py-2.5 pl-8 pr-4 text-sm text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                />
+              </div>
+            </div>
+
+            <!-- Setup fee -->
+            <div>
+              <label for="setup" class="mb-1 block text-sm font-medium text-gray-300">Tarifa Mínima / Apertura (MXN)</label>
+              <div class="relative">
+                <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">$</span>
+                <input
+                  id="setup"
+                  formControlName="minimum_setup_fee"
+                  type="number"
+                  min="0"
+                  step="50"
+                  class="w-full rounded-lg border border-gray-700 bg-gray-800 py-2.5 pl-8 pr-4 text-sm text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Styles Card ───────────────────────────────── -->
+        <div class="animate-fade-in-up rounded-2xl border border-gray-800 bg-gray-900 p-6 shadow-lg transition-all duration-300 hover:border-gray-700 delay-500">
+          <h2 class="mb-4 text-lg font-semibold text-white">Estilos de Tatuaje</h2>
+          <p class="mb-4 text-sm text-gray-400">Selecciona los estilos en los que te especializas.</p>
+          <div class="flex flex-wrap gap-3">
+            @for (style of styles; track style.id) {
+              <button
+                type="button"
+                (click)="toggleStyle(style.id)"
+                [class]="selectedStyleIds.has(style.id)
+                  ? 'rounded-full border border-indigo-500 bg-indigo-600/20 px-4 py-1.5 text-sm font-medium text-indigo-300 transition hover:bg-indigo-600/30'
+                  : 'rounded-full border border-gray-700 bg-gray-800 px-4 py-1.5 text-sm font-medium text-gray-400 transition hover:border-gray-500 hover:text-gray-200'"
+              >
+                {{ style.name }}
+              </button>
+            }
+            @if (styles.length === 0) {
+              <p class="text-sm text-gray-500">No hay estilos registrados aún.</p>
+            }
+          </div>
+        </div>
+
+        <!-- ── Save button ───────────────────────────────── -->
+        <div class="flex items-center gap-4">
+          <button
+            type="submit"
+            [disabled]="profileForm.invalid || saving"
+            class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:bg-indigo-500 hover:shadow-xl hover:shadow-indigo-500/25 active:scale-95 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-950 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            @if (saving) {
+              <svg class="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+              </svg>
+            }
+            {{ saving ? 'Guardando…' : 'Guardar Cambios' }}
+          </button>
+
+          @if (saveMessage) {
+            <span class="text-sm font-medium" [class]="saveMessage.includes('Error') ? 'text-red-400' : 'text-green-400'">
+              {{ saveMessage }}
+            </span>
+          }
+        </div>
+      </form>
+
+      <!-- ── Portfolio section ───────────────────────────── -->
+      <app-portfolio-upload />
+    }
+  </div>
+</section>
