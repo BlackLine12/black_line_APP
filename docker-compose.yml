@@ -40,7 +40,6 @@ services:
         condition: service_healthy
     stdin_open: true
     tty: true
-    command: zsh /app/entrypoint.sh
 
   frontend:
       build:
