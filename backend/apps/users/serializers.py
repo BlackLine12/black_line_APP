@@ -75,7 +75,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'email', 'username', 'first_name', 'last_name', 'user_type', 'phone', 'is_active', 'created_at', 'updated_at']
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'email', 'user_type', 'is_active', 'created_at', 'updated_at']
 
 class RegisterSerializer(serializers.ModelSerializer):
     """
@@ -121,18 +121,8 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         """Crear un nuevo usuario."""
         validated_data.pop('password_confirm')
-        
-        user = User.objects.create_user(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            password=validated_data['password'],
-            first_name=validated_data.get('first_name', ''),
-            last_name=validated_data.get('last_name', ''),
-            user_type=validated_data.get('user_type', User.UserType.CLIENT),
-            phone=validated_data.get('phone', None),
-        )
-        
-        return user
+        password = validated_data.pop('password')
+        return User.objects.create_user(password=password, **validated_data)
 
 
 class ChangePasswordSerializer(serializers.Serializer):
