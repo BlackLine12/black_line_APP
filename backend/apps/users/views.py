@@ -5,6 +5,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 from django.contrib.auth import get_user_model
+from django.db import transaction
 
 from .serializers import (
     CustomTokenObtainPairSerializer,
@@ -29,6 +30,7 @@ class RegisterView(generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = RegisterSerializer
 
+    @transaction.atomic
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -42,12 +44,14 @@ class RegisterView(generics.CreateAPIView):
             status=status.HTTP_201_CREATED
         )
 
-class UserProfileView(generics.RetrieveAPIView):
+class UserProfileView(generics.RetrieveUpdateAPIView):
     """
-    Vista para obtener el perfil del usuario autenticado.
+    Vista para obtener y actualizar el perfil del usuario autenticado.
+    Campos editables: first_name, last_name, username, phone.
     """
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
+    http_method_names = ['get', 'patch']
 
     def get_object(self):
         return self.request.user
@@ -63,21 +67,12 @@ class ChangePasswordView(APIView):
             data=request.data,
             context={'request': request}
         )
-        
-        if serializer.is_valid():
-            # Cambiar la contraseña
-            user = request.user
-            user.set_password(serializer.validated_data['new_password'])
-            user.save()
-            
-            return Response(
-                {"message": "Contraseña actualizada exitosamente"},
-                status=status.HTTP_200_OK
-            )
-        
+        serializer.is_valid(raise_exception=True)
+        request.user.set_password(serializer.validated_data['new_password'])
+        request.user.save()
         return Response(
-            serializer.errors,
-            status=status.HTTP_400_BAD_REQUEST
+            {"message": "Contraseña actualizada exitosamente"},
+            status=status.HTTP_200_OK
         )
 
 
