@@ -19,11 +19,7 @@ services:
   backend:
     build:
       context: ./backend
-      args:
-        USER_ID: ${USER_ID:-1000}
-        GROUP_ID: ${GROUP_ID:-1000}
     container_name: black_line_backend
-    user: "${USER_ID:-1000}:${GROUP_ID:-1000}"
     volumes:
       - ./backend:/app
     ports:
@@ -38,8 +34,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    stdin_open: true
-    tty: true
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
 
   frontend:
       build:
