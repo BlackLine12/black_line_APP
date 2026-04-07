@@ -51,12 +51,13 @@ export class AuthService {
   // ── Helpers ────────────────────────────────────────────────
   redirectByRole(): void {
     const type = this._user()?.user_type;
-    if (type === 'ADMIN') {
-      this.router.navigate(['/client/cotizador']);
-    } else if (type === 'STUDIO') {
+    if (type === 'STUDIO') {
       this.router.navigate(['/studio/dashboard']);
-    } else {
+    } else if (type === 'CLIENT') {
       this.router.navigate(['/client/cotizador']);
+    } else {
+      // ADMIN no tiene SPA — gestiona vía Django Admin (/admin/)
+      this.router.navigate(['/']);
     }
   }
 
