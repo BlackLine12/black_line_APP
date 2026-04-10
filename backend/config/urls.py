@@ -1,7 +1,7 @@
 """
 URL configuration for config project.
 
-The `urlpatterns` list routes URLs to views. For more information please see:
+The "urlpatterns" list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/6.0/topics/http/urls/
 Examples:
 Function views
@@ -33,6 +33,7 @@ def api_root(request):
             "auth": "/api/auth/",
             "artists": "/api/artists/",
             "quotes": "/api/quotes/",
+            "matchmaking": "/api/quotes/match/",
         }
     })
 
