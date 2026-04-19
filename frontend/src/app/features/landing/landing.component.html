@@ -1,0 +1,339 @@
+<div class="landing">
+
+  <!-- ── NAVBAR ─────────────────────────────────────────────────────────── -->
+  <nav class="navbar">
+    <div class="navbar__logo" routerLink="/" style="cursor:pointer;">
+      <span class="navbar__logo-mark"></span>
+      <span class="navbar__logo-black">Black</span><span class="navbar__logo-line">Line</span>
+    </div>
+
+    <div class="navbar__links">
+      <a class="navbar__link" href="#artistas">Artistas</a>
+      <a class="navbar__link" href="#estilos">Estilos</a>
+      <a class="navbar__link" href="#como-funciona">Cómo funciona</a>
+    </div>
+
+    <div class="navbar__ctas">
+      @if (authService.isAuthenticated()) {
+        <button class="btn btn--outline" (click)="goToDashboard()">Mi Panel</button>
+      } @else {
+        <a class="btn btn--outline" routerLink="/auth/login">Iniciar Sesión</a>
+        <a class="btn btn--gold" routerLink="/auth/register">Registrarse</a>
+      }
+    </div>
+  </nav>
+
+  <!-- ── HERO ──────────────────────────────────────────────────────────── -->
+  <section class="hero">
+    <!-- Left -->
+    <div class="hero__left">
+      <div class="badge">
+        <span class="badge__dot"></span>
+        TATUAJES · PIERCINGS · ARTE
+      </div>
+
+      <div class="hero__headline">
+        <span class="hero__headline-light">Tu próximo tatuaje</span>
+        <span class="hero__headline-light">merece al artista</span>
+        <span class="hero__headline-gold">correcto.</span>
+      </div>
+
+      <p class="hero__desc">
+        Describe tu idea, nosotros conectamos tu piel con el tatuador que la hará realidad.
+        Matchmaking artesanal para tatuajes únicos.
+      </p>
+
+      <div class="hero__btns">
+        <button class="btn btn--gold btn--lg" (click)="goToRegisterClient()">
+          Cotizar mi tatuaje
+        </button>
+        <a class="btn btn--ghost btn--lg" href="#artistas">Ver artistas</a>
+      </div>
+    </div>
+
+    <!-- Right -->
+    <div class="hero__right">
+      <div class="hero__img-bg"></div>
+      <div class="hero__overlay"></div>
+      <div class="hero__stats">
+        <div class="stat">
+          <span class="stat__num">340+</span>
+          <span class="stat__label">Artistas verificados</span>
+        </div>
+        <div class="stat">
+          <span class="stat__num">2.8K+</span>
+          <span class="stat__label">Tatuajes realizados</span>
+        </div>
+        <div class="stat">
+          <span class="stat__num">98%</span>
+          <span class="stat__label">Clientes satisfechos</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CÓMO FUNCIONA ─────────────────────────────────────────────────── -->
+  <section class="section section--dark" id="como-funciona">
+    <h2 class="section__title">Así de fácil</h2>
+    <p class="section__subtitle">
+      Tres pasos para encontrar al artista perfecto para tu próximo tatuaje
+    </p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step__icon-ring">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="1.5">
+            <path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+            <path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/>
+          </svg>
+        </div>
+        <h3 class="step__title">Describe tu idea</h3>
+        <p class="step__desc">Cuéntanos sobre el tatuaje que imaginas: estilo, tamaño, ubicación y cualquier referencia visual.</p>
+      </div>
+
+      <div class="step__line"></div>
+
+      <div class="step">
+        <div class="step__icon-ring">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="1.5">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/><path d="M19.5 19.5 21 21"/>
+          </svg>
+        </div>
+        <h3 class="step__title">Te conectamos</h3>
+        <p class="step__desc">Nuestro algoritmo analiza tu idea y te conecta con los artistas más compatibles con tu visión.</p>
+      </div>
+
+      <div class="step__line"></div>
+
+      <div class="step">
+        <div class="step__icon-ring">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="1.5">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+            <path d="m9 16 2 2 4-4"/>
+          </svg>
+        </div>
+        <h3 class="step__title">Agenda tu cita</h3>
+        <p class="step__desc">Elige al artista que más te inspire, agenda tu sesión y prepárate para tu nuevo tatuaje.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ESTILOS POPULARES ─────────────────────────────────────────────── -->
+  <section class="section section--alt" id="estilos">
+    <h2 class="section__title">Explora estilos</h2>
+    <p class="section__subtitle">Encuentra la estética que define tu próximo tatuaje</p>
+
+    <div class="styles-grid">
+      <div class="style-card">
+        <div class="style-card__img" style="background: linear-gradient(135deg, #1a1a1a 0%, #2a1a0a 100%);"></div>
+        <div class="style-card__body">
+          <span class="style-card__name">Blackwork</span>
+        </div>
+      </div>
+      <div class="style-card">
+        <div class="style-card__img" style="background: linear-gradient(135deg, #0a1a2a 0%, #1a0a2a 100%);"></div>
+        <div class="style-card__body">
+          <span class="style-card__name">Realismo</span>
+        </div>
+      </div>
+      <div class="style-card">
+        <div class="style-card__img" style="background: linear-gradient(135deg, #1a2a0a 0%, #0a2a1a 100%);"></div>
+        <div class="style-card__body">
+          <span class="style-card__name">Acuarela</span>
+        </div>
+      </div>
+      <div class="style-card">
+        <div class="style-card__img" style="background: linear-gradient(135deg, #2a0a1a 0%, #1a1a0a 100%);"></div>
+        <div class="style-card__body">
+          <span class="style-card__name">Geométrico</span>
+        </div>
+      </div>
+      <div class="style-card">
+        <div class="style-card__img" style="background: linear-gradient(135deg, #0a0a2a 0%, #2a0a0a 100%);"></div>
+        <div class="style-card__body">
+          <span class="style-card__name">Tradicional</span>
+        </div>
+      </div>
+      <div class="style-card">
+        <div class="style-card__img" style="background: linear-gradient(135deg, #1a1a2a 0%, #2a1a1a 100%);"></div>
+        <div class="style-card__body">
+          <span class="style-card__name">Minimalista</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ARTISTAS DESTACADOS ───────────────────────────────────────────── -->
+  <section class="section section--dark" id="artistas">
+    <div class="badge">
+      <span class="badge__dot"></span>
+      ARTISTAS VERIFICADOS
+    </div>
+    <h2 class="section__title">Artistas que marcan la diferencia</h2>
+    <p class="section__subtitle">Profesionales verificados con portafolios reales y reseñas de clientes</p>
+
+    <div class="artists-row">
+      <div class="artist-card">
+        <div class="artist-card__img" style="background-image: url('/images/artist-1.png');"></div>
+        <div class="artist-card__body">
+          <div class="artist-card__name">Marco Reyes</div>
+          <div class="artist-card__style">Blackwork · Geométrico</div>
+          <div class="artist-card__city">CDMX, México</div>
+        </div>
+      </div>
+      <div class="artist-card">
+        <div class="artist-card__img" style="background-image: url('/images/artist-2.png');"></div>
+        <div class="artist-card__body">
+          <div class="artist-card__name">Sofía Vega</div>
+          <div class="artist-card__style">Acuarela · Realismo</div>
+          <div class="artist-card__city">Guadalajara, México</div>
+        </div>
+      </div>
+      <div class="artist-card">
+        <div class="artist-card__img" style="background-image: url('/images/artist-3.png');"></div>
+        <div class="artist-card__body">
+          <div class="artist-card__name">Tomás Luna</div>
+          <div class="artist-card__style">Tradicional · Neotradicional</div>
+          <div class="artist-card__city">Monterrey, México</div>
+        </div>
+      </div>
+      <div class="artist-card">
+        <div class="artist-card__img" style="background-image: url('/images/artist-4.png');"></div>
+        <div class="artist-card__body">
+          <div class="artist-card__name">Daniela Cruz</div>
+          <div class="artist-card__style">Minimalista · Fineline</div>
+          <div class="artist-card__city">Tijuana, México</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── TESTIMONIOS ───────────────────────────────────────────────────── -->
+  <section class="section section--alt">
+    <div class="badge">
+      <span class="badge__dot"></span>
+      TESTIMONIOS
+    </div>
+    <h2 class="section__title">Lo que dicen nuestros clientes</h2>
+    <p class="section__subtitle">Miles de personas ya encontraron al artista perfecto para su tatuaje</p>
+
+    <div class="testimonials">
+      <div class="testimonial">
+        <div class="testimonial__stars">★★★★★</div>
+        <p class="testimonial__text">
+          "Describí mi idea y en menos de 24h tenía 3 propuestas increíbles. El artista que elegí
+          capturo exactamente lo que imaginaba."
+        </p>
+        <div class="testimonial__author">
+          <div class="testimonial__avatar">AR</div>
+          <div>
+            <div class="testimonial__name">Ana Rodríguez</div>
+            <div class="testimonial__role">Cliente</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial">
+        <div class="testimonial__stars">★★★★★</div>
+        <p class="testimonial__text">
+          "BlackLine me ahorró semanas de búsqueda. El matching fue perfecto, el artista
+          entendía mi visión desde el primer mensaje."
+        </p>
+        <div class="testimonial__author">
+          <div class="testimonial__avatar">CM</div>
+          <div>
+            <div class="testimonial__name">Carlos Medina</div>
+            <div class="testimonial__role">Cliente</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial">
+        <div class="testimonial__stars">★★★★★</div>
+        <p class="testimonial__text">
+          "Como artista, BlackLine me conecta con clientes que realmente valoran mi trabajo.
+          La plataforma es intuitiva y profesional."
+        </p>
+        <div class="testimonial__author">
+          <div class="testimonial__avatar">TV</div>
+          <div>
+            <div class="testimonial__name">Tomás Vega</div>
+            <div class="testimonial__role">Artista verificado</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA FINAL ─────────────────────────────────────────────────────── -->
+  <section class="cta-final">
+    <div class="cta-final__deco">
+      <span class="cta-final__line"></span>
+      TU PRÓXIMO TATUAJE
+      <span class="cta-final__line"></span>
+    </div>
+    <h2 class="cta-final__title">
+      Encuentra al artista que dará vida a tu idea
+    </h2>
+    <p class="cta-final__desc">
+      Conectamos tu visión con el talento correcto. Sin complicaciones, sin búsquedas
+      interminables. Solo arte que trasciende.
+    </p>
+    <div class="cta-final__btns">
+      <button class="btn btn--gold btn--lg" (click)="goToRegisterClient()">
+        Comenzar ahora
+      </button>
+      <button class="btn btn--outline-gold btn--lg" (click)="goToRegisterStudio()">
+        Soy artista — únete
+      </button>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ─────────────────────────────────────────────────────────── -->
+  <footer class="footer">
+    <div class="footer__top">
+      <div class="footer__col footer__col--brand">
+        <div class="footer__logo">
+          <span class="navbar__logo-mark"></span>
+          <span class="navbar__logo-black">Black</span><span class="navbar__logo-line">Line</span>
+        </div>
+        <p class="footer__brand-desc">
+          La plataforma que conecta tu piel con el artista ideal. Matchmaking inteligente para tatuajes únicos.
+        </p>
+      </div>
+      <div class="footer__col">
+        <span class="footer__col-title">Plataforma</span>
+        <a class="footer__link" href="#como-funciona">Cómo funciona</a>
+        <a class="footer__link" href="#estilos">Estilos de tatuaje</a>
+        <a class="footer__link" href="#artistas">Artistas</a>
+        <a class="footer__link" routerLink="/auth/register">Registrarse</a>
+      </div>
+      <div class="footer__col">
+        <span class="footer__col-title">Empresa</span>
+        <a class="footer__link" href="#">Sobre nosotros</a>
+        <a class="footer__link" href="#">Blog</a>
+        <a class="footer__link" href="#">Contacto</a>
+        <a class="footer__link" href="#">Trabaja con nosotros</a>
+      </div>
+      <div class="footer__col">
+        <span class="footer__col-title">Legal</span>
+        <a class="footer__link" href="#">Términos de servicio</a>
+        <a class="footer__link" href="#">Política de privacidad</a>
+        <a class="footer__link" href="#">Cookies</a>
+      </div>
+    </div>
+
+    <div class="footer__divider"></div>
+
+    <div class="footer__bottom">
+      <span class="footer__copy">&copy; 2026 BlackLine. Todos los derechos reservados.</span>
+      <div class="footer__socials">
+        <a class="footer__social" href="#">Instagram</a>
+        <a class="footer__social" href="#">Twitter</a>
+        <a class="footer__social" href="#">TikTok</a>
+      </div>
+    </div>
+  </footer>
+
+</div>
