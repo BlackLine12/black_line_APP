@@ -511,3 +511,34 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
 
   svg { flex-shrink: 0; }
 }
+
+// ── Back to landing ───────────────────────────────────────────────────────
+.auth-card__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: $font-sans;
+  font-size: 12px;
+  font-weight: 500;
+  color: $muted;
+  text-decoration: none;
+  letter-spacing: 0.3px;
+  transition: color 0.2s, gap 0.2s;
+  padding-bottom: 4px;
+
+  &:hover {
+    color: $gold;
+    gap: 10px;
+  }
+}
+
+.auth-card__back-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+
+  .auth-card__back:hover & {
+    transform: translateX(-2px);
+  }
+}

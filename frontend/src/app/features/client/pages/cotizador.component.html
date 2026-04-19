@@ -1,50 +1,56 @@
-<!-- ═══════════════════════════════════════════════════════
-     QUOTE WIZARD – BlackLine Cotizador Visual
-     ═══════════════════════════════════════════════════════ -->
-<div class="min-h-screen bg-gray-950 text-gray-100 px-4 py-8 sm:px-6 lg:px-8">
-  <div class="mx-auto max-w-2xl">
+<!-- ═══════════════════════════════════════════════════════════════
+     COTIZADOR  ·  BlackLine – Wizard de Cotización Premium
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="cotizador">
 
-    <!-- ── Header ─────────────────────────────────────── -->
-    <div class="mb-8 text-center">
-      <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">
-        Cotiza tu <span class="text-purple-400">Tatuaje</span>
-      </h1>
-      <p class="mt-2 text-sm text-gray-400">
-        Completa los pasos y encuentra al tatuador ideal para ti.
-      </p>
+  <!-- ── Header ──────────────────────────────────────────────── -->
+  <div class="cotizador__header">
+    <span class="cotizador__badge">
+      <span class="cotizador__badge-dot"></span>COTIZADOR IA
+    </span>
+    <h1 class="cotizador__title">
+      Cotiza tu&nbsp;<em>Tatuaje</em>
+    </h1>
+    <p class="cotizador__subtitle">
+      Responde 4 preguntas y obtén un precio estimado al instante.
+    </p>
+  </div>
+
+  <!-- ── Error Banner ─────────────────────────────────────────── -->
+  @if (errorMsg()) {
+    <div role="alert" class="cotizador__error">
+      <svg xmlns="http://www.w3.org/2000/svg" class="cotizador__error-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/>
+      </svg>
+      {{ errorMsg() }}
     </div>
+  }
 
-    <!-- ── Stepper ────────────────────────────────────── -->
+  <!-- ── Wrapper card ─────────────────────────────────────────── -->
+  <div class="cotizador__card">
+
+    <!-- ── Stepper ───────────────────────────────────────────── -->
     @if (!submitted()) {
-      <div class="mb-10 flex items-center justify-between">
+      <div class="stepper">
         @for (step of [1, 2, 3, 4]; track step) {
           <button
+            class="stepper__item"
             (click)="goToStep(step)"
-            class="flex flex-col items-center gap-1 transition-colors"
-            [class.cursor-pointer]="step < currentStep()"
-            [class.cursor-default]="step >= currentStep()"
+            [class.stepper__item--active]="step === currentStep()"
+            [class.stepper__item--done]="step < currentStep()"
+            [class.stepper__item--locked]="step > currentStep()"
+            type="button"
           >
-            <span
-              class="flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold transition-all duration-300"
-              [ngClass]="{
-                'bg-purple-600 text-white shadow-lg shadow-purple-600/30': step === currentStep(),
-                'bg-purple-600/20 text-purple-400': step < currentStep(),
-                'bg-gray-800 text-gray-500': step > currentStep()
-              }"
-            >
+            <span class="stepper__bubble">
               @if (step < currentStep()) {
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="stepper__check" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                 </svg>
               } @else {
                 {{ step }}
               }
             </span>
-            <span class="text-[10px] sm:text-xs"
-              [ngClass]="{
-                'text-purple-400': step <= currentStep(),
-                'text-gray-600': step > currentStep()
-              }">
+            <span class="stepper__label">
               @switch (step) {
                 @case (1) { Estilo }
                 @case (2) { Zona }
@@ -54,275 +60,322 @@
             </span>
           </button>
           @if (step < 4) {
-            <div class="mx-1 h-0.5 flex-1 rounded transition-colors duration-300"
-              [ngClass]="step < currentStep() ? 'bg-purple-600/50' : 'bg-gray-800'">
-            </div>
+            <div class="stepper__connector" [class.stepper__connector--done]="step < currentStep()"></div>
           }
         }
       </div>
     }
 
-    <!-- ── Error Banner ───────────────────────────────── -->
-    @if (errorMsg()) {
-      <div role="alert" class="mb-6 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
-        {{ errorMsg() }}
-      </div>
-    }
+    <!-- ██ FORMULARIO ████████████████████████████████████████ -->
+    <form [formGroup]="quoteForm" (ngSubmit)="submit()" class="cotizador__form">
 
-    <!-- ██ FORM ██ -->
-    <form [formGroup]="quoteForm" (ngSubmit)="submit()">
-
-      <!-- ── STEP 1: Estilo ───────────────────────────── -->
+      <!-- ── STEP 1: Estilo ──────────────────────────────────── -->
       @if (currentStep() === 1) {
-        <div class="animate-fade-in">
-          <h2 class="mb-1 text-xl font-semibold">¿Qué estilo buscas?</h2>
-          <p class="mb-6 text-sm text-gray-400">Elige el estilo que mejor represente tu idea.</p>
-
-          <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            @for (style of styles(); track style.id) {
-              <button
-                type="button"
-                (click)="selectStyle(style.id)"
-                class="group relative rounded-xl border-2 p-4 text-center transition-all duration-200"
-                [ngClass]="quoteForm.value.tattoo_style === style.id
-                  ? 'border-purple-500 bg-purple-500/10 shadow-lg shadow-purple-500/10'
-                  : 'border-gray-800 bg-gray-900 hover:border-gray-700 hover:bg-gray-800/70'"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto mb-2 h-7 w-7 text-purple-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42"/>
-                </svg>
-                <span class="text-sm font-medium"
-                  [ngClass]="quoteForm.value.tattoo_style === style.id ? 'text-purple-300' : 'text-gray-300'">
-                  {{ style.name }}
-                </span>
-                @if (quoteForm.value.tattoo_style === style.id) {
-                  <span class="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-purple-500 text-[10px] text-white">
-                    ✓
-                  </span>
-                }
-              </button>
-            }
+        <div class="step-panel animate-in">
+          <div class="step-panel__head">
+            <span class="step-panel__num">01</span>
+            <div>
+              <h2 class="step-panel__title">¿Qué estilo buscas?</h2>
+              <p class="step-panel__hint">Elige el estilo que mejor represente tu idea.</p>
+            </div>
           </div>
-        </div>
-      }
 
-      <!-- ── STEP 2: Zona del cuerpo & Color ──────────── -->
-      @if (currentStep() === 2) {
-        <div class="animate-fade-in space-y-8">
-          <!-- Body Part -->
-          <div>
-            <h2 class="mb-1 text-xl font-semibold">¿Dónde irá tu tatuaje?</h2>
-            <p class="mb-6 text-sm text-gray-400">Selecciona la zona del cuerpo.</p>
-
-            <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              @for (part of bodyParts; track part.value) {
+          @if (styles().length === 0) {
+            <div class="styles-loading">
+              <span class="styles-loading__spinner"></span>
+              <span>Cargando estilos…</span>
+            </div>
+          } @else {
+            <div class="styles-grid">
+              @for (style of styles(); track style.id) {
                 <button
+                  id="style-{{ style.id }}"
                   type="button"
-                  (click)="selectBodyPart(part.value)"
-                  class="flex items-center justify-center rounded-xl border-2 px-4 py-3 transition-all duration-200"
-                  [ngClass]="quoteForm.value.body_part === part.value
-                    ? 'border-purple-500 bg-purple-500/10'
-                    : 'border-gray-800 bg-gray-900 hover:border-gray-700'"
+                  class="style-btn"
+                  [class.style-btn--selected]="quoteForm.value.tattoo_style === style.id"
+                  (click)="selectStyle(style.id)"
                 >
-                  <span class="text-sm font-medium"
-                    [ngClass]="quoteForm.value.body_part === part.value ? 'text-purple-300' : 'text-gray-300'">
-                    {{ part.label }}
-                  </span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="style-btn__icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42"/>
+                  </svg>
+                  <span class="style-btn__name">{{ style.name }}</span>
+                  @if (quoteForm.value.tattoo_style === style.id) {
+                    <span class="style-btn__check">✓</span>
+                  }
                 </button>
               }
             </div>
+          }
+        </div>
+      }
+
+      <!-- ── STEP 2: Zona del cuerpo & Color ────────────────── -->
+      @if (currentStep() === 2) {
+        <div class="step-panel animate-in">
+          <!-- Body Part -->
+          <div class="step-panel__head">
+            <span class="step-panel__num">02</span>
+            <div>
+              <h2 class="step-panel__title">¿Dónde irá tu tatuaje?</h2>
+              <p class="step-panel__hint">Selecciona la zona del cuerpo.</p>
+            </div>
+          </div>
+
+          <div class="body-grid">
+            @for (part of bodyParts; track part.value) {
+              <button
+                id="body-{{ part.value }}"
+                type="button"
+                class="body-btn"
+                [class.body-btn--selected]="quoteForm.value.body_part === part.value"
+                (click)="selectBodyPart(part.value)"
+              >
+                {{ part.label }}
+              </button>
+            }
           </div>
 
           <!-- Color Toggle -->
-          <div>
-            <h3 class="mb-4 text-lg font-semibold">¿A color o Black &amp; Grey?</h3>
-            <div class="flex gap-4">
+          <div class="color-section">
+            <h3 class="color-section__title">¿A color o Black &amp; Grey?</h3>
+            <div class="color-toggle">
               <button
+                id="color-bw"
                 type="button"
+                class="color-btn"
+                [class.color-btn--selected]="!quoteForm.value.is_color"
                 (click)="toggleColor(false)"
-                class="flex-1 rounded-xl border-2 py-4 text-center transition-all duration-200"
-                [ngClass]="!quoteForm.value.is_color
-                  ? 'border-purple-500 bg-purple-500/10'
-                  : 'border-gray-800 bg-gray-900 hover:border-gray-700'"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto mb-1 h-7 w-7" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="color-btn__icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"/>
                 </svg>
-                <span class="text-sm font-medium">Black &amp; Grey</span>
+                <span>Black &amp; Grey</span>
+                <span class="color-btn__tag">Clásico</span>
               </button>
               <button
+                id="color-full"
                 type="button"
+                class="color-btn"
+                [class.color-btn--selected]="quoteForm.value.is_color"
                 (click)="toggleColor(true)"
-                class="flex-1 rounded-xl border-2 py-4 text-center transition-all duration-200"
-                [ngClass]="quoteForm.value.is_color
-                  ? 'border-purple-500 bg-purple-500/10'
-                  : 'border-gray-800 bg-gray-900 hover:border-gray-700'"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto mb-1 h-7 w-7" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="color-btn__icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M4.098 19.902a3.75 3.75 0 0 0 5.304 0l6.401-6.402M6.75 21A3.75 3.75 0 0 1 3 17.25V4.125C3 3.504 3.504 3 4.125 3h5.25c.621 0 1.125.504 1.125 1.125v4.072M6.75 21a3.75 3.75 0 0 0 3.75-3.75V8.197M6.75 21h13.125c.621 0 1.125-.504 1.125-1.125v-5.25c0-.621-.504-1.125-1.125-1.125h-4.072M10.5 8.197l2.88-2.88c.438-.439 1.15-.439 1.59 0l3.712 3.713c.44.44.44 1.152 0 1.59l-2.879 2.88M6.75 17.25h.008v.008H6.75v-.008Z"/>
                 </svg>
-                <span class="text-sm font-medium">A Color</span>
+                <span>A Color</span>
+                <span class="color-btn__tag color-btn__tag--premium">+30%</span>
               </button>
             </div>
           </div>
         </div>
       }
 
-      <!-- ── STEP 3: Tamaño ──────────────────────────── -->
+      <!-- ── STEP 3: Tamaño ──────────────────────────────────── -->
       @if (currentStep() === 3) {
-        <div class="animate-fade-in">
-          <h2 class="mb-1 text-xl font-semibold">¿Qué tamaño tendrá?</h2>
-          <p class="mb-8 text-sm text-gray-400">Usa el slider o escribe los centímetros.</p>
+        <div class="step-panel animate-in">
+          <div class="step-panel__head">
+            <span class="step-panel__num">03</span>
+            <div>
+              <h2 class="step-panel__title">¿Qué tamaño tendrá?</h2>
+              <p class="step-panel__hint">Usa el slider o escribe los centímetros.</p>
+            </div>
+          </div>
 
-          <div class="flex flex-col items-center gap-6">
-            <!-- Size Display -->
-            <div class="flex flex-col items-center">
-              <span class="text-6xl font-bold text-purple-400">
-                {{ quoteForm.value.size_cm }}
-              </span>
-              <span class="text-sm text-gray-400 mt-1">centímetros</span>
-              <span class="mt-2 inline-block rounded-full bg-purple-600/20 px-3 py-1 text-xs font-medium text-purple-300">
-                {{ sizeLabel }}
-              </span>
+          <div class="size-section">
+            <!-- Display grande -->
+            <div class="size-display">
+              <span class="size-display__num">{{ quoteForm.value.size_cm }}</span>
+              <span class="size-display__unit">cm</span>
+              <span class="size-display__label">{{ sizeLabel }}</span>
             </div>
 
             <!-- Slider -->
-            <div class="w-full px-2">
+            <div class="slider-wrap">
               <input
+                id="slider-size"
                 type="range"
                 formControlName="size_cm"
                 min="1"
                 max="200"
                 step="1"
-                class="range-slider w-full"
+                class="range-slider"
               />
-              <div class="mt-2 flex justify-between text-xs text-gray-500">
-                <span>1 cm</span>
-                <span>50 cm</span>
-                <span>100 cm</span>
-                <span>150 cm</span>
-                <span>200 cm</span>
+              <div class="slider-ticks">
+                <span>1</span><span>50</span><span>100</span><span>150</span><span>200 cm</span>
               </div>
             </div>
 
-            <!-- Numeric input -->
-            <div class="mt-4 flex items-center gap-3">
-              <label class="text-sm text-gray-400">Escribir valor:</label>
+            <!-- Input numérico -->
+            <div class="size-input-row">
+              <label for="input-size" class="size-input-row__label">Valor exacto:</label>
               <input
+                id="input-size"
                 type="number"
                 formControlName="size_cm"
                 min="1"
                 max="200"
-                class="w-24 rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-center text-white focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                class="size-input"
               />
-              <span class="text-sm text-gray-500">cm</span>
+              <span class="size-input-row__unit">cm</span>
             </div>
           </div>
+
+          <!-- ── Estimación en vivo ────────────────────────────── -->
+          @if (estimatedPrice() && quoteForm.value.body_part) {
+            <div class="price-preview animate-in">
+              <div class="price-preview__label">
+                <svg xmlns="http://www.w3.org/2000/svg" class="price-preview__icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z"/>
+                </svg>
+                Estimación de precio
+              </div>
+              <div class="price-preview__range">
+                <span class="price-preview__min">{{ formatMXN(estimatedPrice()!.min) }}</span>
+                <span class="price-preview__sep">—</span>
+                <span class="price-preview__max">{{ formatMXN(estimatedPrice()!.max) }}</span>
+              </div>
+              <p class="price-preview__note">
+                Precio referencial · El artista confirmará el costo final en tu cita.
+              </p>
+            </div>
+          }
         </div>
       }
 
-      <!-- ── STEP 4: Resumen ─────────────────────────── -->
+      <!-- ── STEP 4: Resumen ─────────────────────────────────── -->
       @if (currentStep() === 4) {
-        <div class="animate-fade-in">
-          <h2 class="mb-1 text-xl font-semibold">Resumen de tu cotización</h2>
-          <p class="mb-6 text-sm text-gray-400">Verifica los datos antes de buscar a tu tatuador ideal.</p>
+        <div class="step-panel animate-in">
+          <div class="step-panel__head">
+            <span class="step-panel__num">04</span>
+            <div>
+              <h2 class="step-panel__title">Resumen de tu cotización</h2>
+              <p class="step-panel__hint">Verifica los datos antes de buscar a tu tatuador ideal.</p>
+            </div>
+          </div>
 
-          <div class="space-y-4 rounded-2xl border border-gray-800 bg-gray-900/60 p-6">
-            <!-- Style -->
-            <div class="flex items-center justify-between border-b border-gray-800 pb-4">
-              <span class="text-sm text-gray-400">Estilo</span>
-              <span class="font-medium text-purple-300">{{ selectedStyle?.name ?? '—' }}</span>
+          <!-- Tabla de resumen -->
+          <div class="summary-card">
+            <div class="summary-row">
+              <span class="summary-row__key">Estilo</span>
+              <span class="summary-row__val">{{ selectedStyle?.name ?? '—' }}</span>
             </div>
-            <!-- Body Part -->
-            <div class="flex items-center justify-between border-b border-gray-800 pb-4">
-              <span class="text-sm text-gray-400">Zona del cuerpo</span>
-              <span class="font-medium">
-                {{ selectedBodyPart?.label ?? '—' }}
-              </span>
+            <div class="summary-row">
+              <span class="summary-row__key">Zona</span>
+              <span class="summary-row__val">{{ selectedBodyPart?.label ?? '—' }}</span>
             </div>
-            <!-- Color -->
-            <div class="flex items-center justify-between border-b border-gray-800 pb-4">
-              <span class="text-sm text-gray-400">Tipo</span>
-              <span class="font-medium">
+            <div class="summary-row">
+              <span class="summary-row__key">Tipo</span>
+              <span class="summary-row__val">
                 {{ quoteForm.value.is_color ? 'A Color' : 'Black & Grey' }}
               </span>
             </div>
-            <!-- Size -->
-            <div class="flex items-center justify-between">
-              <span class="text-sm text-gray-400">Tamaño</span>
-              <span class="font-medium">
+            <div class="summary-row">
+              <span class="summary-row__key">Tamaño</span>
+              <span class="summary-row__val">
                 {{ quoteForm.value.size_cm }} cm
-                <span class="ml-1 text-xs text-gray-500">({{ sizeLabel }})</span>
+                <em class="summary-row__sub">{{ sizeLabel }}</em>
               </span>
             </div>
           </div>
 
-          <!-- Submit button -->
+          <!-- Card de precio estimado -->
+          @if (estimatedPrice()) {
+            <div class="result-card animate-in">
+              <div class="result-card__top">
+                <svg xmlns="http://www.w3.org/2000/svg" class="result-card__trophy" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 0 0 2.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 0 1 2.916.52 6.003 6.003 0 0 1-5.395 4.972m0 0a6.726 6.726 0 0 1-2.749 1.35m0 0a6.772 6.772 0 0 1-3.044 0"/>
+                </svg>
+                <span class="result-card__label">Precio Estimado</span>
+              </div>
+              <div class="result-card__price">
+                {{ formatMXN(estimatedPrice()!.min) }}
+                <span class="result-card__price-sep"> – </span>
+                {{ formatMXN(estimatedPrice()!.max) }}
+              </div>
+              <div class="result-card__chips">
+                <span class="result-chip">{{ selectedStyle?.name }}</span>
+                <span class="result-chip">{{ selectedBodyPart?.label }}</span>
+                <span class="result-chip">{{ quoteForm.value.size_cm }} cm</span>
+                <span class="result-chip" [class.result-chip--color]="quoteForm.value.is_color">
+                  {{ quoteForm.value.is_color ? 'Color' : 'B&G' }}
+                </span>
+              </div>
+              <p class="result-card__disclaimer">
+                ✦ &nbsp;Precio referencial en MXN. El artista confirmará el costo final.
+              </p>
+            </div>
+          }
+
+          <!-- Botón submit -->
           <button
+            id="btn-submit-quote"
             type="submit"
             [disabled]="loading() || !quoteForm.valid"
-            class="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-purple-600 py-4 text-lg font-bold text-white transition-all duration-200 hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-950 disabled:cursor-not-allowed disabled:opacity-50"
+            class="btn-submit"
           >
             @if (loading()) {
-              <svg class="h-5 w-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg class="btn-submit__spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
               </svg>
-              Enviando…
+              Enviando cotización…
             } @else {
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" class="btn-submit__icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
               </svg>
-              Buscar Tatuadores (Hacer Match)
+              Buscar Tatuadores · Hacer Match
             }
           </button>
         </div>
       }
 
-      <!-- ── Navigation Buttons ───────────────────────── -->
+      <!-- ── Navegación entre pasos ───────────────────────────── -->
       @if (!submitted() && currentStep() < 4) {
-        <div class="mt-8 flex items-center justify-between">
+        <div class="nav-row">
           <button
+            id="btn-prev"
             type="button"
             (click)="prev()"
             [disabled]="currentStep() === 1"
-            class="rounded-lg border border-gray-700 bg-gray-900 px-5 py-2.5 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-30"
+            class="nav-btn nav-btn--prev"
           >
             ← Anterior
           </button>
           <button
+            id="btn-next"
             type="button"
             (click)="next()"
             [disabled]="!isCurrentStepValid()"
-            class="rounded-lg bg-purple-600 px-6 py-2.5 text-sm font-bold text-white transition-colors hover:bg-purple-500 disabled:cursor-not-allowed disabled:opacity-50"
+            class="nav-btn nav-btn--next"
           >
             Siguiente →
           </button>
         </div>
       }
+
     </form>
 
-    <!-- ── Success State ──────────────────────────────── -->
+    <!-- ── Success State ──────────────────────────────────────── -->
     @if (submitted()) {
-      <div class="animate-fade-in flex flex-col items-center gap-6 py-12 text-center">
-        <div class="flex h-20 w-20 items-center justify-center rounded-full bg-green-500/20">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-green-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+      <div class="success-state animate-in">
+        <div class="success-state__ring">
+          <svg xmlns="http://www.w3.org/2000/svg" class="success-state__check" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
           </svg>
         </div>
-        <h2 class="text-2xl font-bold">¡Cotización enviada!</h2>
-        <p class="text-gray-400">
+        <h2 class="success-state__title">¡Cotización enviada!</h2>
+        <p class="success-state__desc">
           Estamos buscando los mejores tatuadores para tu estilo. Recibirás tus matches muy pronto.
         </p>
         <button
           type="button"
           (click)="submitted.set(false); currentStep.set(1); quoteForm.reset({ size_cm: 10, is_color: false })"
-          class="rounded-lg border border-gray-700 px-6 py-2.5 text-sm font-medium text-gray-300 hover:bg-gray-800"
+          class="nav-btn nav-btn--prev"
         >
           Crear otra cotización
         </button>
       </div>
     }
 
-  </div>
-</div>
+  </div><!-- /.cotizador__card -->
+</div><!-- /.cotizador -->
