@@ -1,0 +1,306 @@
+@use 'sass:color';
+
+// ── Tokens BlackLine ───────────────────────────────────────────────────────
+$bg:         #0C0A08;
+$bg-card:    #161412;
+$gold:       #C9A84C;
+$gold-dim:   #8C5A1A;
+$cream:      #EDE0C4;
+$muted:      #8A7E72;
+$border:     rgba(#C9A84C, 0.18);
+$danger:     #EF4444;
+
+$font-serif: 'Playfair Display', Georgia, serif;
+$font-sans:  'Inter', system-ui, sans-serif;
+$font-mono:  'Geist Mono', 'Courier New', monospace;
+
+// ── Animaciones ────────────────────────────────────────────────────────────
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-down {
+  animation: slideDown 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// NAVBAR BASE
+// ═══════════════════════════════════════════════════════════════════════════
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba($bg, 0.92);
+  border-bottom: 1px solid $border;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  font-family: $font-sans;
+}
+
+.navbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 40px;
+  height: 68px;
+  gap: 24px;
+
+  @media (max-width: 768px) {
+    padding: 0 20px;
+    height: 60px;
+  }
+}
+
+// ── Brand ──────────────────────────────────────────────────────────────────
+.navbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: opacity 0.2s;
+
+  &:hover { opacity: 0.85; }
+}
+
+.navbar__brand-mark {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border-radius: 3px;
+  background: linear-gradient(135deg, $gold 0%, $gold-dim 100%);
+  flex-shrink: 0;
+}
+
+.navbar__brand-text {
+  font-family: $font-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: $cream;
+  line-height: 1;
+}
+
+.navbar__brand-line {
+  color: $gold;
+}
+
+// ── Desktop links ──────────────────────────────────────────────────────────
+.navbar__links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+
+  @media (max-width: 768px) { display: none; }
+}
+
+.navbar__link {
+  padding: 7px 14px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: $muted;
+  text-decoration: none;
+  transition: color 0.18s, background 0.18s;
+  white-space: nowrap;
+
+  &:hover {
+    color: $cream;
+    background: rgba($cream, 0.05);
+  }
+
+  &--active {
+    color: $gold !important;
+    background: rgba($gold, 0.08) !important;
+  }
+}
+
+// Role tags (solo visibles en admin)
+.navbar__role-tag {
+  font-family: $font-mono;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 2px;
+  margin-right: 4px;
+
+  &--studio {
+    background: rgba(#6366F1, 0.15);
+    color: #A5B4FC;
+    border: 1px solid rgba(#6366F1, 0.25);
+  }
+
+  &--client {
+    background: rgba($gold, 0.12);
+    color: $gold;
+    border: 1px solid rgba($gold, 0.22);
+  }
+}
+
+.navbar__divider {
+  display: inline-block;
+  width: 1px;
+  height: 20px;
+  background: rgba($cream, 0.1);
+  margin: 0 8px;
+}
+
+// ── Right side ─────────────────────────────────────────────────────────────
+.navbar__right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+// User avatar + name
+.navbar__user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  @media (max-width: 900px) { .navbar__user-name { display: none; } }
+}
+
+.navbar__user-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba($gold, 0.15);
+  border: 1px solid rgba($gold, 0.35);
+  font-size: 13px;
+  font-weight: 700;
+  color: $gold;
+  flex-shrink: 0;
+}
+
+.navbar__user-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: $muted;
+}
+
+// Logout button
+.navbar__logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 4px;
+  border: 1px solid rgba($cream, 0.12);
+  background: transparent;
+  color: $muted;
+  font-family: $font-sans;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+
+  &:hover {
+    border-color: rgba($danger, 0.5);
+    color: lighten($danger, 10%);
+    background: rgba($danger, 0.06);
+  }
+}
+
+.navbar__logout-icon {
+  width: 15px;
+  height: 15px;
+}
+
+.navbar__logout-label {
+  @media (max-width: 900px) { display: none; }
+}
+
+// Hamburger
+.navbar__hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 6px;
+  border: 1px solid $border;
+  background: transparent;
+  color: $muted;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+
+  &:hover {
+    color: $cream;
+    border-color: rgba($cream, 0.25);
+  }
+
+  @media (max-width: 768px) { display: flex; }
+}
+
+.navbar__hamburger-icon {
+  width: 20px;
+  height: 20px;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MOBILE MENU
+// ═══════════════════════════════════════════════════════════════════════════
+.navbar__mobile {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 20px 20px;
+  border-top: 1px solid $border;
+  background: rgba($bg, 0.98);
+
+  @media (min-width: 769px) { display: none; }
+}
+
+.navbar__mobile-label {
+  display: block;
+  font-family: $font-mono;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 8px 12px 4px;
+
+  &--studio { color: #A5B4FC; }
+  &--client  { color: $gold; }
+}
+
+.navbar__mobile-link {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: $muted;
+  text-decoration: none;
+  transition: background 0.18s, color 0.18s;
+
+  &:hover {
+    background: rgba($cream, 0.05);
+    color: $cream;
+  }
+}
+
+.navbar__mobile-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba($cream, 0.06);
+
+  .navbar__user-name {
+    font-size: 13px;
+    color: $muted;
+  }
+}

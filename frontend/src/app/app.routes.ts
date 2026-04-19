@@ -1,19 +1,24 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth.guard';
-import { roleGuard } from './core/guards/role.guard';
+import { authGuard }   from './core/guards/auth.guard';
+import { noAuthGuard } from './core/guards/no-auth.guard';
+import { roleGuard }   from './core/guards/role.guard';
 import { LandingComponent } from './features/landing/landing.component';
-import { LayoutComponent } from './shared/layout/layout.component';
+import { LayoutComponent }  from './shared/layout/layout.component';
 
 export const routes: Routes = [
-  // ── Public ─────────────────────────────────────────────
-  { path: '', component: LandingComponent },
+  // ── Pública: redirige al panel si ya hay sesión ────────
+  {
+    path: '',
+    component: LandingComponent,
+    canActivate: [noAuthGuard],
+  },
   {
     path: 'auth',
     loadChildren: () =>
       import('./features/auth/pages/auth.routes').then(m => m.AUTH_ROUTES),
   },
 
-  // ── Authenticated (wrapped with navbar + footer) ───────
+  // ── Autenticadas (navbar + footer) ────────────────────
   {
     path: '',
     component: LayoutComponent,
