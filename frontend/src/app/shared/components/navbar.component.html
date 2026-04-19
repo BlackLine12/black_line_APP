@@ -40,6 +40,9 @@
         @if (isAdmin()) {
           <span class="navbar__role-tag navbar__role-tag--client">Cliente</span>
         }
+        <a routerLink="/client/dashboard"
+           routerLinkActive="navbar__link--active"
+           class="navbar__link">Panel</a>
         <a routerLink="/client/cotizador"
            routerLinkActive="navbar__link--active"
            class="navbar__link">Cotizador</a>

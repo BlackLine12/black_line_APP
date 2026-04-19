@@ -63,7 +63,7 @@ export class AuthService {
     if (type === 'STUDIO') {
       this.router.navigate(['/studio/dashboard']);
     } else if (type === 'CLIENT') {
-      this.router.navigate(['/client/cotizador']);
+      this.router.navigate(['/client/dashboard']);
     } else if (type === 'ADMIN') {
       // ADMIN no tiene SPA — gestiona vía Django Admin (/admin/)
       this.router.navigate(['/']);
