@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
-from .models import QuoteRequest
-from apps.artists.models import TattooStyle
+from .models import QuoteRequest, Appointment, HealthConsent, CalendarBlock
+from apps.artists.models import TattooStyle, ArtistProfile
 
 
 class QuoteRequestSerializer(serializers.ModelSerializer):
@@ -80,6 +80,111 @@ class MatchSearchSerializer(serializers.Serializer):
         required=False,
         help_text="Presupuesto maximo del cliente (opcional).",
     )
+
+
+# ===========================================================================
+# RF-4 – Serializers para Citas (Appointment)
+# ===========================================================================
+
+class AppointmentReadSerializer(serializers.ModelSerializer):
+    """Serializer de lectura con información expandida de cliente y artista."""
+    client_name = serializers.SerializerMethodField()
+    client_email = serializers.EmailField(source="client.email", read_only=True)
+    artist_name = serializers.SerializerMethodField()
+    artist_city = serializers.CharField(source="artist.city", read_only=True)
+    artist_id = serializers.IntegerField(source="artist.id", read_only=True)
+    status_display = serializers.CharField(source="get_status_display", read_only=True)
+    has_health_consent = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Appointment
+        fields = [
+            "id", "client_name", "client_email",
+            "artist_id", "artist_name", "artist_city",
+            "quote", "scheduled_at", "status", "status_display",
+            "counter_offer_datetime", "counter_offer_note",
+            "has_health_consent", "created_at", "updated_at",
+        ]
+
+    def get_client_name(self, obj):
+        return obj.client.get_full_name() or obj.client.username
+
+    def get_artist_name(self, obj):
+        return obj.artist.user.get_full_name() or obj.artist.user.username
+
+    def get_has_health_consent(self, obj):
+        return hasattr(obj, "health_consent")
+
+
+class AppointmentCreateSerializer(serializers.ModelSerializer):
+    """Serializer para que el cliente cree una nueva cita."""
+
+    class Meta:
+        model = Appointment
+        fields = ["artist", "quote", "scheduled_at"]
+
+    def validate_scheduled_at(self, value):
+        from django.utils import timezone
+        if value <= timezone.now():
+            raise serializers.ValidationError(
+                "La fecha de la cita debe ser en el futuro."
+            )
+        return value
+
+
+class AppointmentStatusSerializer(serializers.Serializer):
+    """Serializer para actualizar el estado de una cita."""
+    status = serializers.ChoiceField(choices=Appointment.Status.choices)
+    counter_offer_datetime = serializers.DateTimeField(required=False, allow_null=True)
+    counter_offer_note = serializers.CharField(required=False, default="", allow_blank=True)
+
+    def validate(self, data):
+        if data["status"] == Appointment.Status.COUNTER_OFFER:
+            if not data.get("counter_offer_datetime"):
+                raise serializers.ValidationError(
+                    {"counter_offer_datetime": "Requerido cuando el estado es COUNTER_OFFER."}
+                )
+        return data
+
+
+# ===========================================================================
+# RF-6 – Serializer para HealthConsent
+# ===========================================================================
+
+class HealthConsentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HealthConsent
+        fields = [
+            "id", "has_allergies", "allergies_detail",
+            "has_chronic_disease", "chronic_disease_detail",
+            "takes_medication", "medication_detail",
+            "is_pregnant", "has_skin_condition", "skin_condition_detail",
+            "terms_accepted", "created_at",
+        ]
+        read_only_fields = ["id", "created_at"]
+
+    def validate_terms_accepted(self, value):
+        if not value:
+            raise serializers.ValidationError(
+                "Debe aceptar los términos y política de privacidad para continuar."
+            )
+        return value
+
+
+# ===========================================================================
+# RF-7 – Serializer para CalendarBlock
+# ===========================================================================
+
+class CalendarBlockSerializer(serializers.ModelSerializer):
+    artist_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = CalendarBlock
+        fields = ["id", "artist", "artist_name", "start_datetime", "end_datetime", "reason", "created_at"]
+        read_only_fields = ["id", "artist", "created_at"]
+
+    def get_artist_name(self, obj):
+        return obj.artist.user.get_full_name() or obj.artist.user.username
 
 
 class ArtistMatchCardSerializer(serializers.Serializer):
