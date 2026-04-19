@@ -11,3 +11,5 @@ staticfiles/
 .DS_Store
 node_modules/
 .claude/
+images/
+blackline.pen
