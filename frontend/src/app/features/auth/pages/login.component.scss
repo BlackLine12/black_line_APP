@@ -13,38 +13,49 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
 
 // ── Split layout ──────────────────────────────────────────────────────────
 .auth-split {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(460px, 42vw) minmax(0, 1fr);
   min-height: 100vh;
   background: $bg;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 // ── Arte izquierda ────────────────────────────────────────────────────────
 .auth-split__art {
   position: relative;
-  width: 600px;
-  flex-shrink: 0;
+  width: 100%;
   overflow: hidden;
-  background: #181410;
+  background: radial-gradient(circle at 30% 35%, #2d2115 0%, #181410 50%, #0c0a08 100%);
 
-  @media (max-width: 1024px) { display: none; }
+  @media (max-width: 1024px) {
+    min-height: 280px;
+  }
+
+  @media (max-width: 768px) {
+    min-height: 220px;
+  }
 }
 
 .auth-split__art-img {
   position: absolute;
   inset: 0;
-  background: url('/images/login-art.png') center/cover no-repeat;
+  background: url('/images/login-art.png') 58% center/cover no-repeat;
+  transform: scale(1.06);
 }
 
 .auth-split__art-grad-v {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba($bg, 0) 30%, $bg 100%);
+  background: linear-gradient(180deg, rgba($bg, 0.05) 15%, rgba($bg, 0.86) 100%);
 }
 
 .auth-split__art-grad-h {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba($bg, 0) 0%, rgba($bg, 0.88) 100%);
+  background: linear-gradient(90deg, rgba($bg, 0.12) 0%, rgba($bg, 0.94) 82%);
 }
 
 .art-logo {
@@ -76,15 +87,24 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
 
 .art-quote {
   position: absolute;
-  left: 50px;
-  top: 380px;
-  width: 500px;
+  left: 48px;
+  bottom: 128px;
+  width: min(86%, 420px);
   z-index: 2;
+
+  @media (max-width: 1280px) {
+    left: 40px;
+  }
+
+  @media (max-width: 768px) {
+    left: 24px;
+    bottom: 76px;
+  }
 }
 
 .art-quote__text {
   font-family: $font-serif;
-  font-size: 44px;
+  font-size: clamp(30px, 3.6vw, 44px);
   font-weight: 600;
   font-style: italic;
   color: $gold;
@@ -135,27 +155,62 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
 
 // ── Form derecha ──────────────────────────────────────────────────────────
 .auth-split__form {
-  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 48px 100px;
-  background: $bg;
+  padding: 42px 72px;
+  background: linear-gradient(160deg, #0c0a08 0%, #13100d 100%);
 
-  @media (max-width: 1280px) { padding: 48px 60px; }
-  @media (max-width: 768px)  { padding: 40px 24px; }
+  @media (max-width: 1280px) { padding: 36px 48px; }
+  @media (max-width: 1024px)  { padding: 28px 24px 40px; }
+  @media (max-width: 768px)  { padding: 24px 16px 32px; }
 }
 
 .auth-card {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
   width: 100%;
-  max-width: 400px;
-  padding: 36px;
-  background: $bg-card;
-  border-radius: 6px;
-  border: 1px solid rgba($gold, 0.07);
+  max-width: 470px;
+  padding: 34px;
+  background: linear-gradient(180deg, rgba(#15120f, 0.96) 0%, rgba(#100d0b, 0.98) 100%);
+  border-radius: 10px;
+  border: 1px solid rgba($gold, 0.18);
+  box-shadow: 0 20px 42px rgba(0, 0, 0, 0.35);
+
+  @media (max-width: 768px) {
+    padding: 24px;
+    border-radius: 8px;
+  }
+}
+
+.auth-card__header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.auth-card__kicker {
+  font-family: $font-mono;
+  font-size: 10px;
+  letter-spacing: 2.4px;
+  text-transform: uppercase;
+  color: rgba($gold, 0.86);
+}
+
+.auth-card__title {
+  margin: 0;
+  font-family: $font-serif;
+  font-size: clamp(28px, 2.6vw, 34px);
+  line-height: 1.1;
+  color: $cream;
+}
+
+.auth-card__subtitle {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #988b7d;
 }
 
 // ── Brand ─────────────────────────────────────────────────────────────────
@@ -202,7 +257,7 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
   font-family: $font-mono;
   font-size: 10px;
   color: $muted;
-  letter-spacing: 2px;
+  letter-spacing: 1.8px;
 }
 
 // ── Dividers ──────────────────────────────────────────────────────────────
@@ -237,7 +292,7 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
 
 // ── Alert ─────────────────────────────────────────────────────────────────
 .auth-alert {
-  padding: 10px 14px;
+  padding: 11px 14px;
   border-radius: 4px;
   font-size: 13px;
   line-height: 1.5;
@@ -259,7 +314,7 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
 .auth-fields {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 13px;
 }
 
 .auth-fields-row {
@@ -288,7 +343,7 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
   padding: 10px 14px;
   background: rgba(#1E1B18, 0.8);
   border: 1px solid $border;
-  border-radius: 3px;
+  border-radius: 6px;
   font-family: $font-sans;
   font-size: 14px;
   color: $cream;
@@ -344,7 +399,7 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
   background: $gold;
   color: #0C0A08;
   border: none;
-  border-radius: 3px;
+  border-radius: 6px;
   font-family: $font-sans;
   font-size: 14px;
   font-weight: 700;
@@ -370,8 +425,12 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
 // ── Social buttons ────────────────────────────────────────────────────────
 .auth-socials {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 10px;
+
+  @media (max-width: 520px) {
+    flex-direction: column;
+  }
 }
 
 .auth-social-btn {
@@ -389,6 +448,7 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
   color: #B8B0A4;
   cursor: not-allowed;
   opacity: 0.5;
+  flex: 1;
 
   strong { font-size: 16px; color: $cream; }
 }

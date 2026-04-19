@@ -15,6 +15,7 @@
 
     <div class="navbar__ctas">
       @if (authService.isAuthenticated()) {
+        <a class="btn btn--outline" routerLink="/auth/login" [queryParams]="{ force: '1' }">Cambiar cuenta</a>
         <button class="btn btn--outline" (click)="goToDashboard()">Mi Panel</button>
       } @else {
         <a class="btn btn--outline" routerLink="/auth/login">Iniciar Sesión</a>
@@ -47,7 +48,8 @@
         <button class="btn btn--gold btn--lg" (click)="goToRegisterClient()">
           Cotizar mi tatuaje
         </button>
-        <a class="btn btn--ghost btn--lg" href="#artistas">Ver artistas</a>
+        <a class="btn btn--outline btn--lg" routerLink="/auth/login">Iniciar sesión</a>
+        <button class="btn btn--ghost btn--lg" (click)="goToRegisterStudio()">Soy artista / estudio</button>
       </div>
     </div>
 
@@ -55,6 +57,13 @@
     <div class="hero__right">
       <div class="hero__img-bg"></div>
       <div class="hero__overlay"></div>
+
+      <div class="hero__floating-cards" aria-hidden="true">
+        <div class="hero__floating-card hero__floating-card--top" style="background-image: url('/images/artist-2.png');"></div>
+        <div class="hero__floating-card hero__floating-card--mid" style="background-image: url('/images/artist-1.png');"></div>
+        <div class="hero__floating-card hero__floating-card--bottom" style="background-image: url('/images/artist-4.png');"></div>
+      </div>
+
       <div class="hero__stats">
         <div class="stat">
           <span class="stat__num">340+</span>
@@ -126,37 +135,37 @@
 
     <div class="styles-grid">
       <div class="style-card">
-        <div class="style-card__img" style="background: linear-gradient(135deg, #1a1a1a 0%, #2a1a0a 100%);"></div>
+        <div class="style-card__img" style="background-image: url('/images/artist-1.png');"></div>
         <div class="style-card__body">
           <span class="style-card__name">Blackwork</span>
         </div>
       </div>
       <div class="style-card">
-        <div class="style-card__img" style="background: linear-gradient(135deg, #0a1a2a 0%, #1a0a2a 100%);"></div>
+        <div class="style-card__img" style="background-image: url('/images/artist-2.png');"></div>
         <div class="style-card__body">
           <span class="style-card__name">Realismo</span>
         </div>
       </div>
       <div class="style-card">
-        <div class="style-card__img" style="background: linear-gradient(135deg, #1a2a0a 0%, #0a2a1a 100%);"></div>
+        <div class="style-card__img" style="background-image: url('/images/artist-3.png');"></div>
         <div class="style-card__body">
           <span class="style-card__name">Acuarela</span>
         </div>
       </div>
       <div class="style-card">
-        <div class="style-card__img" style="background: linear-gradient(135deg, #2a0a1a 0%, #1a1a0a 100%);"></div>
+        <div class="style-card__img" style="background-image: url('/images/artist-4.png');"></div>
         <div class="style-card__body">
           <span class="style-card__name">Geométrico</span>
         </div>
       </div>
       <div class="style-card">
-        <div class="style-card__img" style="background: linear-gradient(135deg, #0a0a2a 0%, #2a0a0a 100%);"></div>
+        <div class="style-card__img" style="background-image: url('/images/login-art.png');"></div>
         <div class="style-card__body">
           <span class="style-card__name">Tradicional</span>
         </div>
       </div>
       <div class="style-card">
-        <div class="style-card__img" style="background: linear-gradient(135deg, #1a1a2a 0%, #2a1a1a 100%);"></div>
+        <div class="style-card__img" style="background-image: url('/images/register-art.png');"></div>
         <div class="style-card__body">
           <span class="style-card__name">Minimalista</span>
         </div>
@@ -284,6 +293,7 @@
       <button class="btn btn--gold btn--lg" (click)="goToRegisterClient()">
         Comenzar ahora
       </button>
+      <a class="btn btn--outline btn--lg" routerLink="/auth/login">Ya tengo cuenta</a>
       <button class="btn btn--outline-gold btn--lg" (click)="goToRegisterStudio()">
         Soy artista — únete
       </button>

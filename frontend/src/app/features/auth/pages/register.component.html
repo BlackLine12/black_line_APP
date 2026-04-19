@@ -47,6 +47,12 @@
   <main class="auth-split__form auth-split__form--scroll">
     <div class="auth-card auth-card--wide">
 
+      <header class="auth-card__header">
+        <span class="auth-card__kicker">Registro BlackLine</span>
+        <h1 class="auth-card__title">Crea tu cuenta</h1>
+        <p class="auth-card__subtitle">Completa tus datos y empieza en minutos.</p>
+      </header>
+
       <!-- Brand -->
       <div class="auth-card__brand">
         <span class="auth-card__brand-line"></span>
@@ -92,11 +98,18 @@
           </div>
         </div>
 
-        <!-- Username -->
-        <div class="auth-field">
-          <label class="auth-field__label" for="username">Nombre de usuario</label>
-          <input id="username" class="auth-field__input" formControlName="username"
-            type="text" placeholder="juanperez" autocomplete="username" />
+        <div class="auth-fields-row">
+          <div class="auth-field">
+            <label class="auth-field__label" for="username">Nombre de usuario</label>
+            <input id="username" class="auth-field__input" formControlName="username"
+              type="text" placeholder="juanperez" autocomplete="username" />
+          </div>
+
+          <div class="auth-field">
+            <label class="auth-field__label" for="phone">Teléfono</label>
+            <input id="phone" class="auth-field__input" formControlName="phone"
+              type="tel" placeholder="+52 614 123 4567" autocomplete="tel" />
+          </div>
         </div>
 
         <!-- Email -->
@@ -104,15 +117,6 @@
           <label class="auth-field__label" for="reg_email">Correo electrónico</label>
           <input id="reg_email" class="auth-field__input" formControlName="email"
             type="email" placeholder="tu@email.com" autocomplete="email" />
-        </div>
-
-        <!-- Teléfono -->
-        <div class="auth-field">
-          <label class="auth-field__label" for="phone">
-            Teléfono <span style="color:#3A3430;">(opcional)</span>
-          </label>
-          <input id="phone" class="auth-field__input" formControlName="phone"
-            type="tel" placeholder="+52 614 123 4567" autocomplete="tel" />
         </div>
 
         <!-- Tipo de cuenta -->
@@ -135,6 +139,14 @@
               <span class="auth-role-label__name">Artista / Estudio</span>
               <span class="auth-role-label__sub">Ofrezco servicio</span>
             </label>
+          </div>
+
+          <div class="auth-role-hint">
+            @if (registerForm.get('user_type')?.value === 'STUDIO') {
+              <strong>Artista / Estudio:</strong> podrás completar perfil, subir portafolio y gestionar agenda.
+            } @else {
+              <strong>Cliente:</strong> podrás crear cotizaciones, ver match de artistas y dar seguimiento a tus citas.
+            }
           </div>
         </div>
 

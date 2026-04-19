@@ -220,6 +220,61 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
   background: linear-gradient(180deg, rgba($bg, 0) 0%, rgba($bg, 0.8) 100%);
 }
 
+.hero__floating-cards {
+  position: absolute;
+  top: 72px;
+  right: 36px;
+  width: 230px;
+  height: 520px;
+  pointer-events: none;
+
+  @media (max-width: 1200px) {
+    right: 20px;
+    width: 190px;
+  }
+
+  @media (max-width: 900px) {
+    display: none;
+  }
+}
+
+.hero__floating-card {
+  position: absolute;
+  width: 180px;
+  height: 120px;
+  border-radius: 8px;
+  border: 1px solid rgba($gold, 0.45);
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba($bg, 0.08) 0%, rgba($bg, 0.7) 100%);
+  }
+
+  &--top {
+    top: 0;
+    right: 20px;
+    transform: rotate(6deg);
+  }
+
+  &--mid {
+    top: 165px;
+    right: 0;
+    transform: rotate(-4deg);
+  }
+
+  &--bottom {
+    top: 328px;
+    right: 28px;
+    transform: rotate(5deg);
+  }
+}
+
 .hero__stats {
   position: absolute;
   bottom: 0;
@@ -403,6 +458,16 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
 .style-card__img {
   height: 220px;
   width: 100%;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba($bg, 0.12) 0%, rgba($bg, 0.9) 100%);
+  }
 }
 
 .style-card__body {

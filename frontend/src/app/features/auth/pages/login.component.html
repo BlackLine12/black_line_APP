@@ -39,6 +39,12 @@
   <main class="auth-split__form">
     <div class="auth-card">
 
+      <header class="auth-card__header">
+        <span class="auth-card__kicker">Acceso BlackLine</span>
+        <h1 class="auth-card__title">Bienvenido de vuelta</h1>
+        <p class="auth-card__subtitle">Entra para gestionar tus cotizaciones, match y agenda en un solo lugar.</p>
+      </header>
+
       <!-- Brand -->
       <div class="auth-card__brand">
         <span class="auth-card__brand-line"></span>
@@ -57,6 +63,12 @@
       </div>
 
       <!-- Error -->
+      @if (successMessage) {
+        <div class="auth-alert auth-alert--success" role="status">
+          {{ successMessage }}
+        </div>
+      }
+
       @if (errorMessage) {
         <div class="auth-alert auth-alert--error" role="alert">
           {{ errorMessage }}
@@ -114,7 +126,7 @@
       <!-- Divider social -->
       <div class="auth-divider auth-divider--soft">
         <span class="auth-divider__line"></span>
-        <span class="auth-divider__text auth-divider__text--soft">o continua con</span>
+        <span class="auth-divider__text auth-divider__text--soft">acceso social (próximamente)</span>
         <span class="auth-divider__line"></span>
       </div>
 

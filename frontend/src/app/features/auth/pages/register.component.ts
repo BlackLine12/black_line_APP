@@ -54,7 +54,12 @@ export class RegisterComponent implements OnInit {
       next: () => {
         this.loading = false;
         this.successMessage = 'Cuenta creada exitosamente. Redirigiendo al login…';
-        setTimeout(() => this.router.navigate(['/auth/login']), 2000);
+        setTimeout(() => {
+          this.router.navigate(['/auth/login'], {
+            queryParams: { registered: '1' },
+            replaceUrl: true,
+          });
+        }, 1500);
       },
       error: (err) => {
         this.loading = false;
