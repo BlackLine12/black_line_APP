@@ -8,6 +8,7 @@ export interface PortfolioImage {
   artist: number;
   image: string;
   description: string;
+  position: number;
   created_at: string;
 }
 

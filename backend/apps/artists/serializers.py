@@ -11,8 +11,8 @@ class TattooStyleSerializer(serializers.ModelSerializer):
 class PortfolioImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = PortfolioImage
-        fields = ["id", "artist", "image", "description", "created_at"]
-        read_only_fields = ["id", "artist", "created_at"]
+        fields = ["id", "artist", "image", "description", "position", "created_at"]
+        read_only_fields = ["id", "artist", "position", "created_at"]
 
 
 class ArtistProfileSerializer(serializers.ModelSerializer):

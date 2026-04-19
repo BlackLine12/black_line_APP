@@ -221,5 +221,4 @@ class ArtistMatchCardSerializer(serializers.ModelSerializer):
         first = obj.portfolio_images.first()
         if not first:
             return None
-        request = self.context.get("request")
-        return request.build_absolute_uri(first.image.url) if request else first.image.url
+        return first.image.url

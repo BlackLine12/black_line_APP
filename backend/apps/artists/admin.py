@@ -11,6 +11,7 @@ class TattooStyleAdmin(admin.ModelAdmin):
 class PortfolioImageInline(admin.TabularInline):
     model = PortfolioImage
     extra = 0
+    fields = ("position", "image", "description", "created_at")
     readonly_fields = ("created_at",)
 
 
@@ -25,6 +26,8 @@ class ArtistProfileAdmin(admin.ModelAdmin):
 
 @admin.register(PortfolioImage)
 class PortfolioImageAdmin(admin.ModelAdmin):
-    list_display = ("id", "artist", "description", "created_at")
+    list_display = ("id", "artist", "position", "description", "created_at")
+    list_editable = ("position",)
     list_filter = ("created_at",)
     search_fields = ("description", "artist__user__username")
+    ordering = ("-position", "-created_at")

@@ -1,0 +1,55 @@
+:host {
+	display: block;
+	background:
+		radial-gradient(circle at top center, rgba(201, 168, 76, 0.08), transparent 36%),
+		linear-gradient(180deg, #0c0a08 0%, #11110f 100%);
+}
+
+.portfolio-page {
+	color: #ede0c4;
+}
+
+.portfolio-page__inner {
+	display: grid;
+	gap: 1.5rem;
+}
+
+.portfolio-page__header {
+	padding: 0.25rem 0 0.75rem;
+}
+
+.portfolio-page__eyebrow {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.55rem;
+	margin-bottom: 0.75rem;
+	color: #c9a84c;
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.24em;
+	text-transform: uppercase;
+}
+
+.portfolio-page__eyebrow-dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 999px;
+	background: #c9a84c;
+	box-shadow: 0 0 0 6px rgba(201, 168, 76, 0.12);
+}
+
+.portfolio-page__title {
+	margin: 0;
+	font-family: Georgia, 'Times New Roman', serif;
+	font-size: clamp(2.3rem, 4vw, 3.4rem);
+	line-height: 1;
+	color: #fff8ea;
+}
+
+.portfolio-page__subtitle {
+	margin: 0.85rem 0 0;
+	max-width: 66ch;
+	color: #8a7e72;
+	font-size: 0.98rem;
+	line-height: 1.65;
+}
