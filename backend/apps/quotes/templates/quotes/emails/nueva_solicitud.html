@@ -1,0 +1,95 @@
+{% extends "quotes/emails/base_email.html" %}
+{% block subject %}Nueva solicitud de cita — BlackLine{% endblock %}
+
+{% block content %}
+  <!-- Ícono de evento -->
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+         style="margin-bottom:28px;">
+    <tr>
+      <td align="center">
+        <div style="width:60px;height:60px;background:rgba(201,168,76,0.1);
+                    border:1px solid rgba(201,168,76,0.25);border-radius:50%;
+                    display:inline-block;line-height:60px;text-align:center;font-size:26px;">
+          ✉
+        </div>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Saludo -->
+  <h1 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;
+             font-size:26px;font-weight:700;color:#EDE0C4;text-align:center;">
+    Nueva solicitud de cita
+  </h1>
+  <p style="margin:0 0 32px;font-size:14px;color:#8A7E72;text-align:center;">
+    Hola <strong style="color:#EDE0C4;">{{ artist_name }}</strong>,
+    un cliente quiere agendar contigo.
+  </p>
+
+  <!-- Divider dorado -->
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+         style="margin-bottom:28px;">
+    <tr>
+      <td style="height:1px;background:linear-gradient(90deg,transparent,#C9A84C,transparent);"></td>
+    </tr>
+  </table>
+
+  <!-- Detalle de la cita -->
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+         style="background:#111110;border:1px solid #2A2420;border-radius:8px;
+                margin-bottom:28px;overflow:hidden;">
+
+    <tr>
+      <td style="padding:16px 24px;border-bottom:1px solid #2A2420;">
+        <span style="font-size:11px;color:#5A5248;text-transform:uppercase;letter-spacing:0.1em;">Cliente</span><br/>
+        <span style="font-size:15px;color:#EDE0C4;font-weight:500;">{{ client_name }}</span>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:16px 24px;border-bottom:1px solid #2A2420;">
+        <span style="font-size:11px;color:#5A5248;text-transform:uppercase;letter-spacing:0.1em;">Fecha solicitada</span><br/>
+        <span style="font-size:15px;color:#EDE0C4;font-weight:500;">{{ scheduled_at }}</span>
+      </td>
+    </tr>
+    {% if style_name %}
+    <tr>
+      <td style="padding:16px 24px;border-bottom:1px solid #2A2420;">
+        <span style="font-size:11px;color:#5A5248;text-transform:uppercase;letter-spacing:0.1em;">Estilo de tatuaje</span><br/>
+        <span style="font-size:15px;color:#EDE0C4;font-weight:500;">{{ style_name }}</span>
+      </td>
+    </tr>
+    {% endif %}
+    <tr>
+      <td style="padding:16px 24px;">
+        <span style="font-size:11px;color:#5A5248;text-transform:uppercase;letter-spacing:0.1em;">Estado</span><br/>
+        <span style="display:inline-block;margin-top:4px;background:rgba(201,168,76,0.12);
+                     border:1px solid rgba(201,168,76,0.25);color:#C9A84C;
+                     font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;
+                     padding:4px 12px;border-radius:999px;">
+          Pendiente de tu respuesta
+        </span>
+      </td>
+    </tr>
+  </table>
+
+  <!-- CTA -->
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+         style="margin-bottom:28px;">
+    <tr>
+      <td align="center">
+        <a href="{{ dashboard_url }}"
+           style="display:inline-block;background:#C9A84C;color:#0C0A08;
+                  font-size:14px;font-weight:700;text-decoration:none;
+                  padding:14px 36px;border-radius:6px;letter-spacing:0.04em;">
+          Ver solicitud en mi dashboard
+        </a>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Nota -->
+  <p style="margin:0;font-size:13px;color:#5A5248;text-align:center;line-height:1.6;">
+    Puedes aprobar, rechazar o proponer una nueva fecha desde tu panel de artista.<br/>
+    Tienes <strong style="color:#8A7E72;">48 horas</strong> para responder.
+  </p>
+{% endblock %}

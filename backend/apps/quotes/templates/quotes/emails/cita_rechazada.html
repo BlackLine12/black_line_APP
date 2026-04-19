@@ -1,0 +1,97 @@
+{% extends "quotes/emails/base_email.html" %}
+{% block subject %}Actualización sobre tu solicitud de cita — BlackLine{% endblock %}
+
+{% block content %}
+  <!-- Ícono -->
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+         style="margin-bottom:28px;">
+    <tr>
+      <td align="center">
+        <div style="width:60px;height:60px;background:rgba(220,60,60,0.08);
+                    border:1px solid rgba(220,60,60,0.2);border-radius:50%;
+                    display:inline-block;line-height:60px;text-align:center;font-size:26px;">
+          ◌
+        </div>
+      </td>
+    </tr>
+  </table>
+
+  <h1 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;
+             font-size:26px;font-weight:700;color:#EDE0C4;text-align:center;">
+    Solicitud no disponible
+  </h1>
+  <p style="margin:0 0 32px;font-size:14px;color:#8A7E72;text-align:center;">
+    Hola <strong style="color:#EDE0C4;">{{ client_name }}</strong>,
+    el artista no pudo aceptar tu solicitud esta vez.
+  </p>
+
+  <!-- Divider -->
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+         style="margin-bottom:28px;">
+    <tr>
+      <td style="height:1px;background:linear-gradient(90deg,transparent,#2A2420,transparent);"></td>
+    </tr>
+  </table>
+
+  <!-- Detalle -->
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+         style="background:#111110;border:1px solid #2A2420;border-radius:8px;
+                margin-bottom:28px;overflow:hidden;">
+    <tr>
+      <td style="padding:16px 24px;border-bottom:1px solid #2A2420;">
+        <span style="font-size:11px;color:#5A5248;text-transform:uppercase;letter-spacing:0.1em;">Artista</span><br/>
+        <span style="font-size:15px;color:#EDE0C4;font-weight:500;">{{ artist_name }}</span>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:16px 24px;border-bottom:1px solid #2A2420;">
+        <span style="font-size:11px;color:#5A5248;text-transform:uppercase;letter-spacing:0.1em;">Fecha solicitada</span><br/>
+        <span style="font-size:15px;color:#EDE0C4;font-weight:500;">{{ scheduled_at }}</span>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:16px 24px;">
+        <span style="font-size:11px;color:#5A5248;text-transform:uppercase;letter-spacing:0.1em;">Estado</span><br/>
+        <span style="display:inline-block;margin-top:4px;background:rgba(220,60,60,0.1);
+                     border:1px solid rgba(220,60,60,0.25);color:#e07070;
+                     font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;
+                     padding:4px 12px;border-radius:999px;">
+          No disponible
+        </span>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Motivación -->
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+         style="background:rgba(201,168,76,0.04);border:1px solid rgba(201,168,76,0.1);
+                border-radius:8px;padding:20px 24px;margin-bottom:28px;">
+    <tr>
+      <td>
+        <p style="margin:0 0 8px;font-size:13px;color:#8A7E72;line-height:1.6;text-align:center;">
+          ¡No te desanimes! BlackLine tiene muchos otros artistas talentosos.<br/>
+          Intenta con otro artista o en una fecha diferente.
+        </p>
+      </td>
+    </tr>
+  </table>
+
+  <!-- CTA -->
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+         style="margin-bottom:28px;">
+    <tr>
+      <td align="center">
+        <a href="{{ cotizador_url }}"
+           style="display:inline-block;background:#C9A84C;color:#0C0A08;
+                  font-size:14px;font-weight:700;text-decoration:none;
+                  padding:14px 36px;border-radius:6px;letter-spacing:0.04em;">
+          Buscar otro artista
+        </a>
+      </td>
+    </tr>
+  </table>
+
+  <p style="margin:0;font-size:13px;color:#5A5248;text-align:center;">
+    Tu cotización original sigue disponible en la plataforma.
+  </p>
+{% endblock %}
