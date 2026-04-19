@@ -1,0 +1,197 @@
+@use 'sass:color';
+
+// ── Tokens BlackLine ───────────────────────────────────────────────────────
+$gold:       #C9A84C;
+$gold-dim:   #8C5A1A;
+$cream:      #EDE0C4;
+$muted:      #8A7E72;
+$bg:         #0C0A08;
+$border:     #2A2420;
+$danger:     #EF4444;
+
+$font-sans:  'Inter', system-ui, sans-serif;
+
+// ── Keyframes ──────────────────────────────────────────────────────────────
+@keyframes bl-spin {
+  to { transform: rotate(360deg); }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BASE
+// ═══════════════════════════════════════════════════════════════════════════
+.bl-btn {
+  // Layout
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+
+  // Typography
+  font-family: $font-sans;
+  font-weight: 600;
+  letter-spacing: 0.25px;
+  text-decoration: none;
+
+  // Shape
+  border-radius: 4px;
+  border: 1px solid transparent;
+  outline: none;
+  cursor: pointer;
+  user-select: none;
+
+  // Transitions
+  transition:
+    background  0.20s ease,
+    border-color 0.20s ease,
+    color       0.20s ease,
+    opacity     0.20s ease,
+    box-shadow  0.20s ease,
+    transform   0.15s ease;
+
+  // Focus ring (accesibilidad)
+  &:focus-visible {
+    box-shadow: 0 0 0 3px rgba($gold, 0.30);
+    outline: 2px solid transparent;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// TAMAÑOS
+// ═══════════════════════════════════════════════════════════════════════════
+.bl-btn--sm {
+  padding: 6px 14px;
+  font-size: 12px;
+  border-radius: 3px;
+  gap: 6px;
+}
+
+.bl-btn--md {
+  padding: 9px 20px;
+  font-size: 13px;
+}
+
+.bl-btn--lg {
+  padding: 13px 28px;
+  font-size: 15px;
+  border-radius: 5px;
+  gap: 10px;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// VARIANTES
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── Gold (primario) ────────────────────────────────────────────────────────
+.bl-btn--gold {
+  background: $gold;
+  color: $bg;
+  border-color: $gold;
+
+  &:hover:not(.bl-btn--disabled) {
+    background: color.adjust($gold, $lightness: 7%);
+    border-color: color.adjust($gold, $lightness: 7%);
+    box-shadow: 0 0 22px rgba($gold, 0.30);
+    transform: translateY(-1px);
+  }
+
+  &:active:not(.bl-btn--disabled) {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+}
+
+// ── Outline ────────────────────────────────────────────────────────────────
+.bl-btn--outline {
+  background: transparent;
+  color: $gold;
+  border-color: rgba($gold, 0.38);
+
+  &:hover:not(.bl-btn--disabled) {
+    border-color: $gold;
+    color: $cream;
+    background: rgba($gold, 0.06);
+  }
+}
+
+// ── Ghost ──────────────────────────────────────────────────────────────────
+.bl-btn--ghost {
+  background: transparent;
+  color: $muted;
+  border-color: $border;
+
+  &:hover:not(.bl-btn--disabled) {
+    color: $cream;
+    border-color: rgba($cream, 0.25);
+    background: rgba($cream, 0.04);
+  }
+}
+
+// ── Danger ─────────────────────────────────────────────────────────────────
+.bl-btn--danger {
+  background: transparent;
+  color: color.adjust($danger, $lightness: 10%);
+  border-color: rgba($danger, 0.40);
+
+  &:hover:not(.bl-btn--disabled) {
+    background: rgba($danger, 0.08);
+    border-color: rgba($danger, 0.65);
+    color: color.adjust($danger, $lightness: 15%);
+  }
+}
+
+// ── Link ───────────────────────────────────────────────────────────────────
+.bl-btn--link {
+  background: transparent;
+  color: $gold;
+  border-color: transparent;
+  padding-left: 0;
+  padding-right: 0;
+  font-weight: 500;
+
+  &:hover:not(.bl-btn--disabled) {
+    color: color.adjust($gold, $lightness: 10%);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ESTADOS
+// ═══════════════════════════════════════════════════════════════════════════
+.bl-btn--disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.bl-btn--loading {
+  cursor: wait;
+  pointer-events: none;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// INNER ELEMENTS
+// ═══════════════════════════════════════════════════════════════════════════
+.bl-btn__spinner {
+  width: 1em;
+  height: 1em;
+  animation: bl-spin 0.75s linear infinite;
+  flex-shrink: 0;
+}
+
+.bl-btn__label {
+  line-height: 1;
+}
+
+.bl-btn__icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+
+  // Los íconos reciben el tamaño relativo al texto
+  svg {
+    width: 1.1em;
+    height: 1.1em;
+  }
+}

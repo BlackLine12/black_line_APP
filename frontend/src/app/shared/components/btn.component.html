@@ -1,0 +1,67 @@
+<!-- ══════════════════════════════════════════════════════════
+     BtnComponent  ·  BlackLine – Botón base reutilizable
+     ══════════════════════════════════════════════════════════ -->
+
+<!-- Render como <a routerLink> -->
+@if (routerLink) {
+  <a
+    [routerLink]="isDisabled ? null : routerLink"
+    [class]="classes.join(' ')"
+    [attr.aria-disabled]="isDisabled || null"
+    (click)="onClick($event)"
+  >
+    <ng-container *ngTemplateOutlet="content"></ng-container>
+  </a>
+}
+
+<!-- Render como <a href> externo -->
+@else if (href) {
+  <a
+    [href]="isDisabled ? null : href"
+    [target]="target"
+    [class]="classes.join(' ')"
+    [attr.aria-disabled]="isDisabled || null"
+    rel="noopener noreferrer"
+    (click)="onClick($event)"
+  >
+    <ng-container *ngTemplateOutlet="content"></ng-container>
+  </a>
+}
+
+<!-- Render como <button> (default) -->
+@else {
+  <button
+    [type]="type"
+    [disabled]="isDisabled"
+    [class]="classes.join(' ')"
+    (click)="onClick($event)"
+  >
+    <ng-container *ngTemplateOutlet="content"></ng-container>
+  </button>
+}
+
+<!-- ── Contenido compartido ───────────────────────────────── -->
+<ng-template #content>
+  <!-- Spinner de carga -->
+  @if (loading) {
+    <svg class="bl-btn__spinner" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"
+              stroke-dasharray="56" stroke-dashoffset="14"/>
+    </svg>
+  }
+
+  <!-- Icono izquierdo (si no está cargando) -->
+  @if (iconLeft && !loading) {
+    <span class="bl-btn__icon bl-btn__icon--left" [innerHTML]="iconLeft" aria-hidden="true"></span>
+  }
+
+  <!-- Slot de contenido (ng-content) -->
+  <span class="bl-btn__label">
+    <ng-content></ng-content>
+  </span>
+
+  <!-- Icono derecho (si no está cargando) -->
+  @if (iconRight && !loading) {
+    <span class="bl-btn__icon bl-btn__icon--right" [innerHTML]="iconRight" aria-hidden="true"></span>
+  }
+</ng-template>
