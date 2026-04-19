@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { QuoteService } from '../../../core/services/quote.service';
 import { ArtistService } from '../../studio/services/artist.service';
 import { TattooStyle } from '../../../core/models/artist';
@@ -17,6 +18,7 @@ export class CotizadorComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly quoteService = inject(QuoteService);
   private readonly artistService = inject(ArtistService);
+  private readonly router = inject(Router);
 
   currentStep = signal(1);
   totalSteps = 4;
@@ -131,9 +133,10 @@ export class CotizadorComponent implements OnInit {
     const payload: QuoteRequestPayload = this.quoteForm.value;
 
     this.quoteService.createQuote(payload).subscribe({
-      next: () => {
+      next: (quote) => {
         this.loading.set(false);
-        this.submitted.set(true);
+        this.quoteService.lastQuote.set(quote);
+        this.router.navigate(['/client/match']);
       },
       error: (err) => {
         this.loading.set(false);

@@ -12,4 +12,5 @@ staticfiles/
 node_modules/
 .claude/
 images/
+!frontend/public/images/
 blackline.pen

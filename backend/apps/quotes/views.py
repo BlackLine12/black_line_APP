@@ -50,12 +50,36 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.artists.models import ArtistProfile
-from .models import QuoteRequest
+from .models import QuoteRequest, Appointment, HealthConsent, CalendarBlock
 from .serializers import (
     QuoteRequestSerializer,
     MatchSearchSerializer,
     ArtistMatchCardSerializer,
+    AppointmentReadSerializer,
+    AppointmentCreateSerializer,
+    AppointmentStatusSerializer,
+    HealthConsentSerializer,
+    CalendarBlockSerializer,
 )
+
+
+# ===========================================================================
+# Helpers de permisos
+# ===========================================================================
+
+def _get_appointment_or_403(pk, user):
+    """Devuelve (appointment, None) o (None, Response de error)."""
+    try:
+        appt = Appointment.objects.select_related("client", "artist__user").get(pk=pk)
+    except Appointment.DoesNotExist:
+        return None, Response({"detail": "Cita no encontrada."}, status=status.HTTP_404_NOT_FOUND)
+
+    if user.user_type == "CLIENT" and appt.client != user:
+        return None, Response({"detail": "Sin acceso a esta cita."}, status=status.HTTP_403_FORBIDDEN)
+    if user.user_type == "STUDIO" and appt.artist.user != user:
+        return None, Response({"detail": "Sin acceso a esta cita."}, status=status.HTTP_403_FORBIDDEN)
+
+    return appt, None
 
 
 # ===========================================================================
@@ -232,18 +256,13 @@ class ArtistMatchView(APIView):
         # -- 5. Ordenar por precio estimado ascendente --
         queryset = queryset.order_by("estimated_price")
 
-        # -- 6. Proyeccion con .values() (evita instanciar modelos) --
-        #    Recuperamos solo las columnas necesarias para la tarjeta.
-        results = queryset.values(
-            "id",
-            "user__first_name",
-            "city",
-            "minimum_setup_fee",
-            "estimated_price",
-        )
+        # -- 6. Prefetch relaciones para evitar N+1 queries --
+        queryset = queryset.select_related("user").prefetch_related("styles", "portfolio_images")
 
         # -- 7. Serializar y responder --
-        card_serializer = ArtistMatchCardSerializer(results, many=True)
+        card_serializer = ArtistMatchCardSerializer(
+            queryset, many=True, context={"request": request}
+        )
 
         return Response(
             {
@@ -260,3 +279,222 @@ class ArtistMatchView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+
+
+# ===========================================================================
+# RF-4 – API de Citas (Appointment)
+# ===========================================================================
+
+class AppointmentListCreateView(APIView):
+    """
+    GET  /api/quotes/appointments/  — Lista citas según rol del usuario.
+    POST /api/quotes/appointments/  — Cliente crea una nueva cita.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        if user.user_type == "CLIENT":
+            qs = Appointment.objects.filter(client=user)
+        elif user.user_type == "STUDIO":
+            qs = Appointment.objects.filter(artist__user=user)
+        else:
+            qs = Appointment.objects.all()
+
+        qs = qs.select_related("client", "artist__user").order_by("-created_at")
+        return Response(AppointmentReadSerializer(qs, many=True).data)
+
+    def post(self, request):
+        if request.user.user_type != "CLIENT":
+            return Response(
+                {"detail": "Solo los clientes pueden crear citas."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        serializer = AppointmentCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        appointment = serializer.save(client=request.user)
+        return Response(
+            AppointmentReadSerializer(appointment).data,
+            status=status.HTTP_201_CREATED,
+        )
+
+
+class AppointmentDetailView(APIView):
+    """GET /api/quotes/appointments/<pk>/"""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        appt, err = _get_appointment_or_403(pk, request.user)
+        if err:
+            return err
+        return Response(AppointmentReadSerializer(appt).data)
+
+
+class AppointmentStatusUpdateView(APIView):
+    """
+    PATCH /api/quotes/appointments/<pk>/status/
+    Máquina de estados:
+      PENDING       → APPROVED | REJECTED | COUNTER_OFFER  (artista)
+      COUNTER_OFFER → APPROVED                              (cliente)
+    """
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, pk):
+        try:
+            appt = Appointment.objects.select_related("client", "artist__user").get(pk=pk)
+        except Appointment.DoesNotExist:
+            return Response({"detail": "Cita no encontrada."}, status=status.HTTP_404_NOT_FOUND)
+
+        user = request.user
+        new_status = request.data.get("status")
+
+        if appt.status == Appointment.Status.PENDING:
+            if user.user_type != "STUDIO" or appt.artist.user != user:
+                return Response(
+                    {"detail": "Solo el artista asignado puede responder a esta cita."},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+        elif appt.status == Appointment.Status.COUNTER_OFFER:
+            if user.user_type != "CLIENT" or appt.client != user:
+                return Response(
+                    {"detail": "Solo el cliente puede responder a la contraoferta."},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+            if new_status != Appointment.Status.APPROVED:
+                return Response(
+                    {"detail": "Desde COUNTER_OFFER solo puede pasar a APPROVED."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        else:
+            return Response(
+                {"detail": f"No se puede modificar una cita en estado '{appt.get_status_display()}'."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        serializer = AppointmentStatusSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        appt.status = data["status"]
+        if data["status"] == Appointment.Status.COUNTER_OFFER:
+            appt.counter_offer_datetime = data.get("counter_offer_datetime")
+            appt.counter_offer_note = data.get("counter_offer_note", "")
+        appt.save()
+
+        return Response(AppointmentReadSerializer(appt).data)
+
+
+# ===========================================================================
+# RF-6 – Cuestionario de Salud (HealthConsent)
+# ===========================================================================
+
+class HealthConsentView(APIView):
+    """
+    GET  /api/quotes/appointments/<pk>/health-consent/  — Leer cuestionario.
+    POST /api/quotes/appointments/<pk>/health-consent/  — Cliente llena el cuestionario.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        appt, err = _get_appointment_or_403(pk, request.user)
+        if err:
+            return err
+        try:
+            consent = appt.health_consent
+        except HealthConsent.DoesNotExist:
+            return Response(
+                {"detail": "Cuestionario de salud no registrado para esta cita."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        return Response(HealthConsentSerializer(consent).data)
+
+    def post(self, request, pk):
+        if request.user.user_type != "CLIENT":
+            return Response(
+                {"detail": "Solo el cliente puede enviar el cuestionario de salud."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        appt, err = _get_appointment_or_403(pk, request.user)
+        if err:
+            return err
+
+        if hasattr(appt, "health_consent"):
+            return Response(
+                {"detail": "Ya existe un cuestionario de salud para esta cita."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        serializer = HealthConsentSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        consent = serializer.save(appointment=appt)
+        return Response(HealthConsentSerializer(consent).data, status=status.HTTP_201_CREATED)
+
+
+# ===========================================================================
+# RF-7 – Bloqueos de Calendario (CalendarBlock)
+# ===========================================================================
+
+class CalendarBlockListCreateView(APIView):
+    """
+    GET  /api/quotes/calendar-blocks/  — Lista bloques del artista autenticado.
+    POST /api/quotes/calendar-blocks/  — Artista crea un bloqueo manual.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def _get_artist(self, user):
+        try:
+            return user.artist_profile, None
+        except ArtistProfile.DoesNotExist:
+            return None, Response(
+                {"detail": "Perfil de artista no encontrado."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+    def get(self, request):
+        if request.user.user_type == "ADMIN":
+            qs = CalendarBlock.objects.select_related("artist__user").all()
+        else:
+            artist, err = self._get_artist(request.user)
+            if err:
+                return err
+            qs = CalendarBlock.objects.filter(artist=artist)
+        return Response(CalendarBlockSerializer(qs, many=True).data)
+
+    def post(self, request):
+        if request.user.user_type != "STUDIO":
+            return Response(
+                {"detail": "Solo los artistas pueden bloquear su calendario."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        artist, err = self._get_artist(request.user)
+        if err:
+            return err
+
+        serializer = CalendarBlockSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        block = serializer.save(artist=artist)
+        return Response(CalendarBlockSerializer(block).data, status=status.HTTP_201_CREATED)
+
+
+class CalendarBlockDeleteView(APIView):
+    """DELETE /api/quotes/calendar-blocks/<pk>/"""
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, pk):
+        if request.user.user_type != "STUDIO":
+            return Response(
+                {"detail": "Solo los artistas pueden gestionar su calendario."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        try:
+            artist = request.user.artist_profile
+        except ArtistProfile.DoesNotExist:
+            return Response({"detail": "Perfil de artista no encontrado."}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            block = CalendarBlock.objects.get(pk=pk, artist=artist)
+        except CalendarBlock.DoesNotExist:
+            return Response({"detail": "Bloqueo no encontrado."}, status=status.HTTP_404_NOT_FOUND)
+
+        block.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

@@ -7,7 +7,13 @@ export function roleGuard(...allowedRoles: User['user_type'][]): CanActivateFn {
   return (route, state) => {
     const authService = inject(AuthService);
     const router = inject(Router);
+    authService.syncSessionState();
     const userType = authService.userType();
+
+    if (!authService.isAuthenticated()) {
+      router.navigate(['/auth/login'], { queryParams: { returnUrl: state.url } });
+      return false;
+    }
 
     // ADMIN puede acceder a todos los módulos
     if (userType === 'ADMIN') {

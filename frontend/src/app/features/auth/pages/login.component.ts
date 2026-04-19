@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
@@ -13,6 +13,9 @@ import { AuthService } from '../../../core/services/auth.service';
 export class LoginComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private returnUrl: string | null = null;
 
   loginForm: FormGroup = this.fb.group({
     credential: ['', [Validators.required]],
@@ -21,10 +24,18 @@ export class LoginComponent implements OnInit {
 
   loading = false;
   errorMessage = '';
+  successMessage = '';
 
   ngOnInit(): void {
+    this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+    const registered = this.route.snapshot.queryParamMap.get('registered');
+    const force = this.route.snapshot.queryParamMap.get('force');
+    if (registered === '1') {
+      this.successMessage = 'Cuenta creada con éxito. Ahora inicia sesión.';
+    }
+
     // If already logged in, redirect to their dashboard
-    if (this.authService.isAuthenticated()) {
+    if (force !== '1' && this.authService.isAuthenticated()) {
       this.authService.redirectByRole();
     }
   }
@@ -38,7 +49,11 @@ export class LoginComponent implements OnInit {
     this.authService.login(credential, password).subscribe({
       next: () => {
         this.loading = false;
-        this.authService.redirectByRole();
+        if (this.returnUrl && this.returnUrl !== '/' && !this.returnUrl.startsWith('/auth')) {
+          this.router.navigateByUrl(this.returnUrl);
+        } else {
+          this.authService.redirectByRole();
+        }
       },
       error: (err) => {
         this.loading = false;

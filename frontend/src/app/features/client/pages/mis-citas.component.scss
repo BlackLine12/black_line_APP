@@ -1,0 +1,220 @@
+$bg:       #0C0A08;
+$bg-card:  #111110;
+$bg-panel: #0F0D0B;
+$gold:     #C9A84C;
+$gold-m:   rgba(201,168,76,0.15);
+$divider:  #2A2420;
+$text-p:   #EDE0C4;
+$text-s:   #8A7E72;
+$font-h:   'Playfair Display', serif;
+$font-b:   'Inter', sans-serif;
+
+.mis-citas {
+  min-height: 100vh;
+  background: $bg;
+  color: $text-p;
+  font-family: $font-b;
+  padding: 48px;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 40px;
+}
+
+.page-title {
+  font-family: $font-h;
+  font-size: 36px;
+  font-weight: 700;
+  color: $text-p;
+  margin: 0;
+}
+
+// ── Cards ─────────────────────────────────────────────────────────────────
+.citas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cita-card {
+  background: $bg-card;
+  border: 1px solid $divider;
+  border-radius: 10px;
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 24px 24px 16px;
+    border-bottom: 1px solid $divider;
+  }
+
+  &__actions {
+    padding: 16px 24px;
+    border-top: 1px solid $divider;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(201,168,76,0.04);
+  }
+}
+
+.cita-artist {
+  font-family: $font-h;
+  font-size: 20px;
+  font-weight: 700;
+  color: $text-p;
+  margin: 0 0 4px;
+}
+
+.cita-city {
+  font-size: 12px;
+  color: $text-s;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+}
+
+// ── Status badges ─────────────────────────────────────────────────────────
+.status-badge {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+
+  &.status--pending  { background: rgba(180,150,40,0.15); color: #c9a030; border: 1px solid rgba(180,150,40,0.3); }
+  &.status--approved { background: rgba(50,180,80,0.12);  color: #5cb870; border: 1px solid rgba(50,180,80,0.3); }
+  &.status--rejected { background: rgba(220,60,60,0.12);  color: #e07070; border: 1px solid rgba(220,60,60,0.3); }
+  &.status--counter  { background: rgba(200,120,40,0.12); color: #d4904a; border: 1px solid rgba(200,120,40,0.3); }
+}
+
+// ── Details ───────────────────────────────────────────────────────────────
+.cita-details {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.detail {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+
+  &__label {
+    font-size: 11px;
+    color: $text-s;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    padding-top: 1px;
+  }
+
+  &__value {
+    font-size: 14px;
+    color: $text-p;
+    text-align: right;
+  }
+
+  &--highlight &__value {
+    color: $gold;
+    font-weight: 500;
+  }
+}
+
+.text-ok   { color: #5cb870 !important; }
+.text-warn { color: #c9a030 !important; }
+
+.counter-msg {
+  font-size: 13px;
+  color: $text-s;
+  margin: 0;
+  flex: 1;
+}
+
+// ── Loading ───────────────────────────────────────────────────────────────
+.loading-list { display: flex; flex-direction: column; gap: 20px; }
+
+.cita-skeleton {
+  height: 200px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, $bg-card 25%, #1a1815 50%, $bg-card 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// ── Empty state ───────────────────────────────────────────────────────────
+.empty-state {
+  text-align: center;
+  padding: 80px 40px;
+
+  .empty-icon {
+    font-size: 48px;
+    color: rgba(201,168,76,0.2);
+    margin-bottom: 24px;
+  }
+
+  h3 {
+    font-family: $font-h;
+    font-size: 28px;
+    color: $text-p;
+    margin: 0 0 12px;
+  }
+
+  p {
+    font-size: 15px;
+    color: $text-s;
+    margin: 0 0 28px;
+    line-height: 1.6;
+  }
+}
+
+// ── Shared buttons ────────────────────────────────────────────────────────
+.btn-gold {
+  background: $gold;
+  border: none;
+  border-radius: 6px;
+  color: #0C0A08;
+  font-family: $font-b;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) { opacity: 0.9; }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+
+.error-banner {
+  background: rgba(220,60,60,0.1);
+  border: 1px solid rgba(220,60,60,0.3);
+  color: #e07070;
+  border-radius: 8px;
+  padding: 14px 20px;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .mis-citas { padding: 24px 16px; }
+  .page-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .detail { flex-direction: column; gap: 4px; }
+  .detail__value { text-align: left; }
+}

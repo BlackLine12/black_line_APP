@@ -1,126 +1,198 @@
-<section class="flex min-h-screen items-center justify-center bg-gray-950 px-4 py-8">
-  <div class="w-full max-w-lg space-y-8">
+<div class="auth-split">
 
-    <!-- Brand -->
-    <div class="animate-fade-in-down text-center">
-      <h1 class="text-4xl font-extrabold tracking-tight text-white transition-transform hover:scale-105">Black<span class="text-indigo-500">Line</span></h1>
-      <p class="mt-2 text-sm text-gray-400">Crea tu cuenta para empezar</p>
+  <!-- ── PANEL ARTE (izquierda) ───────────────────────────────────────── -->
+  <aside class="auth-split__art auth-split__art--register">
+    <div class="auth-split__art-img"></div>
+    <div class="auth-split__art-grad-v"></div>
+    <div class="auth-split__art-grad-h"></div>
+
+    <div class="art-logo">
+      <span class="art-logo__bar"></span>
+      <span class="art-logo__text">BL</span>
     </div>
 
-    <!-- Card -->
-    <div class="animate-fade-in-up rounded-2xl border border-gray-800 bg-gray-900 p-8 shadow-xl delay-200">
+    <div class="art-quote">
+      <p class="art-quote__text">Arte que trasciende generaciones</p>
+      <span class="art-quote__attr">— Tu historia, tu piel</span>
+    </div>
 
-      <!-- Success -->
+    <!-- Rol seleccionado visible en el panel arte -->
+    <div class="art-role-badge">
+      @if (registerForm.get('user_type')?.value === 'STUDIO') {
+        <span class="art-role-badge__icon">✦</span>
+        Unirte como Artista
+      } @else {
+        <span class="art-role-badge__icon">◌</span>
+        Buscar mi tatuaje ideal
+      }
+    </div>
+
+    <div class="art-stats">
+      <div class="art-stat">
+        <span class="art-stat__num">340+</span>
+        <span class="art-stat__label">Artistas</span>
+      </div>
+      <div class="art-stat">
+        <span class="art-stat__num">2.8K+</span>
+        <span class="art-stat__label">Tatuajes</span>
+      </div>
+      <div class="art-stat">
+        <span class="art-stat__num">98%</span>
+        <span class="art-stat__label">Satisfacción</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── PANEL FORMULARIO (derecha) ───────────────────────────────────── -->
+  <main class="auth-split__form auth-split__form--scroll">
+    <div class="auth-card auth-card--wide">
+
+      <header class="auth-card__header">
+        <span class="auth-card__kicker">Registro BlackLine</span>
+        <h1 class="auth-card__title">Crea tu cuenta</h1>
+        <p class="auth-card__subtitle">Completa tus datos y empieza en minutos.</p>
+      </header>
+
+      <!-- Brand -->
+      <div class="auth-card__brand">
+        <span class="auth-card__brand-line"></span>
+        <div class="auth-card__brand-inner">
+          <span class="auth-card__logo-square"></span>
+          <span class="auth-card__logo-name">BlackLine</span>
+          <span class="auth-card__logo-tagline">El arte que llevas en la piel</span>
+        </div>
+      </div>
+
+      <!-- Divider REGISTRO -->
+      <div class="auth-divider">
+        <span class="auth-divider__line"></span>
+        <span class="auth-divider__text">CREAR CUENTA</span>
+        <span class="auth-divider__line"></span>
+      </div>
+
+      <!-- Alerts -->
       @if (successMessage) {
-        <div role="alert" class="mb-5 rounded-lg border border-green-800 bg-green-900/30 px-4 py-3 text-sm text-green-300">
+        <div class="auth-alert auth-alert--success" role="alert">
           {{ successMessage }}
         </div>
       }
-
-      <!-- Error -->
       @if (errorMessage) {
-        <div role="alert" class="mb-5 rounded-lg border border-red-800 bg-red-900/30 px-4 py-3 text-sm text-red-300">
+        <div class="auth-alert auth-alert--error" role="alert">
           {{ errorMessage }}
         </div>
       }
 
-      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-5">
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-fields">
 
-        <!-- Name row -->
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label for="first_name" class="mb-1 block text-sm font-medium text-gray-300">Nombre</label>
-            <input id="first_name" formControlName="first_name" type="text" placeholder="Juan"
-              class="w-full rounded-lg border border-gray-700 bg-gray-800 px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+        <!-- Nombre / Apellido -->
+        <div class="auth-fields-row">
+          <div class="auth-field">
+            <label class="auth-field__label" for="first_name">Nombre</label>
+            <input id="first_name" class="auth-field__input" formControlName="first_name"
+              type="text" placeholder="Juan" autocomplete="given-name" />
           </div>
-          <div>
-            <label for="last_name" class="mb-1 block text-sm font-medium text-gray-300">Apellido</label>
-            <input id="last_name" formControlName="last_name" type="text" placeholder="Pérez"
-              class="w-full rounded-lg border border-gray-700 bg-gray-800 px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+          <div class="auth-field">
+            <label class="auth-field__label" for="last_name">Apellido</label>
+            <input id="last_name" class="auth-field__input" formControlName="last_name"
+              type="text" placeholder="Pérez" autocomplete="family-name" />
           </div>
         </div>
 
-        <!-- Username -->
-        <div>
-          <label for="username" class="mb-1 block text-sm font-medium text-gray-300">Nombre de usuario</label>
-          <input id="username" formControlName="username" type="text" placeholder="juanperez"
-            class="w-full rounded-lg border border-gray-700 bg-gray-800 px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+        <div class="auth-fields-row">
+          <div class="auth-field">
+            <label class="auth-field__label" for="username">Nombre de usuario</label>
+            <input id="username" class="auth-field__input" formControlName="username"
+              type="text" placeholder="juanperez" autocomplete="username" />
+          </div>
+
+          <div class="auth-field">
+            <label class="auth-field__label" for="phone">Teléfono</label>
+            <input id="phone" class="auth-field__input" formControlName="phone"
+              type="tel" placeholder="+52 614 123 4567" autocomplete="tel" />
+          </div>
         </div>
 
         <!-- Email -->
-        <div>
-          <label for="reg_email" class="mb-1 block text-sm font-medium text-gray-300">Correo electrónico</label>
-          <input id="reg_email" formControlName="email" type="email" placeholder="tu@email.com"
-            class="w-full rounded-lg border border-gray-700 bg-gray-800 px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+        <div class="auth-field">
+          <label class="auth-field__label" for="reg_email">Correo electrónico</label>
+          <input id="reg_email" class="auth-field__input" formControlName="email"
+            type="email" placeholder="tu@email.com" autocomplete="email" />
         </div>
 
-        <!-- Phone -->
-        <div>
-          <label for="phone" class="mb-1 block text-sm font-medium text-gray-300">Teléfono <span class="text-gray-500">(opcional)</span></label>
-          <input id="phone" formControlName="phone" type="tel" placeholder="+52 614 123 4567"
-            class="w-full rounded-lg border border-gray-700 bg-gray-800 px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
-        </div>
-
-        <!-- User type -->
-        <div>
-          <label class="mb-2 block text-sm font-medium text-gray-300">Tipo de cuenta</label>
-          <div class="grid grid-cols-2 gap-3">
+        <!-- Tipo de cuenta -->
+        <div class="auth-field">
+          <label class="auth-field__label">Tipo de cuenta</label>
+          <div class="auth-role-grid">
             <label
-              [class]="registerForm.get('user_type')?.value === 'CLIENT'
-                ? 'cursor-pointer rounded-xl border-2 border-indigo-500 bg-indigo-600/10 p-3 text-center transition'
-                : 'cursor-pointer rounded-xl border-2 border-gray-700 bg-gray-800 p-3 text-center transition hover:border-gray-500'"
+              class="auth-role-label"
+              [class.auth-role-label--active]="registerForm.get('user_type')?.value === 'CLIENT'"
             >
-              <input type="radio" formControlName="user_type" value="CLIENT" class="sr-only" />
-              <span class="block text-sm font-semibold text-white">Cliente</span>
-              <span class="mt-0.5 block text-xs text-gray-400">Busco tatuador</span>
+              <input type="radio" formControlName="user_type" value="CLIENT" />
+              <span class="auth-role-label__name">Cliente</span>
+              <span class="auth-role-label__sub">Busco tatuador</span>
             </label>
             <label
-              [class]="registerForm.get('user_type')?.value === 'STUDIO'
-                ? 'cursor-pointer rounded-xl border-2 border-indigo-500 bg-indigo-600/10 p-3 text-center transition'
-                : 'cursor-pointer rounded-xl border-2 border-gray-700 bg-gray-800 p-3 text-center transition hover:border-gray-500'"
+              class="auth-role-label"
+              [class.auth-role-label--active]="registerForm.get('user_type')?.value === 'STUDIO'"
             >
-              <input type="radio" formControlName="user_type" value="STUDIO" class="sr-only" />
-              <span class="block text-sm font-semibold text-white">Artista / Estudio</span>
-              <span class="mt-0.5 block text-xs text-gray-400">Ofrezco servicio</span>
+              <input type="radio" formControlName="user_type" value="STUDIO" />
+              <span class="auth-role-label__name">Artista / Estudio</span>
+              <span class="auth-role-label__sub">Ofrezco servicio</span>
             </label>
           </div>
-        </div>
 
-        <!-- Passwords -->
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label for="reg_password" class="mb-1 block text-sm font-medium text-gray-300">Contraseña</label>
-            <input id="reg_password" formControlName="password" type="password" placeholder="••••••••"
-              class="w-full rounded-lg border border-gray-700 bg-gray-800 px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
-          </div>
-          <div>
-            <label for="reg_password_confirm" class="mb-1 block text-sm font-medium text-gray-300">Confirmar</label>
-            <input id="reg_password_confirm" formControlName="password_confirm" type="password" placeholder="••••••••"
-              class="w-full rounded-lg border border-gray-700 bg-gray-800 px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+          <div class="auth-role-hint">
+            @if (registerForm.get('user_type')?.value === 'STUDIO') {
+              <strong>Artista / Estudio:</strong> podrás completar perfil, subir portafolio y gestionar agenda.
+            } @else {
+              <strong>Cliente:</strong> podrás crear cotizaciones, ver match de artistas y dar seguimiento a tus citas.
+            }
           </div>
         </div>
 
-        <!-- Submit -->
+        <!-- Contraseñas -->
+        <div class="auth-fields-row">
+          <div class="auth-field">
+            <label class="auth-field__label" for="reg_password">Contraseña</label>
+            <input id="reg_password" class="auth-field__input" formControlName="password"
+              type="password" placeholder="••••••••" autocomplete="new-password" />
+          </div>
+          <div class="auth-field">
+            <label class="auth-field__label" for="reg_confirm">Confirmar</label>
+            <input id="reg_confirm" class="auth-field__input" formControlName="password_confirm"
+              type="password" placeholder="••••••••" autocomplete="new-password" />
+          </div>
+        </div>
+
         <button
           type="submit"
+          class="auth-btn-submit"
           [disabled]="registerForm.invalid || loading"
-          class="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-950 disabled:cursor-not-allowed disabled:opacity-50"
         >
           @if (loading) {
-            <svg class="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+            <svg class="auth-btn-submit__spinner" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="60" stroke-dashoffset="15"/>
             </svg>
           }
           {{ loading ? 'Creando cuenta…' : 'Crear Cuenta' }}
         </button>
       </form>
-    </div>
 
-    <!-- Login link -->
-    <p class="animate-fade-in text-center text-sm text-gray-400 delay-400">
-      ¿Ya tienes cuenta?
-      <a routerLink="/auth/login" class="font-medium text-indigo-400 transition-colors hover:text-indigo-300">Inicia sesión</a>
-    </p>
-  </div>
-</section>
+      <!-- Login link -->
+      <div class="auth-footer-link">
+        <span>¿Ya tienes cuenta?</span>
+        <a routerLink="/auth/login" class="auth-footer-link__cta">Inicia sesión</a>
+      </div>
+
+      <!-- Secure badge -->
+      <div class="auth-secure">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="m9 12 2 2 4-4"/>
+        </svg>
+        Conexión segura y encriptada
+      </div>
+
+    </div>
+  </main>
+</div>

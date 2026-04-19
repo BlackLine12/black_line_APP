@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
@@ -10,10 +10,11 @@ import { AuthService } from '../../../core/services/auth.service';
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss',
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   registerForm: FormGroup = this.fb.group({
     first_name: ['', [Validators.required]],
@@ -29,6 +30,13 @@ export class RegisterComponent {
   loading = false;
   errorMessage = '';
   successMessage = '';
+
+  ngOnInit(): void {
+    const role = this.route.snapshot.queryParamMap.get('role');
+    if (role === 'CLIENT' || role === 'STUDIO') {
+      this.registerForm.patchValue({ user_type: role });
+    }
+  }
 
   onSubmit(): void {
     if (this.registerForm.invalid || this.loading) return;
@@ -46,7 +54,12 @@ export class RegisterComponent {
       next: () => {
         this.loading = false;
         this.successMessage = 'Cuenta creada exitosamente. Redirigiendo al login…';
-        setTimeout(() => this.router.navigate(['/auth/login']), 2000);
+        setTimeout(() => {
+          this.router.navigate(['/auth/login'], {
+            queryParams: { registered: '1' },
+            replaceUrl: true,
+          });
+        }, 1500);
       },
       error: (err) => {
         this.loading = false;

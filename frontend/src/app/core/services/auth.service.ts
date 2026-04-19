@@ -17,8 +17,13 @@ export class AuthService {
   /** Reactive user state */
   private _user = signal<User | null>(this.loadUserFromStorage());
   readonly user = this._user.asReadonly();
-  readonly isAuthenticated = computed(() => !!this._user());
-  readonly userType = computed(() => this._user()?.user_type ?? null);
+  readonly isAuthenticated = computed(() => this.hasActiveSession());
+  readonly userType = computed(() => {
+    if (!this.hasActiveSession()) {
+      return null;
+    }
+    return this._user()?.user_type ?? this.getUserTypeFromAccessToken();
+  });
 
   // ── Login (acepta email o username) ────────────────────────
   login(credential: string, password: string): Observable<AuthResponse> {
@@ -42,23 +47,99 @@ export class AuthService {
     if (refresh) {
       this.http.post(`${this.baseUrl}/logout/`, { refresh }).subscribe();
     }
-    this.tokenStorage.clear();
-    localStorage.removeItem('bl_user');
-    this._user.set(null);
+    this.clearLocalSession();
     this.router.navigate(['/auth/login']);
   }
 
   // ── Helpers ────────────────────────────────────────────────
+  syncSessionState(): void {
+    if (!this.hasValidAccessToken()) {
+      this.clearLocalSession();
+    }
+  }
+
   redirectByRole(): void {
-    const type = this._user()?.user_type;
+    const type = this._user()?.user_type ?? this.getUserTypeFromAccessToken();
     if (type === 'STUDIO') {
       this.router.navigate(['/studio/dashboard']);
     } else if (type === 'CLIENT') {
       this.router.navigate(['/client/cotizador']);
-    } else {
+    } else if (type === 'ADMIN') {
       // ADMIN no tiene SPA — gestiona vía Django Admin (/admin/)
       this.router.navigate(['/']);
+    } else {
+      this.router.navigate(['/auth/login']);
     }
+  }
+
+  private hasActiveSession(): boolean {
+    if (!this._user()) {
+      return false;
+    }
+
+    const hasToken = this.hasValidAccessToken();
+    if (!hasToken) {
+      this.clearLocalSession();
+      return false;
+    }
+
+    return true;
+  }
+
+  private hasValidAccessToken(): boolean {
+    const access = this.tokenStorage.getAccessToken();
+    if (!access) {
+      return false;
+    }
+
+    const payload = this.decodeAccessTokenPayload();
+    if (!payload) {
+      return false;
+    }
+
+    const exp = payload['exp'];
+    if (typeof exp !== 'number') {
+      return false;
+    }
+
+    return exp * 1000 > Date.now();
+  }
+
+  private decodeAccessTokenPayload(): Record<string, unknown> | null {
+    const access = this.tokenStorage.getAccessToken();
+    if (!access) {
+      return null;
+    }
+
+    try {
+      const payload = access.split('.')[1];
+      if (!payload) {
+        return null;
+      }
+
+      return JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+    } catch {
+      return null;
+    }
+  }
+
+  private getUserTypeFromAccessToken(): User['user_type'] | null {
+    const decoded = this.decodeAccessTokenPayload();
+    if (!decoded) {
+      return null;
+    }
+
+    const userType = decoded['user_type'];
+    if (userType === 'CLIENT' || userType === 'STUDIO' || userType === 'ADMIN') {
+      return userType;
+    }
+    return null;
+  }
+
+  private clearLocalSession(): void {
+    this.tokenStorage.clear();
+    localStorage.removeItem('bl_user');
+    this._user.set(null);
   }
 
   private saveUser(user: User): void {
@@ -67,6 +148,11 @@ export class AuthService {
 
   private loadUserFromStorage(): User | null {
     try {
+      if (!this.tokenStorage.getAccessToken()) {
+        localStorage.removeItem('bl_user');
+        return null;
+      }
+
       const raw = localStorage.getItem('bl_user');
       return raw ? JSON.parse(raw) : null;
     } catch {
