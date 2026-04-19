@@ -1,1 +1,244 @@
-<p>match works!</p>
+<div class="match-page">
+
+  <!-- ── Top Bar ─────────────────────────────────────────── -->
+  <div class="match-topbar">
+    <div class="match-topbar__info">
+      <span class="match-topbar__label">Buscando artistas</span>
+      @if (quote()) {
+        <span class="match-topbar__quote">
+          {{ quote()!.style_name }} · {{ quote()!.body_part_display }} · {{ quote()!.size_cm }}cm
+          @if (quote()!.is_color) { <span class="badge-color">A color</span> }
+        </span>
+      }
+    </div>
+
+    <div class="match-topbar__search">
+      <input
+        class="city-input"
+        type="text"
+        placeholder="¿En qué ciudad?"
+        [value]="city()"
+        (input)="city.set($any($event.target).value)"
+        (keyup.enter)="search()"
+      />
+      <button class="btn-gold" (click)="search()" [disabled]="loading() || !city().trim()">
+        @if (loading()) { <span class="spinner"></span> } @else { Buscar }
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Cuerpo ───────────────────────────────────────────── -->
+  <div class="match-body" [class.panel-open]="selectedArtist()">
+
+    <!-- Lista de artistas -->
+    <div class="match-results">
+
+      @if (!searched() && !loading()) {
+        <div class="empty-state">
+          <div class="empty-state__icon">✦</div>
+          <h3>Encuentra tu artista ideal</h3>
+          <p>Ingresa tu ciudad y presiona Buscar para ver artistas disponibles.</p>
+        </div>
+      }
+
+      @if (loading()) {
+        <div class="loading-grid">
+          @for (n of [1,2,3,4,5,6]; track n) {
+            <div class="artist-card skeleton"></div>
+          }
+        </div>
+      }
+
+      @if (searchError()) {
+        <div class="error-banner">{{ searchError() }}</div>
+      }
+
+      @if (searched() && !loading() && artists().length === 0 && !searchError()) {
+        <div class="empty-state">
+          <div class="empty-state__icon">◌</div>
+          <h3>Sin resultados</h3>
+          <p>No encontramos artistas en <strong>{{ city() }}</strong> con ese estilo.<br>Intenta otra ciudad.</p>
+        </div>
+      }
+
+      @if (artists().length > 0) {
+        <div class="results-header">
+          <span class="results-count">{{ artists().length }} artista{{ artists().length !== 1 ? 's' : '' }} encontrado{{ artists().length !== 1 ? 's' : '' }}</span>
+          <span class="results-sort">Ordenado por precio estimado</span>
+        </div>
+
+        <div class="artists-grid">
+          @for (artist of artists(); track artist.artist_id) {
+            <div
+              class="artist-card"
+              [class.artist-card--selected]="selectedArtist()?.artist_id === artist.artist_id"
+              (click)="selectArtist(artist)"
+            >
+              <div class="artist-card__thumb">
+                @if (artist.portfolio_thumbnail) {
+                  <img [src]="artist.portfolio_thumbnail" [alt]="artist.artist_name" />
+                } @else {
+                  <div class="artist-card__no-photo">
+                    <span>{{ artist.artist_name[0] }}</span>
+                  </div>
+                }
+              </div>
+
+              <div class="artist-card__body">
+                <h3 class="artist-card__name">{{ artist.artist_name }}</h3>
+                <p class="artist-card__city">{{ artist.city }}</p>
+
+                @if (artist.bio) {
+                  <p class="artist-card__bio">{{ artist.bio | slice:0:100 }}{{ artist.bio.length > 100 ? '…' : '' }}</p>
+                }
+
+                <div class="artist-card__styles">
+                  @for (style of artist.styles; track style.id) {
+                    <span class="style-tag">{{ style.name }}</span>
+                  }
+                </div>
+              </div>
+
+              <div class="artist-card__footer">
+                <div class="artist-card__price">
+                  <span class="price-label">Precio estimado</span>
+                  <span class="price-value">{{ formatPrice(artist.estimated_price) }}</span>
+                </div>
+                <div class="price-min">Mínimo: {{ formatPrice(artist.minimum_setup_fee) }}</div>
+                <button class="btn-select">Elegir</button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- ── Panel lateral de cita ──────────────────────────── -->
+    @if (selectedArtist()) {
+      <div class="appointment-panel">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-header__name">{{ selectedArtist()!.artist_name }}</h2>
+            <p class="panel-header__city">{{ selectedArtist()!.city }}</p>
+          </div>
+          <button class="btn-close" (click)="closePanel()">✕</button>
+        </div>
+
+        <div class="panel-price">
+          Precio estimado: <strong>{{ formatPrice(selectedArtist()!.estimated_price) }}</strong>
+        </div>
+
+        <!-- Paso 1: Fecha y hora -->
+        @if (step() === 'appointment') {
+          <form [formGroup]="appointmentForm" (ngSubmit)="submitAppointment()" class="panel-form">
+            <h3 class="panel-section-title">1. Elige fecha y hora</h3>
+
+            <div class="field">
+              <label>Fecha y hora de la cita</label>
+              <input
+                type="datetime-local"
+                formControlName="scheduled_at"
+                [min]="minDatetime"
+                class="input"
+              />
+              @if (appointmentForm.get('scheduled_at')?.invalid && appointmentForm.get('scheduled_at')?.touched) {
+                <span class="field-error">Selecciona una fecha válida</span>
+              }
+            </div>
+
+            @if (submitError()) {
+              <div class="form-error">{{ submitError() }}</div>
+            }
+
+            <button type="submit" class="btn-gold btn-full" [disabled]="appointmentForm.invalid || submitting()">
+              @if (submitting()) { <span class="spinner"></span> Enviando… } @else { Continuar → }
+            </button>
+          </form>
+        }
+
+        <!-- Paso 2: Cuestionario de salud -->
+        @if (step() === 'consent') {
+          <form [formGroup]="consentForm" (ngSubmit)="submitConsent()" class="panel-form">
+            <h3 class="panel-section-title">2. Cuestionario de salud</h3>
+            <p class="panel-note">Obligatorio por normativa. Toda la información es confidencial.</p>
+
+            <div class="consent-question">
+              <label class="toggle-label">
+                <input type="checkbox" formControlName="has_allergies" />
+                ¿Tiene alergias?
+              </label>
+              @if (consentForm.value.has_allergies) {
+                <textarea formControlName="allergies_detail" class="input" placeholder="Describir alergias…" rows="2"></textarea>
+              }
+            </div>
+
+            <div class="consent-question">
+              <label class="toggle-label">
+                <input type="checkbox" formControlName="has_chronic_disease" />
+                ¿Padece enfermedad crónica?
+              </label>
+              @if (consentForm.value.has_chronic_disease) {
+                <textarea formControlName="chronic_disease_detail" class="input" placeholder="Ej. diabetes, hipertensión…" rows="2"></textarea>
+              }
+            </div>
+
+            <div class="consent-question">
+              <label class="toggle-label">
+                <input type="checkbox" formControlName="takes_medication" />
+                ¿Toma medicamentos actualmente?
+              </label>
+              @if (consentForm.value.takes_medication) {
+                <textarea formControlName="medication_detail" class="input" placeholder="Nombre y dosis…" rows="2"></textarea>
+              }
+            </div>
+
+            <div class="consent-question">
+              <label class="toggle-label">
+                <input type="checkbox" formControlName="is_pregnant" />
+                ¿Embarazo o lactancia?
+              </label>
+            </div>
+
+            <div class="consent-question">
+              <label class="toggle-label">
+                <input type="checkbox" formControlName="has_skin_condition" />
+                ¿Condición de piel? (psoriasis, queloide, dermatitis…)
+              </label>
+              @if (consentForm.value.has_skin_condition) {
+                <textarea formControlName="skin_condition_detail" class="input" placeholder="Describir condición…" rows="2"></textarea>
+              }
+            </div>
+
+            <div class="consent-terms">
+              <label class="toggle-label toggle-label--terms">
+                <input type="checkbox" formControlName="terms_accepted" />
+                Acepto los <a href="#" class="link-gold">términos del servicio</a> y el aviso de privacidad (LFPDPPP)
+              </label>
+              @if (consentForm.get('terms_accepted')?.invalid && consentForm.get('terms_accepted')?.touched) {
+                <span class="field-error">Debes aceptar los términos para continuar</span>
+              }
+            </div>
+
+            @if (submitError()) {
+              <div class="form-error">{{ submitError() }}</div>
+            }
+
+            <button type="submit" class="btn-gold btn-full" [disabled]="consentForm.invalid || submitting()">
+              @if (submitting()) { <span class="spinner"></span> Enviando… } @else { Confirmar cita }
+            </button>
+          </form>
+        }
+
+        <!-- Confirmación -->
+        @if (step() === 'done') {
+          <div class="panel-done">
+            <div class="done-icon">✦</div>
+            <h3>¡Solicitud enviada!</h3>
+            <p>Tu cita con <strong>{{ selectedArtist()!.artist_name }}</strong> está pendiente de aprobación.</p>
+            <button class="btn-gold btn-full" (click)="goToMisCitas()">Ver Mis Citas</button>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

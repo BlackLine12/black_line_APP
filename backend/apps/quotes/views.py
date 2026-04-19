@@ -256,18 +256,13 @@ class ArtistMatchView(APIView):
         # -- 5. Ordenar por precio estimado ascendente --
         queryset = queryset.order_by("estimated_price")
 
-        # -- 6. Proyeccion con .values() (evita instanciar modelos) --
-        #    Recuperamos solo las columnas necesarias para la tarjeta.
-        results = queryset.values(
-            "id",
-            "user__first_name",
-            "city",
-            "minimum_setup_fee",
-            "estimated_price",
-        )
+        # -- 6. Prefetch relaciones para evitar N+1 queries --
+        queryset = queryset.select_related("user").prefetch_related("styles", "portfolio_images")
 
         # -- 7. Serializar y responder --
-        card_serializer = ArtistMatchCardSerializer(results, many=True)
+        card_serializer = ArtistMatchCardSerializer(
+            queryset, many=True, context={"request": request}
+        )
 
         return Response(
             {

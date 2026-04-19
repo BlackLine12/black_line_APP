@@ -187,38 +187,39 @@ class CalendarBlockSerializer(serializers.ModelSerializer):
         return obj.artist.user.get_full_name() or obj.artist.user.username
 
 
-class ArtistMatchCardSerializer(serializers.Serializer):
+class ArtistMatchCardSerializer(serializers.ModelSerializer):
     """
-    Serializer de SALIDA: representa una "Tarjeta de Artista" en los
-    resultados del matchmaking.
-
-    Campos devueltos:
-        - artist_id:        PK del perfil del artista.
-        - artist_name:      Nombre completo del usuario vinculado.
-        - city:             Ciudad del artista.
-        - minimum_setup_fee: Tarifa minima de apertura de agujas.
-        - estimated_price:  Precio estimado calculado por el motor matematico
-                            directamente en SQL (annotate).
+    Serializer de SALIDA: Tarjeta de artista en resultados de matchmaking.
+    Incluye estilos, bio, thumbnail de portafolio y precio estimado (annotated).
     """
 
-    artist_id = serializers.IntegerField(
-        source="id",
-        help_text="ID del perfil del artista.",
-    )
-    artist_name = serializers.CharField(
-        source="user__first_name",
-        help_text="Nombre del artista.",
-    )
-    city = serializers.CharField(
-        help_text="Ciudad del artista.",
-    )
-    minimum_setup_fee = serializers.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        help_text="Tarifa minima de apertura de agujas.",
-    )
+    artist_id = serializers.IntegerField(source="id")
+    artist_name = serializers.SerializerMethodField()
+    styles = serializers.SerializerMethodField()
+    portfolio_thumbnail = serializers.SerializerMethodField()
     estimated_price = serializers.DecimalField(
         max_digits=12,
         decimal_places=2,
-        help_text="Precio estimado calculado en SQL (tamano x tarifa x zona x color).",
+        read_only=True,
     )
+
+    class Meta:
+        model = ArtistProfile
+        fields = [
+            "artist_id", "artist_name", "city", "bio",
+            "minimum_setup_fee", "estimated_price",
+            "styles", "portfolio_thumbnail",
+        ]
+
+    def get_artist_name(self, obj):
+        return obj.user.get_full_name() or obj.user.username
+
+    def get_styles(self, obj):
+        return [{"id": s.id, "name": s.name} for s in obj.styles.all()]
+
+    def get_portfolio_thumbnail(self, obj):
+        first = obj.portfolio_images.first()
+        if not first:
+            return None
+        request = self.context.get("request")
+        return request.build_absolute_uri(first.image.url) if request else first.image.url

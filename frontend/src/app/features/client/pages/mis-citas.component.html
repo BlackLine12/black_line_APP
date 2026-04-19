@@ -1,1 +1,95 @@
-<p>mis-citas works!</p>
+<div class="mis-citas">
+
+  <div class="page-header">
+    <h1 class="page-title">Mis Citas</h1>
+    <button class="btn-gold" (click)="goToCotizador()">+ Nueva cotización</button>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-list">
+      @for (n of [1,2,3]; track n) {
+        <div class="cita-skeleton"></div>
+      }
+    </div>
+  }
+
+  @if (error()) {
+    <div class="error-banner">{{ error() }}</div>
+  }
+
+  @if (actionError()) {
+    <div class="error-banner">{{ actionError() }}</div>
+  }
+
+  @if (!loading() && !error() && appointments().length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">✦</div>
+      <h3>Sin citas aún</h3>
+      <p>Usa el cotizador para encontrar tu artista ideal y agendar tu primera cita.</p>
+      <button class="btn-gold" (click)="goToCotizador()">Ir al cotizador</button>
+    </div>
+  }
+
+  @if (!loading() && appointments().length > 0) {
+    <div class="citas-list">
+      @for (appt of appointments(); track appt.id) {
+        <div class="cita-card" [class]="statusClass(appt.status)">
+          <div class="cita-card__header">
+            <div class="cita-info">
+              <h3 class="cita-artist">{{ appt.artist_name }}</h3>
+              <p class="cita-city">{{ appt.artist_city }}</p>
+            </div>
+            <span class="status-badge" [class]="statusClass(appt.status)">
+              {{ appt.status_display }}
+            </span>
+          </div>
+
+          <div class="cita-details">
+            <div class="detail">
+              <span class="detail__label">Fecha solicitada</span>
+              <span class="detail__value">{{ formatDate(appt.scheduled_at) }}</span>
+            </div>
+
+            @if (appt.status === 'COUNTER_OFFER' && appt.counter_offer_datetime) {
+              <div class="detail detail--highlight">
+                <span class="detail__label">Nueva fecha propuesta</span>
+                <span class="detail__value">{{ formatDate(appt.counter_offer_datetime) }}</span>
+              </div>
+              @if (appt.counter_offer_note) {
+                <div class="detail">
+                  <span class="detail__label">Nota del artista</span>
+                  <span class="detail__value">{{ appt.counter_offer_note }}</span>
+                </div>
+              }
+            }
+
+            <div class="detail">
+              <span class="detail__label">Cuestionario de salud</span>
+              <span class="detail__value" [class.text-ok]="appt.has_health_consent" [class.text-warn]="!appt.has_health_consent">
+                {{ appt.has_health_consent ? 'Enviado ✓' : 'Pendiente' }}
+              </span>
+            </div>
+
+            <div class="detail">
+              <span class="detail__label">Creada</span>
+              <span class="detail__value">{{ formatDate(appt.created_at) }}</span>
+            </div>
+          </div>
+
+          @if (appt.status === 'COUNTER_OFFER') {
+            <div class="cita-card__actions">
+              <p class="counter-msg">El artista propuso una nueva fecha. ¿La aceptas?</p>
+              <button
+                class="btn-gold"
+                (click)="acceptCounterOffer(appt)"
+                [disabled]="actionLoading() === appt.id"
+              >
+                @if (actionLoading() === appt.id) { Procesando… } @else { Aceptar nueva fecha }
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>
