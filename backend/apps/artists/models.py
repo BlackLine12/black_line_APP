@@ -76,12 +76,13 @@ class PortfolioImage(models.Model):
         default="",
         verbose_name="Descripción",
     )
+    position = models.PositiveIntegerField(default=0, verbose_name="Orden")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Subida")
 
     class Meta:
         verbose_name = "Imagen de Portafolio"
         verbose_name_plural = "Imágenes de Portafolio"
-        ordering = ["-created_at"]
+        ordering = ["-position", "-created_at"]
 
     def __str__(self):
         return f"Imagen #{self.pk} – {self.artist}"

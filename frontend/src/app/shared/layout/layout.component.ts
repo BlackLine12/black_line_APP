@@ -10,9 +10,9 @@ import { routeFadeAnimation } from '../animations/route-animations';
   imports: [RouterOutlet, NavbarComponent, FooterComponent],
   animations: [routeFadeAnimation],
   template: `
-    <div class="flex min-h-screen flex-col bg-gray-950">
+    <div style="display:flex; flex-direction:column; min-height:100vh; background:#0C0A08;">
       <app-navbar />
-      <main class="flex-1" [@routeAnimations]="getRouteAnimationData()">
+      <main style="flex:1;" [@routeAnimations]="getRouteAnimationData()">
         <router-outlet />
       </main>
       <app-footer />

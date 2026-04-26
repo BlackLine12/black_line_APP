@@ -1,17 +1,37 @@
 <!-- ═══════════════════ PORTFOLIO UPLOAD ═══════════════════ -->
-<div class="animate-fade-in-up rounded-2xl border border-gray-800 bg-gray-900 p-6 shadow-lg transition-all duration-300 hover:border-gray-700 delay-700">
-  <h2 class="mb-5 text-lg font-semibold text-white">Mi Portafolio</h2>
+<div class="portfolio-shell animate-fade-in-up delay-700">
+  <div class="portfolio-shell__glow"></div>
+
+  <div class="portfolio-shell__header">
+    <div>
+      <div class="portfolio-shell__eyebrow">
+        <span class="portfolio-shell__eyebrow-dot"></span>
+        GESTOR VISUAL
+      </div>
+      <h2 class="portfolio-shell__title">Mi Portafolio</h2>
+      <p class="portfolio-shell__subtitle">Sube trabajos previos y ordénalos como quieras mostrarlos.</p>
+    </div>
+    <div class="portfolio-shell__counter">
+      {{ images.length }} fotos
+    </div>
+  </div>
+
+  @if (statusMessage) {
+    <div [class]="statusType === 'success' ? 'portfolio-alert portfolio-alert--success' : 'portfolio-alert portfolio-alert--error'">
+      {{ statusMessage }}
+    </div>
+  }
 
   <!-- Description input -->
-  <div class="mb-4">
-    <label for="imgDesc" class="mb-1 block text-sm font-medium text-gray-300">Descripción (opcional)</label>
+  <div class="portfolio-field">
+    <label for="imgDesc" class="portfolio-field__label">Descripción opcional</label>
     <input
       id="imgDesc"
       [(ngModel)]="description"
       type="text"
       maxlength="255"
       placeholder="Ej. Realismo en brazo completo"
-      class="w-full rounded-lg border border-gray-700 bg-gray-800 px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+      class="portfolio-field__input"
     />
   </div>
 
@@ -21,8 +41,8 @@
     (dragleave)="onDragLeave($event)"
     (drop)="onDrop($event)"
     [class]="dragging
-      ? 'flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-indigo-500 bg-indigo-600/10 p-10 transition'
-      : 'flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-700 bg-gray-800/50 p-10 transition hover:border-gray-500'"
+      ? 'portfolio-dropzone portfolio-dropzone--active'
+      : 'portfolio-dropzone'"
     (click)="fileInput.click()"
   >
     <input
@@ -34,48 +54,102 @@
     />
 
     @if (uploading) {
-      <svg class="mb-3 h-10 w-10 animate-spin text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <svg class="portfolio-dropzone__icon animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
       </svg>
-      <p class="text-sm text-gray-400">Subiendo imagen…</p>
+      <p class="portfolio-dropzone__text">Subiendo imagen…</p>
     } @else {
-      <!-- Upload icon -->
-      <svg class="mb-3 h-10 w-10 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+      <svg class="portfolio-dropzone__icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
       </svg>
-      <p class="text-sm text-gray-400">Arrastra una imagen aquí o <span class="font-medium text-indigo-400">haz clic para seleccionar</span></p>
-      <p class="mt-1 text-xs text-gray-500">JPG, PNG o WebP</p>
+      <p class="portfolio-dropzone__text">Arrastra una imagen aquí o <span>haz clic para seleccionar</span></p>
+      <p class="portfolio-dropzone__hint">JPG, PNG o WebP</p>
     }
   </div>
 
   <!-- ── Gallery Grid ─────────────────────────────────────── -->
   @if (images.length > 0) {
-    <div class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-      @for (img of images; track img.id) {
-        <div class="group relative overflow-hidden rounded-xl border border-gray-800 bg-gray-800">
-          <img
-            [src]="img.image"
-            [alt]="img.description || 'Portafolio'"
-            class="aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-110"
-          />
-          <!-- Overlay on hover -->
-          <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/60 opacity-0 transition group-hover:opacity-100">
-            @if (img.description) {
-              <p class="mb-2 px-2 text-center text-xs text-gray-200">{{ img.description }}</p>
-            }
+    <div class="portfolio-grid">
+      @for (img of images; track img.id; let index = $index) {
+        <article class="portfolio-card group relative overflow-hidden">
+          <div class="portfolio-card__index">
+            #{{ index + 1 }}
+          </div>
+          <button type="button" class="portfolio-card__image-button" (click)="openViewer(index)">
+            <img
+              [src]="img.image"
+              [alt]="img.description || 'Portafolio'"
+              class="portfolio-card__image"
+            />
+          </button>
+          <div class="portfolio-card__overlay">
+            <div class="portfolio-card__meta">
+              @if (img.description) {
+                <p class="portfolio-card__description">{{ img.description }}</p>
+              } @else {
+                <p class="portfolio-card__description portfolio-card__description--muted">Sin descripción</p>
+              }
+              <p class="portfolio-card__date">{{ img.created_at | date:'dd MMM yyyy' }}</p>
+            </div>
+
+            <div class="portfolio-card__actions">
+              <button
+                type="button"
+                (click)="moveImage(index, -1)"
+                [disabled]="index === 0 || uploading || reordering"
+                class="portfolio-card__action"
+              >
+                Subir
+              </button>
+              <button
+                type="button"
+                (click)="moveImage(index, 1)"
+                [disabled]="index === images.length - 1 || uploading || reordering"
+                class="portfolio-card__action"
+              >
+                Bajar
+              </button>
+            </div>
             <button
               type="button"
               (click)="deleteImage(img.id)"
-              class="rounded-lg bg-red-600/80 px-3 py-1 text-xs font-semibold text-white transition hover:bg-red-500"
+              class="portfolio-card__delete"
             >
               Eliminar
             </button>
           </div>
-        </div>
+        </article>
       }
     </div>
   } @else {
-    <p class="mt-6 text-center text-sm text-gray-500">Tu portafolio está vacío. ¡Sube tu primera imagen!</p>
+    <p class="portfolio-empty">Tu portafolio está vacío. Sube tu primera imagen para empezar a mostrar tu trabajo.</p>
+  }
+
+  @if (viewerIndex !== null) {
+    <div class="portfolio-viewer" role="dialog" aria-modal="true" aria-label="Vista ampliada del portafolio" (click)="closeViewer()">
+      <div class="portfolio-viewer__panel" (click)="$event.stopPropagation()">
+        <button type="button" class="portfolio-viewer__close" (click)="closeViewer()" aria-label="Cerrar visualizador">×</button>
+
+        @if (images[viewerIndex]) {
+          <div class="portfolio-viewer__media">
+            <img [src]="images[viewerIndex].image" [alt]="images[viewerIndex].description || 'Portafolio'" />
+          </div>
+
+          <div class="portfolio-viewer__body">
+            <div>
+              <p class="portfolio-viewer__eyebrow">Imagen {{ viewerIndex + 1 }} de {{ images.length }}</p>
+              <h3>{{ images[viewerIndex].description || 'Sin descripción' }}</h3>
+              <p class="portfolio-viewer__date">{{ images[viewerIndex].created_at | date:'dd MMM yyyy' }}</p>
+            </div>
+
+            <div class="portfolio-viewer__actions">
+              <button type="button" class="portfolio-viewer__action" (click)="showPreviousImage()">Anterior</button>
+              <button type="button" class="portfolio-viewer__action" (click)="showNextImage()">Siguiente</button>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
   }
 </div>

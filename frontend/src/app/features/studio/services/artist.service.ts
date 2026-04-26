@@ -39,6 +39,12 @@ export class ArtistService {
     return this.http.post<PortfolioImage>(`${this.baseUrl}/portfolio/`, formData);
   }
 
+  reorderPortfolioImages(orderedIds: number[]): Observable<PortfolioImage[]> {
+    return this.http.post<PortfolioImage[]>(`${this.baseUrl}/portfolio/reorder/`, {
+      ordered_ids: orderedIds,
+    });
+  }
+
   deletePortfolioImage(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/portfolio/${id}/`);
   }

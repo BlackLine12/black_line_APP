@@ -1,3 +1,71 @@
-<footer class="border-t border-gray-800 bg-gray-950 px-4 py-6">
-  <p class="text-center text-sm text-gray-500">&copy; 2026 BlackLine. Todos los derechos reservados.</p>
+<!-- ═══════════════════════════════════════════════════════
+     FOOTER  ·  BlackLine – Pie de página global
+     ═══════════════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="footer__inner">
+
+    <!-- ── Col Brand ──────────────────────────────────────── -->
+    <div class="footer__col footer__col--brand">
+      <a routerLink="/" class="footer__brand">
+        <span class="footer__brand-mark"></span>
+        <span class="footer__brand-black">Black</span><span class="footer__brand-line">Line</span>
+      </a>
+      <p class="footer__brand-desc">
+        La plataforma que conecta tu piel con el artista ideal.
+        Matchmaking inteligente para tatuajes únicos.
+      </p>
+      <div class="footer__socials">
+        <a href="#" class="footer__social" aria-label="Instagram">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z"/>
+          </svg>
+        </a>
+        <a href="#" class="footer__social" aria-label="Twitter / X">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.259 5.629 5.905-5.629Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+        </a>
+        <a href="#" class="footer__social" aria-label="TikTok">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── Col Plataforma ──────────────────────────────────── -->
+    <div class="footer__col">
+      <span class="footer__col-title">Plataforma</span>
+      <a class="footer__link" href="#como-funciona">Cómo funciona</a>
+      <a class="footer__link" href="#estilos">Estilos de tatuaje</a>
+      <a class="footer__link" href="#artistas">Artistas</a>
+      <a class="footer__link" routerLink="/auth/register">Registrarse</a>
+    </div>
+
+    <!-- ── Col Empresa ────────────────────────────────────── -->
+    <div class="footer__col">
+      <span class="footer__col-title">Empresa</span>
+      <a class="footer__link" href="#">Sobre nosotros</a>
+      <a class="footer__link" href="#">Blog</a>
+      <a class="footer__link" href="#">Contacto</a>
+      <a class="footer__link" href="#">Trabaja con nosotros</a>
+    </div>
+
+    <!-- ── Col Legal ──────────────────────────────────────── -->
+    <div class="footer__col">
+      <span class="footer__col-title">Legal</span>
+      <a class="footer__link" href="#">Términos de servicio</a>
+      <a class="footer__link" href="#">Política de privacidad</a>
+      <a class="footer__link" href="#">Cookies</a>
+    </div>
+
+  </div>
+
+  <div class="footer__divider"></div>
+
+  <div class="footer__bottom">
+    <span class="footer__copy">© {{ year }} BlackLine. Todos los derechos reservados.</span>
+    <span class="footer__tagline">Hecho con ✦ para artistas y amantes del arte</span>
+  </div>
 </footer>

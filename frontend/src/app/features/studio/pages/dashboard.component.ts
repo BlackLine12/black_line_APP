@@ -26,6 +26,31 @@ export class DashboardComponent implements OnInit {
   saveMessage = '';
   saveSuccess = false;
 
+  get selectedStyleCount(): number {
+    return this.selectedStyleIds.size;
+  }
+
+  get profileCompletion(): number {
+    if (!this.profileForm) return 0;
+
+    const fields = ['bio', 'city', 'base_hourly_rate', 'minimum_setup_fee'];
+    const completedFields = fields.filter((field) => {
+      const value = this.profileForm.get(field)?.value;
+      return value !== null && value !== undefined && `${value}`.toString().trim() !== '' && `${value}` !== '0';
+    }).length;
+
+    const styleScore = this.selectedStyleIds.size > 0 ? 1 : 0;
+    return Math.round(((completedFields + styleScore) / (fields.length + 1)) * 100);
+  }
+
+  get portfolioCount(): number {
+    return this.profile?.portfolio_images?.length ?? 0;
+  }
+
+  get artistDisplayName(): string {
+    return this.profile?.username || 'Tu perfil';
+  }
+
   ngOnInit(): void {
     this.initForm();
     this.loadData();
