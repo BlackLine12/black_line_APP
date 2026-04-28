@@ -58,6 +58,40 @@ class ArtistProfileViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(profile)
         return Response(serializer.data)
 
+    @action(detail=False, methods=["get"], url_path="me/stats")
+    def my_stats(self, request):
+        """GET /api/artists/profiles/me/stats/"""
+        from django.utils import timezone
+        from apps.quotes.models import Appointment
+
+        if request.user.user_type not in ("STUDIO", "ADMIN"):
+            return Response(
+                {"detail": "Solo artistas pueden acceder a estadísticas."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        try:
+            profile = request.user.artist_profile
+        except Exception:
+            return Response(
+                {"pending_appointments": 0, "upcoming_appointments": 0, "total_portfolio_images": 0}
+            )
+
+        now = timezone.now()
+        pending = Appointment.objects.filter(artist=profile, status=Appointment.Status.PENDING).count()
+        upcoming = Appointment.objects.filter(
+            artist=profile, status=Appointment.Status.APPROVED, scheduled_at__gte=now
+        ).count()
+        portfolio_count = profile.portfolio_images.count()
+
+        return Response(
+            {
+                "pending_appointments": pending,
+                "upcoming_appointments": upcoming,
+                "total_portfolio_images": portfolio_count,
+            }
+        )
+
 
 class PortfolioImageViewSet(viewsets.ModelViewSet):
     """

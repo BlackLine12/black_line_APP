@@ -1,8 +1,9 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ArtistService } from '../services/artist.service';
-import { ArtistProfile, TattooStyle } from '../../../core/models/artist';
+import { ArtistProfile, ArtistStats, TattooStyle } from '../../../core/models/artist';
 import { PortfolioUploadComponent } from './portfolio-upload.component';
 
 @Component({
@@ -15,10 +16,12 @@ import { PortfolioUploadComponent } from './portfolio-upload.component';
 export class DashboardComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly artistService = inject(ArtistService);
+  private readonly router = inject(Router);
 
   profileForm!: FormGroup;
   profile: ArtistProfile | null = null;
   styles: TattooStyle[] = [];
+  stats: ArtistStats = { pending_appointments: 0, upcoming_appointments: 0, total_portfolio_images: 0 };
   selectedStyleIds: Set<number> = new Set();
 
   loading = true;
@@ -26,25 +29,25 @@ export class DashboardComponent implements OnInit {
   saveMessage = '';
   saveSuccess = false;
 
+  activeSection = 'info';
+
   get selectedStyleCount(): number {
     return this.selectedStyleIds.size;
   }
 
   get profileCompletion(): number {
     if (!this.profileForm) return 0;
-
     const fields = ['bio', 'city', 'base_hourly_rate', 'minimum_setup_fee'];
     const completedFields = fields.filter((field) => {
       const value = this.profileForm.get(field)?.value;
-      return value !== null && value !== undefined && `${value}`.toString().trim() !== '' && `${value}` !== '0';
+      return value !== null && value !== undefined && `${value}`.trim() !== '' && `${value}` !== '0';
     }).length;
-
     const styleScore = this.selectedStyleIds.size > 0 ? 1 : 0;
     return Math.round(((completedFields + styleScore) / (fields.length + 1)) * 100);
   }
 
   get portfolioCount(): number {
-    return this.profile?.portfolio_images?.length ?? 0;
+    return this.stats.total_portfolio_images;
   }
 
   get artistDisplayName(): string {
@@ -71,6 +74,11 @@ export class DashboardComponent implements OnInit {
       error: () => (this.styles = []),
     });
 
+    this.artistService.getStats().subscribe({
+      next: (s) => (this.stats = s),
+      error: () => {},
+    });
+
     this.artistService.getMyProfile().subscribe({
       next: (profile) => {
         this.profile = profile;
@@ -92,6 +100,18 @@ export class DashboardComponent implements OnInit {
       this.selectedStyleIds.delete(id);
     } else {
       this.selectedStyleIds.add(id);
+    }
+  }
+
+  scrollToSection(section: string): void {
+    this.activeSection = section;
+    const el = document.getElementById(`section-${section}`);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  goToPublicProfile(): void {
+    if (this.profile?.id) {
+      this.router.navigate(['/artistas', this.profile.id]);
     }
   }
 
