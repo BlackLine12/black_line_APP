@@ -186,6 +186,15 @@ class CalendarBlockSerializer(serializers.ModelSerializer):
     def get_artist_name(self, obj):
         return obj.artist.user.get_full_name() or obj.artist.user.username
 
+    def validate(self, data):
+        start = data.get("start_datetime")
+        end = data.get("end_datetime")
+        if start and end and start >= end:
+            raise serializers.ValidationError(
+                {"end_datetime": "La fecha de fin debe ser posterior a la de inicio."}
+            )
+        return data
+
 
 class ArtistMatchCardSerializer(serializers.ModelSerializer):
     """
