@@ -40,6 +40,10 @@ export class PortfolioUploadComponent implements OnInit {
   private setStatus(message: string, type: 'success' | 'error'): void {
     this.statusMessage = message;
     this.statusType = type;
+    setTimeout(() => {
+      this.statusMessage = '';
+      this.statusType = '';
+    }, 3500);
   }
 
   private persistOrder(): void {
@@ -149,8 +153,10 @@ export class PortfolioUploadComponent implements OnInit {
     this.artistService.deletePortfolioImage(id).subscribe({
       next: () => {
         this.images = this.images.filter((i) => i.id !== id);
-        this.setStatus('Imagen eliminada.', 'success');
-        this.persistOrder();
+        if (this.viewerIndex !== null) {
+          this.viewerIndex = null;
+        }
+        this.setStatus('Imagen eliminada del portafolio.', 'success');
       },
       error: () => {
         this.setStatus('No se pudo eliminar la imagen.', 'error');

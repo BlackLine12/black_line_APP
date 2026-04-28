@@ -20,14 +20,14 @@
           <span class="dashboard-stat__hint">Perfil optimizado</span>
         </div>
         <div class="dashboard-stat">
-          <span class="dashboard-stat__label">Estilos</span>
-          <span class="dashboard-stat__value">{{ selectedStyleCount }}</span>
-          <span class="dashboard-stat__hint">Seleccionados</span>
+          <span class="dashboard-stat__label">Pendientes</span>
+          <span class="dashboard-stat__value">{{ stats.pending_appointments }}</span>
+          <span class="dashboard-stat__hint">Solicitudes</span>
         </div>
         <div class="dashboard-stat">
-          <span class="dashboard-stat__label">Portafolio</span>
-          <span class="dashboard-stat__value">{{ portfolioCount }}</span>
-          <span class="dashboard-stat__hint">Imágenes subidas</span>
+          <span class="dashboard-stat__label">Próximas</span>
+          <span class="dashboard-stat__value">{{ stats.upcoming_appointments }}</span>
+          <span class="dashboard-stat__hint">Citas confirmadas</span>
         </div>
       </div>
     </div>
@@ -46,11 +46,8 @@
     <!-- Profile form -->
     @if (!loading) {
       <div class="dashboard-layout">
-        <!-- ════════════════════════════════════════════════════════ -->
-        <!-- SIDEBAR IZQUIERDO - PERFIL & ESTADÍSTICAS -->
-        <!-- ════════════════════════════════════════════════════════ -->
+        <!-- SIDEBAR -->
         <aside class="dashboard-sidebar animate-fade-in-up delay-100">
-          <!-- Perfil Circular -->
           <div class="profile-section">
             <div class="profile-avatar">
               <span class="profile-avatar__initials">
@@ -58,38 +55,27 @@
               </span>
             </div>
             <h2 class="profile-name">{{ profile?.username || 'Tu Perfil' }}</h2>
-            
-            <!-- Rating / Stars -->
-            <div class="profile-rating">
-              <div class="rating-stars">
-                @for (i of [1,2,3,4,5]; track i) {
-                  <svg xmlns="http://www.w3.org/2000/svg" class="star" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                  </svg>
-                }
-              </div>
-              <span class="rating-count">4.9 (137 reseñas)</span>
-            </div>
           </div>
 
-          <!-- Secciones numeradas de progreso -->
+          <!-- Progress nav -->
           <nav class="progress-nav">
-            <div class="progress-item progress-item--active">
-              <span class="progress-num">1</span>
-              <span class="progress-label">Información</span>
-            </div>
-            <div class="progress-item">
-              <span class="progress-num">2</span>
-              <span class="progress-label">Tarifas</span>
-            </div>
-            <div class="progress-item">
-              <span class="progress-num">3</span>
-              <span class="progress-label">Especialidades</span>
-            </div>
-            <div class="progress-item">
-              <span class="progress-num">4</span>
-              <span class="progress-label">Portafolio</span>
-            </div>
+            @for (sec of [
+              { id: 'info',      num: '1', label: 'Información' },
+              { id: 'rates',     num: '2', label: 'Tarifas' },
+              { id: 'styles',    num: '3', label: 'Especialidades' },
+              { id: 'portfolio', num: '4', label: 'Portafolio' }
+            ]; track sec.id) {
+              <button
+                type="button"
+                (click)="scrollToSection(sec.id)"
+                [class]="activeSection === sec.id
+                  ? 'progress-item progress-item--active'
+                  : 'progress-item'"
+              >
+                <span class="progress-num">{{ sec.num }}</span>
+                <span class="progress-label">{{ sec.label }}</span>
+              </button>
+            }
           </nav>
 
           <!-- Stats cards -->
@@ -99,21 +85,20 @@
               <span class="stat-value">{{ profileCompletion }}%</span>
             </div>
             <div class="stat-box">
-              <span class="stat-label">Solicitudes</span>
-              <span class="stat-value">8</span>
+              <span class="stat-label">Pendientes</span>
+              <span class="stat-value">{{ stats.pending_appointments }}</span>
             </div>
             <div class="stat-box">
-              <span class="stat-label">Citas este mes</span>
-              <span class="stat-value">14</span>
+              <span class="stat-label">Próximas citas</span>
+              <span class="stat-value">{{ stats.upcoming_appointments }}</span>
             </div>
             <div class="stat-box">
-              <span class="stat-label">Fotos en portafolio</span>
+              <span class="stat-label">Portafolio</span>
               <span class="stat-value">{{ portfolioCount }}</span>
             </div>
           </div>
 
-          <!-- Botón Ver perfil público -->
-          <button class="btn-public-profile" type="button">
+          <button class="btn-public-profile" type="button" (click)="goToPublicProfile()">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
               <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -122,87 +107,62 @@
           </button>
         </aside>
 
-        <!-- MAIN FORM AREA -->
+        <!-- MAIN FORM -->
         <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="dashboard-form space-y-8">
 
-          <!-- ── Info Card ─────────────────────────────────── -->
-          <div class="dashboard-card animate-fade-in-up delay-100">
+          <!-- 01 · Información -->
+          <div id="section-info" class="dashboard-card animate-fade-in-up delay-100">
             <div class="dashboard-card__header">
               <div>
                 <p class="dashboard-card__eyebrow">01 · Información</p>
                 <h2 class="dashboard-card__title">Tu presencia profesional</h2>
               </div>
             </div>
-
             <div class="dashboard-grid dashboard-grid--main">
               <div>
                 <label for="city" class="dashboard-label">Ciudad</label>
-                <input
-                  id="city"
-                  formControlName="city"
-                  type="text"
-                  placeholder="Ej. CDMX, Guadalajara…"
-                  class="dashboard-input"
-                />
+                <input id="city" formControlName="city" type="text"
+                  placeholder="Ej. CDMX, Guadalajara…" class="dashboard-input" />
               </div>
-
               <div class="dashboard-span-2">
                 <label for="bio" class="dashboard-label">Biografía</label>
-                <textarea
-                  id="bio"
-                  formControlName="bio"
-                  rows="5"
+                <textarea id="bio" formControlName="bio" rows="5"
                   placeholder="Cuéntale al mundo sobre tu estilo, enfoque y experiencia…"
-                  class="dashboard-textarea"
-                ></textarea>
+                  class="dashboard-textarea"></textarea>
               </div>
             </div>
           </div>
 
-          <!-- ── Rates Card ────────────────────────────────── -->
-          <div class="dashboard-card animate-fade-in-up delay-300">
+          <!-- 02 · Tarifas -->
+          <div id="section-rates" class="dashboard-card animate-fade-in-up delay-300">
             <div class="dashboard-card__header">
               <div>
                 <p class="dashboard-card__eyebrow">02 · Tarifas</p>
                 <h2 class="dashboard-card__title">Precio base y apertura</h2>
               </div>
             </div>
-
             <div class="dashboard-grid dashboard-grid--rates">
               <div>
                 <label for="hourly" class="dashboard-label">Tarifa por Hora (MXN)</label>
                 <div class="dashboard-currency">
                   <span>$</span>
-                  <input
-                    id="hourly"
-                    formControlName="base_hourly_rate"
-                    type="number"
-                    min="0"
-                    step="50"
-                    class="dashboard-input dashboard-input--currency"
-                  />
+                  <input id="hourly" formControlName="base_hourly_rate" type="number"
+                    min="0" step="50" class="dashboard-input dashboard-input--currency" />
                 </div>
               </div>
-
               <div>
                 <label for="setup" class="dashboard-label">Tarifa Mínima / Apertura (MXN)</label>
                 <div class="dashboard-currency">
                   <span>$</span>
-                  <input
-                    id="setup"
-                    formControlName="minimum_setup_fee"
-                    type="number"
-                    min="0"
-                    step="50"
-                    class="dashboard-input dashboard-input--currency"
-                  />
+                  <input id="setup" formControlName="minimum_setup_fee" type="number"
+                    min="0" step="50" class="dashboard-input dashboard-input--currency" />
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- ── Styles Card ───────────────────────────────── -->
-          <div class="dashboard-card animate-fade-in-up delay-500">
+          <!-- 03 · Especialidades -->
+          <div id="section-styles" class="dashboard-card animate-fade-in-up delay-500">
             <div class="dashboard-card__header dashboard-card__header--stacked">
               <div>
                 <p class="dashboard-card__eyebrow">03 · Especialidades</p>
@@ -210,16 +170,12 @@
               </div>
               <p class="dashboard-card__description">Selecciona los estilos en los que te especializas para que tus clientes te encuentren mejor.</p>
             </div>
-
             <div class="dashboard-tag-list">
               @for (style of styles; track style.id) {
-                <button
-                  type="button"
-                  (click)="toggleStyle(style.id)"
+                <button type="button" (click)="toggleStyle(style.id)"
                   [class]="selectedStyleIds.has(style.id)
                     ? 'dashboard-tag dashboard-tag--active'
-                    : 'dashboard-tag'"
-                >
+                    : 'dashboard-tag'">
                   {{ style.name }}
                 </button>
               }
@@ -229,13 +185,9 @@
             </div>
           </div>
 
-          <!-- ── Save button ───────────────────────────────── -->
+          <!-- Save button -->
           <div class="dashboard-actions">
-            <button
-              type="submit"
-              [disabled]="profileForm.invalid || saving"
-              class="dashboard-submit"
-            >
+            <button type="submit" [disabled]="profileForm.invalid || saving" class="dashboard-submit">
               @if (saving) {
                 <svg class="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -244,9 +196,10 @@
               }
               {{ saving ? 'Guardando…' : 'Guardar Cambios' }}
             </button>
-
             @if (saveMessage) {
-              <span class="dashboard-message" [class.dashboard-message--success]="saveSuccess" [class.dashboard-message--error]="!saveSuccess">
+              <span class="dashboard-message"
+                [class.dashboard-message--success]="saveSuccess"
+                [class.dashboard-message--error]="!saveSuccess">
                 {{ saveMessage }}
               </span>
             }
@@ -254,8 +207,10 @@
         </form>
       </div>
 
-      <!-- ── Portfolio section ───────────────────────── -->
-      <app-portfolio-upload />
+      <!-- 04 · Portafolio -->
+      <div id="section-portfolio">
+        <app-portfolio-upload />
+      </div>
     }
   </div>
 </section>

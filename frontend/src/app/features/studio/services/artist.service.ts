@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '@env/environment';
-import { ArtistProfile, TattooStyle, PortfolioImage } from '../../../core/models/artist';
+import { ArtistProfile, ArtistStats, TattooStyle, PortfolioImage } from '../../../core/models/artist';
 
 @Injectable({ providedIn: 'root' })
 export class ArtistService {
@@ -21,6 +21,10 @@ export class ArtistService {
 
   updateMyProfile(data: Partial<ArtistProfile>): Observable<ArtistProfile> {
     return this.http.patch<ArtistProfile>(`${this.baseUrl}/profiles/me/`, data);
+  }
+
+  getStats(): Observable<ArtistStats> {
+    return this.http.get<ArtistStats>(`${this.baseUrl}/profiles/me/stats/`);
   }
 
   getProfile(id: number): Observable<ArtistProfile> {

@@ -96,3 +96,21 @@ export interface HealthConsentPayload {
   skin_condition_detail: string;
   terms_accepted: boolean;
 }
+
+// ── CalendarBlock ──────────────────────────────────────────────────────────
+
+export interface CalendarBlock {
+  id: number;
+  artist: number;
+  artist_name: string;
+  start_datetime: string;
+  end_datetime: string;
+  reason: string;
+  created_at: string;
+}
+
+export interface CalendarBlockPayload {
+  start_datetime: string;
+  end_datetime: string;
+  reason?: string;
+}

@@ -1,1 +1,230 @@
-<p>agenda works!</p>
+<!-- ═══════════════════ ARTIST AGENDA ═══════════════════ -->
+<section class="agenda-page px-4 py-8 sm:px-6 lg:px-8">
+  <div class="agenda-inner mx-auto max-w-5xl space-y-10">
+
+    <!-- ── Header ─────────────────────────────────────────────── -->
+    <div class="agenda-hero animate-fade-in-down">
+      <div class="agenda-hero__eyebrow">
+        <span class="agenda-hero__dot"></span>
+        ESTUDIO · AGENDA
+      </div>
+      <h1 class="agenda-hero__title">Mi Agenda</h1>
+      <p class="agenda-hero__subtitle">Gestiona tus citas y bloquea fechas de no disponibilidad.</p>
+
+      <div class="agenda-stats-row">
+        <div class="agenda-badge agenda-badge--gold">
+          <span class="agenda-badge__num">{{ pendingCount }}</span>
+          <span class="agenda-badge__label">Pendientes</span>
+        </div>
+        <div class="agenda-badge">
+          <span class="agenda-badge__num">{{ approvedCount }}</span>
+          <span class="agenda-badge__label">Confirmadas</span>
+        </div>
+        <div class="agenda-badge">
+          <span class="agenda-badge__num">{{ appointments.length }}</span>
+          <span class="agenda-badge__label">Total citas</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Appointments section ───────────────────────────────── -->
+    <div class="agenda-section">
+      <div class="agenda-section__header">
+        <h2 class="agenda-section__title">Citas</h2>
+        <div class="agenda-filters">
+          @for (f of filters; track f.value) {
+            <button
+              type="button"
+              (click)="filter = f.value"
+              [class]="filter === f.value ? 'agenda-filter agenda-filter--active' : 'agenda-filter'"
+            >
+              {{ f.label }}
+              @if (f.value === 'PENDING' && pendingCount > 0) {
+                <span class="agenda-filter__badge">{{ pendingCount }}</span>
+              }
+            </button>
+          }
+        </div>
+      </div>
+
+      @if (appointmentMessage) {
+        <div [class]="appointmentSuccess ? 'agenda-alert agenda-alert--success' : 'agenda-alert agenda-alert--error'">
+          {{ appointmentMessage }}
+        </div>
+      }
+
+      @if (loadingAppointments) {
+        <div class="agenda-loading">
+          <svg class="h-6 w-6 animate-spin text-[#c9a84c]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+          </svg>
+          <span>Cargando citas…</span>
+        </div>
+      } @else if (filteredAppointments.length === 0) {
+        <div class="agenda-empty">
+          <p>No hay citas {{ filter !== 'ALL' ? 'en este estado' : '' }}.</p>
+        </div>
+      } @else {
+        <div class="agenda-list">
+          @for (appt of filteredAppointments; track appt.id) {
+            <article class="agenda-card">
+              <div class="agenda-card__header">
+                <div class="agenda-card__client">
+                  <div class="agenda-card__avatar">
+                    {{ appt.client_name.substring(0, 2).toUpperCase() }}
+                  </div>
+                  <div>
+                    <p class="agenda-card__name">{{ appt.client_name }}</p>
+                    <p class="agenda-card__email">{{ appt.client_email }}</p>
+                  </div>
+                </div>
+                <div class="agenda-card__meta">
+                  <time class="agenda-card__date">
+                    {{ appt.scheduled_at | date:'dd MMM yyyy, HH:mm' }}
+                  </time>
+                  <span [class]="'agenda-status agenda-status--' + appt.status.toLowerCase()">
+                    {{ statusLabel(appt.status) }}
+                  </span>
+                </div>
+              </div>
+
+              @if (appt.status === 'COUNTER_OFFER' && appt.counter_offer_datetime) {
+                <div class="agenda-card__counteroffer">
+                  <p class="agenda-card__counteroffer-label">Contraoferta propuesta</p>
+                  <p class="agenda-card__counteroffer-date">
+                    {{ appt.counter_offer_datetime | date:'dd MMM yyyy, HH:mm' }}
+                  </p>
+                  @if (appt.counter_offer_note) {
+                    <p class="agenda-card__counteroffer-note">{{ appt.counter_offer_note }}</p>
+                  }
+                </div>
+              }
+
+              @if (appt.status === 'PENDING') {
+                @if (counterOfferForId !== appt.id) {
+                  <div class="agenda-card__actions">
+                    <button type="button" class="agenda-btn agenda-btn--approve" (click)="approveAppointment(appt.id)">
+                      Aprobar
+                    </button>
+                    <button type="button" class="agenda-btn agenda-btn--offer" (click)="openCounterOffer(appt.id)">
+                      Contraofertar
+                    </button>
+                    <button type="button" class="agenda-btn agenda-btn--reject" (click)="rejectAppointment(appt.id)">
+                      Rechazar
+                    </button>
+                  </div>
+                } @else {
+                  <form class="agenda-offer-form" (ngSubmit)="submitCounterOffer(appt.id)" [formGroup]="counterOfferForm">
+                    <p class="agenda-offer-form__title">Proponer fecha alternativa</p>
+                    <div class="agenda-offer-form__fields">
+                      <div>
+                        <label class="agenda-offer-form__label">Nueva fecha y hora</label>
+                        <input type="datetime-local" formControlName="counter_offer_datetime" class="agenda-input" />
+                      </div>
+                      <div>
+                        <label class="agenda-offer-form__label">Nota (opcional)</label>
+                        <textarea
+                          formControlName="counter_offer_note"
+                          rows="2"
+                          placeholder="Ej. Prefiero a las 11am, el estudio estará más tranquilo."
+                          class="agenda-input agenda-textarea"
+                        ></textarea>
+                      </div>
+                    </div>
+                    <div class="agenda-offer-form__actions">
+                      <button type="submit" [disabled]="counterOfferForm.invalid" class="agenda-btn agenda-btn--approve">
+                        Enviar contraoferta
+                      </button>
+                      <button type="button" class="agenda-btn agenda-btn--ghost" (click)="cancelCounterOffer()">
+                        Cancelar
+                      </button>
+                    </div>
+                  </form>
+                }
+              }
+            </article>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- ── Calendar Blocks section ────────────────────────────── -->
+    <div class="agenda-section">
+      <div class="agenda-section__header">
+        <h2 class="agenda-section__title">Bloqueos de Calendario</h2>
+        <button type="button" class="agenda-btn-create" (click)="toggleBlockForm()">
+          {{ showBlockForm ? 'Cancelar' : '+ Nuevo bloqueo' }}
+        </button>
+      </div>
+
+      @if (blockMessage) {
+        <div [class]="blockSuccess ? 'agenda-alert agenda-alert--success' : 'agenda-alert agenda-alert--error'">
+          {{ blockMessage }}
+        </div>
+      }
+
+      @if (showBlockForm) {
+        <form class="agenda-block-form" [formGroup]="blockForm" (ngSubmit)="submitBlock()">
+          <div class="agenda-block-form__fields">
+            <div>
+              <label class="agenda-offer-form__label">Inicio del bloqueo</label>
+              <input type="datetime-local" formControlName="start_datetime" class="agenda-input" />
+            </div>
+            <div>
+              <label class="agenda-offer-form__label">Fin del bloqueo</label>
+              <input type="datetime-local" formControlName="end_datetime" class="agenda-input" />
+            </div>
+            <div class="agenda-block-form__full">
+              <label class="agenda-offer-form__label">Motivo (opcional)</label>
+              <input type="text" formControlName="reason"
+                placeholder="Ej. Vacaciones, evento privado…" class="agenda-input" />
+            </div>
+          </div>
+          <div class="agenda-offer-form__actions">
+            <button type="submit" [disabled]="blockForm.invalid || creatingBlock" class="agenda-btn agenda-btn--approve">
+              {{ creatingBlock ? 'Guardando…' : 'Crear bloqueo' }}
+            </button>
+          </div>
+        </form>
+      }
+
+      @if (loadingBlocks) {
+        <div class="agenda-loading">
+          <svg class="h-5 w-5 animate-spin text-[#c9a84c]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+          </svg>
+          <span>Cargando bloqueos…</span>
+        </div>
+      } @else if (calendarBlocks.length === 0) {
+        <div class="agenda-empty">
+          <p>No tienes bloqueos activos. Crea uno para marcar períodos de no disponibilidad.</p>
+        </div>
+      } @else {
+        <div class="agenda-block-list">
+          @for (block of calendarBlocks; track block.id) {
+            <div class="agenda-block-item">
+              <div class="agenda-block-item__dates">
+                <span class="agenda-block-item__range">
+                  {{ block.start_datetime | date:'dd MMM yyyy HH:mm' }}
+                  &nbsp;→&nbsp;
+                  {{ block.end_datetime | date:'dd MMM yyyy HH:mm' }}
+                </span>
+                @if (block.reason) {
+                  <span class="agenda-block-item__reason">{{ block.reason }}</span>
+                }
+              </div>
+              <button type="button" class="agenda-block-item__delete" (click)="deleteBlock(block.id)" aria-label="Eliminar bloqueo">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
+                </svg>
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+  </div>
+</section>

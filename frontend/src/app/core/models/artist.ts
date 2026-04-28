@@ -26,3 +26,9 @@ export interface ArtistProfile {
   created_at: string;
   updated_at: string;
 }
+
+export interface ArtistStats {
+  pending_appointments: number;
+  upcoming_appointments: number;
+  total_portfolio_images: number;
+}
