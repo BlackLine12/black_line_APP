@@ -315,14 +315,14 @@
               <div class="review-item">
                 <span class="review-label">Estilo</span>
                 <span class="review-value">
-                  {{ (styles().find(s => s.id === quoteForm.value.tattoo_style)?.name) || '—' }}
+                  {{ selectedStyle?.name || '—' }}
                 </span>
                 <button class="review-edit" type="button" (click)="goToStep(1)">Editar</button>
               </div>
               <div class="review-item">
                 <span class="review-label">Zona del cuerpo</span>
                 <span class="review-value">
-                  {{ (bodyParts.find(b => b.value === quoteForm.value.body_part)?.label) || '—' }}
+                  {{ selectedBodyPart?.label || '—' }}
                 </span>
                 <button class="review-edit" type="button" (click)="goToStep(2)">Editar</button>
               </div>

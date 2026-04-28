@@ -147,6 +147,14 @@ export class CotizadorComponent implements OnInit {
     return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 }).format(val);
   }
 
+  resetForm(): void {
+    this.quoteForm.reset({ is_color: false, size_cm: 10 });
+    this.submitted.set(false);
+    this.currentStep.set(1);
+    this.estimatedPrice.set(null);
+    this.errorMsg.set('');
+  }
+
   // ── Submit ──────────────────────────────────────────────────────────────
   submit(): void {
     if (!this.quoteForm.valid) return;
