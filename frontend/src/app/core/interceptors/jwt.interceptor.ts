@@ -1,5 +1,6 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { BehaviorSubject, catchError, filter, switchMap, take, throwError } from 'rxjs';
 import { environment } from '@env/environment';
 import { TokenStorageService } from '../services/token-storage.service';
@@ -10,12 +11,16 @@ interface RefreshResponse {
   refresh: string;
 }
 
+// Sentinel value that unblocks queued requests when refresh fails
+const REFRESH_FAILED = '__REFRESH_FAILED__';
+
 let isRefreshing = false;
 const refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   const tokenService = inject(TokenStorageService);
   const http = inject(HttpClient);
+  const router = inject(Router);
 
   // Only attach token to our own API
   if (!req.url.startsWith(environment.apiUrl)) {
@@ -37,6 +42,8 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
       ) {
         const refresh = tokenService.getRefreshToken();
         if (!refresh) {
+          tokenService.clear();
+          router.navigate(['/auth/login']);
           return throwError(() => error);
         }
 
@@ -49,15 +56,16 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
             .pipe(
               switchMap((res) => {
                 isRefreshing = false;
-                // Save both tokens — backend rotates refresh on every use
                 tokenService.saveTokens(res.access, res.refresh);
                 refreshTokenSubject.next(res.access);
                 return next(req.clone({ setHeaders: { Authorization: `Bearer ${res.access}` } }));
               }),
               catchError((refreshError) => {
                 isRefreshing = false;
-                refreshTokenSubject.next(null);
+                // Emit sentinel to unblock all queued requests before redirecting
+                refreshTokenSubject.next(REFRESH_FAILED);
                 tokenService.clear();
+                router.navigate(['/auth/login']);
                 return throwError(() => refreshError);
               }),
             );
@@ -65,11 +73,14 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
 
         // Another request already refreshing — wait and retry with new token
         return refreshTokenSubject.pipe(
-          filter((newToken) => newToken !== null),
+          filter((t) => t !== null),
           take(1),
-          switchMap((newToken) =>
-            next(req.clone({ setHeaders: { Authorization: `Bearer ${newToken}` } })),
-          ),
+          switchMap((t) => {
+            if (t === REFRESH_FAILED) {
+              return throwError(() => new Error('Sesión expirada'));
+            }
+            return next(req.clone({ setHeaders: { Authorization: `Bearer ${t}` } }));
+          }),
         );
       }
       return throwError(() => error);

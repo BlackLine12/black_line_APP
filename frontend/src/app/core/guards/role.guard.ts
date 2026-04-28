@@ -27,8 +27,10 @@ export function roleGuard(...allowedRoles: User['user_type'][]): CanActivateFn {
     // User is authenticated but wrong role — redirect to their dashboard
     if (userType === 'STUDIO') {
       router.navigate(['/studio/dashboard']);
+    } else if (userType === 'ADMIN') {
+      window.location.href = '/admin/';
     } else {
-      router.navigate(['/client/cotizador']);
+      router.navigate(['/client/dashboard']);
     }
     return false;
   };
