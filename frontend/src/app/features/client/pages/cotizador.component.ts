@@ -59,10 +59,11 @@ export class CotizadorComponent implements OnInit {
   ];
 
   quoteForm: FormGroup = this.fb.group({
-    tattoo_style: [null, Validators.required],
-    body_part:    ['',   Validators.required],
-    is_color:     [false],
-    size_cm:      [10,   [Validators.required, Validators.min(1), Validators.max(200)]],
+    tattoo_style:  [null,  Validators.required],
+    body_part:     ['',    Validators.required],
+    is_color:      [false],
+    size_cm:       [10,    [Validators.required, Validators.min(1), Validators.max(200)]],
+    accept_terms:  [false, Validators.requiredTrue],
   });
 
   // ── Precio estimado reactivo (signal mutable, actualizada por valueChanges)
@@ -115,7 +116,7 @@ export class CotizadorComponent implements OnInit {
       case 1: return this.quoteForm.get('tattoo_style')!.valid;
       case 2: return this.quoteForm.get('body_part')!.valid;
       case 3: return this.quoteForm.get('size_cm')!.valid;
-      case 4: return this.quoteForm.valid;
+      case 4: return this.quoteForm.get('accept_terms')!.valid && this.quoteForm.valid;
       default: return false;
     }
   }
@@ -147,8 +148,12 @@ export class CotizadorComponent implements OnInit {
     return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 }).format(val);
   }
 
+  goToMatch(): void {
+    this.router.navigate(['/client/match']);
+  }
+
   resetForm(): void {
-    this.quoteForm.reset({ is_color: false, size_cm: 10 });
+    this.quoteForm.reset({ is_color: false, size_cm: 10, accept_terms: false });
     this.submitted.set(false);
     this.currentStep.set(1);
     this.estimatedPrice.set(null);
@@ -162,13 +167,14 @@ export class CotizadorComponent implements OnInit {
     this.loading.set(true);
     this.errorMsg.set('');
 
-    const payload: QuoteRequestPayload = this.quoteForm.value;
+    const { accept_terms, ...fields } = this.quoteForm.value;
+    const payload: QuoteRequestPayload = fields;
 
     this.quoteService.createQuote(payload).subscribe({
       next: (quote) => {
         this.loading.set(false);
         this.quoteService.lastQuote.set(quote);
-        this.router.navigate(['/client/match']);
+        this.submitted.set(true);
       },
       error: (err) => {
         this.loading.set(false);

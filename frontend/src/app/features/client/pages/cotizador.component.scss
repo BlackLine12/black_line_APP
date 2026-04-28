@@ -1434,13 +1434,13 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
   text-align: center;
 }
 
-.btn-reset {
-  padding: 0.95rem 1.5rem;
-  border: 1px solid rgba(201, 168, 76, 0.3);
+.btn-match {
+  padding: 0.95rem 2rem;
+  border: none;
   border-radius: 12px;
   background: linear-gradient(135deg, #c9a84c, #8c5a1a);
   color: #0c0a08;
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -1448,6 +1448,24 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 24px rgba(201, 168, 76, 0.2);
+    box-shadow: 0 12px 24px rgba(201, 168, 76, 0.3);
+  }
+}
+
+.btn-reset {
+  padding: 0.75rem 1.5rem;
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  border-radius: 12px;
+  background: transparent;
+  color: #c9a84c;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
+
+  &:hover {
+    background: rgba(201, 168, 76, 0.08);
+    transform: translateY(-1px);
   }
 }
