@@ -207,7 +207,7 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
 
   &:hover {
     border-color: rgba($danger, 0.5);
-    color: lighten($danger, 10%);
+    color: color.adjust($danger, $lightness: 10%);
     background: rgba($danger, 0.06);
   }
 }

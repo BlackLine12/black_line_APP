@@ -98,13 +98,6 @@
             </div>
           </div>
 
-          <button class="btn-public-profile" type="button" (click)="goToPublicProfile()">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-              <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-            </svg>
-            Ver perfil público
-          </button>
         </aside>
 
         <!-- MAIN FORM -->
@@ -120,9 +113,37 @@
             </div>
             <div class="dashboard-grid dashboard-grid--main">
               <div>
-                <label for="city" class="dashboard-label">Ciudad</label>
-                <input id="city" formControlName="city" type="text"
-                  placeholder="Ej. CDMX, Guadalajara…" class="dashboard-input" />
+                <label for="city" class="dashboard-label">
+                  Ciudad
+                  @if (cityValid()) {
+                    <span class="city-valid-badge">✓ Verificada</span>
+                  } @else if (cityQuery().length > 0) {
+                    <span class="city-invalid-badge">Selecciona del listado</span>
+                  }
+                </label>
+                <div class="city-autocomplete">
+                  <input
+                    id="city"
+                    type="text"
+                    autocomplete="off"
+                    [value]="cityQuery()"
+                    (input)="onCityInput($any($event.target).value)"
+                    (focus)="showCityDropdown.set(cityQuery().trim().length > 0)"
+                    (blur)="onCityBlur()"
+                    placeholder="Ej. Guadalajara, Ciudad de México…"
+                    class="dashboard-input"
+                  />
+                  @if (showCityDropdown() && filteredCities().length > 0) {
+                    <ul class="city-dropdown">
+                      @for (c of filteredCities(); track c.name) {
+                        <li class="city-dropdown__item" (mousedown)="selectCity(c)">
+                          <span class="city-dropdown__name">{{ c.name }}</span>
+                          <span class="city-dropdown__state">{{ c.state }}</span>
+                        </li>
+                      }
+                    </ul>
+                  }
+                </div>
               </div>
               <div class="dashboard-span-2">
                 <label for="bio" class="dashboard-label">Biografía</label>

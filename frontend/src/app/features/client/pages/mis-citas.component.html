@@ -68,6 +68,11 @@
               <span class="detail__value" [class.text-ok]="appt.has_health_consent" [class.text-warn]="!appt.has_health_consent">
                 {{ appt.has_health_consent ? 'Enviado ✓' : 'Pendiente' }}
               </span>
+              @if (!appt.has_health_consent) {
+                <button class="btn-consent" (click)="openConsentModal(appt)">
+                  Completar cuestionario
+                </button>
+              }
             </div>
 
             <div class="detail">
@@ -79,13 +84,22 @@
           @if (appt.status === 'COUNTER_OFFER') {
             <div class="cita-card__actions">
               <p class="counter-msg">El artista propuso una nueva fecha. ¿La aceptas?</p>
-              <button
-                class="btn-gold"
-                (click)="acceptCounterOffer(appt)"
-                [disabled]="actionLoading() === appt.id"
-              >
-                @if (actionLoading() === appt.id) { Procesando… } @else { Aceptar nueva fecha }
-              </button>
+              <div class="counter-actions">
+                <button
+                  class="btn-gold"
+                  (click)="acceptCounterOffer(appt)"
+                  [disabled]="actionLoading() === appt.id"
+                >
+                  @if (actionLoading() === appt.id) { Procesando… } @else { Aceptar nueva fecha }
+                </button>
+                <button
+                  class="btn-outline-danger"
+                  (click)="rejectCounterOffer(appt)"
+                  [disabled]="actionLoading() === appt.id"
+                >
+                  Rechazar
+                </button>
+              </div>
             </div>
           }
         </div>
@@ -93,3 +107,93 @@
     </div>
   }
 </div>
+
+<!-- ── Health Consent Modal ─────────────────────────────────────────────── -->
+@if (consentAppointmentId() !== null) {
+  <div class="modal-backdrop" (click)="closeConsentModal()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">Cuestionario de Salud</h2>
+        <button class="modal-close" (click)="closeConsentModal()">✕</button>
+      </div>
+
+      @if (consentSuccess()) {
+        <div class="consent-success">
+          <span class="consent-success__icon">✓</span>
+          <p>Cuestionario enviado correctamente.</p>
+        </div>
+      } @else {
+        <form [formGroup]="consentForm" (ngSubmit)="submitConsent()" class="consent-form">
+
+          <div class="consent-field">
+            <label class="consent-check">
+              <input type="checkbox" formControlName="has_allergies" />
+              ¿Tienes alergias?
+            </label>
+            @if (consentForm.get('has_allergies')?.value) {
+              <input type="text" formControlName="allergies_detail"
+                placeholder="Describe tus alergias" class="consent-input" />
+            }
+          </div>
+
+          <div class="consent-field">
+            <label class="consent-check">
+              <input type="checkbox" formControlName="has_chronic_disease" />
+              ¿Padeces alguna enfermedad crónica?
+            </label>
+            @if (consentForm.get('has_chronic_disease')?.value) {
+              <input type="text" formControlName="chronic_disease_detail"
+                placeholder="Describe la enfermedad" class="consent-input" />
+            }
+          </div>
+
+          <div class="consent-field">
+            <label class="consent-check">
+              <input type="checkbox" formControlName="takes_medication" />
+              ¿Tomas medicación regularmente?
+            </label>
+            @if (consentForm.get('takes_medication')?.value) {
+              <input type="text" formControlName="medication_detail"
+                placeholder="Indica la medicación" class="consent-input" />
+            }
+          </div>
+
+          <div class="consent-field">
+            <label class="consent-check">
+              <input type="checkbox" formControlName="is_pregnant" />
+              ¿Estás embarazada?
+            </label>
+          </div>
+
+          <div class="consent-field">
+            <label class="consent-check">
+              <input type="checkbox" formControlName="has_skin_condition" />
+              ¿Tienes alguna condición de piel?
+            </label>
+            @if (consentForm.get('has_skin_condition')?.value) {
+              <input type="text" formControlName="skin_condition_detail"
+                placeholder="Describe la condición" class="consent-input" />
+            }
+          </div>
+
+          <div class="consent-field consent-field--terms">
+            <label class="consent-check">
+              <input type="checkbox" formControlName="terms_accepted" />
+              Acepto los términos y confirmo que la información es verídica.
+            </label>
+          </div>
+
+          @if (consentError()) {
+            <p class="consent-error">{{ consentError() }}</p>
+          }
+
+          <button type="submit"
+            class="btn-gold consent-submit"
+            [disabled]="consentForm.invalid || consentSubmitting()">
+            @if (consentSubmitting()) { Enviando… } @else { Enviar cuestionario }
+          </button>
+        </form>
+      }
+    </div>
+  </div>
+}

@@ -6,20 +6,20 @@ const REFRESH_KEY = 'bl_refresh_token';
 @Injectable({ providedIn: 'root' })
 export class TokenStorageService {
   getAccessToken(): string | null {
-    return localStorage.getItem(ACCESS_KEY);
+    return sessionStorage.getItem(ACCESS_KEY);
   }
 
   getRefreshToken(): string | null {
-    return localStorage.getItem(REFRESH_KEY);
+    return sessionStorage.getItem(REFRESH_KEY);
   }
 
   saveTokens(access: string, refresh: string): void {
-    localStorage.setItem(ACCESS_KEY, access);
-    localStorage.setItem(REFRESH_KEY, refresh);
+    sessionStorage.setItem(ACCESS_KEY, access);
+    sessionStorage.setItem(REFRESH_KEY, refresh);
   }
 
   clear(): void {
-    localStorage.removeItem(ACCESS_KEY);
-    localStorage.removeItem(REFRESH_KEY);
+    sessionStorage.removeItem(ACCESS_KEY);
+    sessionStorage.removeItem(REFRESH_KEY);
   }
 }

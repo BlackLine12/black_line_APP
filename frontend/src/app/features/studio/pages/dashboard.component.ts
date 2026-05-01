@@ -1,10 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { ArtistService } from '../services/artist.service';
 import { ArtistProfile, ArtistStats, TattooStyle } from '../../../core/models/artist';
 import { PortfolioUploadComponent } from './portfolio-upload.component';
+import { MexicanCity, filterCities } from '../../../core/data/cities-mx';
 
 @Component({
   selector: 'app-dashboard',
@@ -16,7 +16,6 @@ import { PortfolioUploadComponent } from './portfolio-upload.component';
 export class DashboardComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly artistService = inject(ArtistService);
-  private readonly router = inject(Router);
 
   profileForm!: FormGroup;
   profile: ArtistProfile | null = null;
@@ -30,6 +29,12 @@ export class DashboardComponent implements OnInit {
   saveSuccess = false;
 
   activeSection = 'info';
+
+  // ── City autocomplete ──────────────────────────────────────────────────────
+  cityQuery = signal('');
+  cityValid = signal(false);
+  showCityDropdown = signal(false);
+  filteredCities = computed(() => filterCities(this.cityQuery()));
 
   get selectedStyleCount(): number {
     return this.selectedStyleIds.size;
@@ -89,10 +94,37 @@ export class DashboardComponent implements OnInit {
           minimum_setup_fee: profile.minimum_setup_fee,
         });
         this.selectedStyleIds = new Set(profile.styles.map((s) => s.id));
+        // Seed autocomplete from saved profile city
+        const savedCity = profile.city ?? '';
+        this.cityQuery.set(savedCity);
+        const inCatalog = savedCity
+          ? filterCities(savedCity).some((c) => c.name === savedCity)
+          : false;
+        this.cityValid.set(inCatalog);
         this.loading = false;
       },
       error: () => (this.loading = false),
     });
+  }
+
+  // ── City autocomplete handlers ─────────────────────────────────────────────
+
+  selectCity(c: MexicanCity): void {
+    this.cityQuery.set(c.name);
+    this.cityValid.set(true);
+    this.showCityDropdown.set(false);
+    this.profileForm.patchValue({ city: c.name });
+  }
+
+  onCityInput(value: string): void {
+    this.cityQuery.set(value);
+    this.cityValid.set(false);
+    this.showCityDropdown.set(value.trim().length > 0);
+    this.profileForm.patchValue({ city: '' });
+  }
+
+  onCityBlur(): void {
+    setTimeout(() => this.showCityDropdown.set(false), 150);
   }
 
   toggleStyle(id: number): void {
@@ -107,12 +139,6 @@ export class DashboardComponent implements OnInit {
     this.activeSection = section;
     const el = document.getElementById(`section-${section}`);
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
-  goToPublicProfile(): void {
-    if (this.profile?.id) {
-      this.router.navigate(['/artistas', this.profile.id]);
-    }
   }
 
   onSubmit(): void {

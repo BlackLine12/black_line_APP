@@ -1,14 +1,15 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { QuoteService } from '../../../core/services/quote.service';
 import { ArtistMatchCard, MatchSearchParams, AppointmentCreatePayload, HealthConsentPayload } from '../../../core/models/quote';
+import { MexicanCity, filterCities } from '../../../core/data/cities-mx';
 
 @Component({
   selector: 'app-match',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './match.component.html',
   styleUrl: './match.component.scss',
 })
@@ -23,6 +24,14 @@ export class MatchComponent implements OnInit {
   searchError = signal('');
   searched = signal(false);
   city = signal('');
+
+  // ── Autocomplete de ciudad ─────────────────────────────────────────────
+  // cityQuery: texto que escribe el usuario en el input
+  // city: valor confirmado al seleccionar del catálogo (enviado al backend)
+  cityQuery    = signal('');
+  cityValid    = signal(false);
+  showDropdown = signal(false);
+  filteredCities = computed(() => filterCities(this.cityQuery()));
 
   // ── Artista seleccionado ───────────────────────────────────────────────
   selectedArtist = signal<ArtistMatchCard | null>(null);
@@ -53,6 +62,9 @@ export class MatchComponent implements OnInit {
   // ── Quote del wizard ───────────────────────────────────────────────────
   quote = computed(() => this.quoteService.lastQuote());
 
+  // ── Indica si existe una quote activa ─────────────────────────────────
+  hasQuote = computed(() => !!this.quoteService.lastQuote());
+
   // ── Min datetime para el input (hoy + 1 hora) ─────────────────────────
   get minDatetime(): string {
     const d = new Date();
@@ -61,9 +73,39 @@ export class MatchComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // lastQuote ya se restaura desde sessionStorage en QuoteService.restoreQuote()
+    // Si después del restore sigue null, intentar desde API
     if (!this.quote()) {
-      this.router.navigate(['/client/cotizador']);
+      this.quoteService.getMyQuotes().subscribe({
+        next: (res) => {
+          if (res.results.length > 0) {
+            this.quoteService.setLastQuote(res.results[0]);
+          }
+        },
+        error: () => { /* silencioso — ya se muestra el estado "sin cotización" */ },
+      });
     }
+  }
+
+  // ── Autocomplete: seleccionar ciudad del dropdown ──────────────────────
+  selectCity(c: MexicanCity): void {
+    this.cityQuery.set(c.name);
+    this.city.set(c.name);
+    this.cityValid.set(true);
+    this.showDropdown.set(false);
+  }
+
+  // ── Autocomplete: el usuario escribe → invalida selección previa ───────
+  onCityInput(value: string): void {
+    this.cityQuery.set(value);
+    this.cityValid.set(false);
+    this.showDropdown.set(value.trim().length > 0);
+    this.city.set('');
+  }
+
+  // ── Autocomplete: cerrar dropdown con delay para permitir click ────────
+  onCityBlur(): void {
+    setTimeout(() => this.showDropdown.set(false), 150);
   }
 
   // ── Búsqueda ───────────────────────────────────────────────────────────
@@ -160,7 +202,7 @@ export class MatchComponent implements OnInit {
 
   // ── Finalizar → Mis Citas ──────────────────────────────────────────────
   goToMisCitas(): void {
-    this.quoteService.lastQuote.set(null);
+    this.quoteService.setLastQuote(null);
     this.router.navigate(['/client/mis-citas']);
   }
 

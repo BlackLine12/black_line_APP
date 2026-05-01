@@ -138,25 +138,25 @@ export class AuthService {
 
   private clearLocalSession(): void {
     this.tokenStorage.clear();
-    localStorage.removeItem('bl_user');
+    sessionStorage.removeItem('bl_user');
     this._user.set(null);
   }
 
   private saveUser(user: User): void {
-    localStorage.setItem('bl_user', JSON.stringify(user));
+    sessionStorage.setItem('bl_user', JSON.stringify(user));
   }
 
   private loadUserFromStorage(): User | null {
     try {
       if (!this.tokenStorage.getAccessToken()) {
-        localStorage.removeItem('bl_user');
+        sessionStorage.removeItem('bl_user');
         return null;
       }
 
-      const raw = localStorage.getItem('bl_user');
+      const raw = sessionStorage.getItem('bl_user');
       return raw ? JSON.parse(raw) : null;
     } catch {
-      localStorage.removeItem('bl_user');
+      sessionStorage.removeItem('bl_user');
       return null;
     }
   }

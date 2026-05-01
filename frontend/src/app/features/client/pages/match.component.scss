@@ -333,6 +333,21 @@ $font-body:   'Inter', sans-serif;
   strong { color: $gold; }
 }
 
+.empty-state--no-quote {
+  .btn-gold {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #c9a84c, #8c5a1a);
+    color: #0c0a08;
+    font-weight: 700;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: opacity 0.2s;
+    &:hover { opacity: 0.85; }
+  }
+}
+
 .error-banner {
   background: rgba(220,60,60,0.1);
   border: 1px solid rgba(220,60,60,0.3);
@@ -613,6 +628,63 @@ textarea.input { resize: vertical; }
   margin: 0;
 
   strong { color: $gold; }
+}
+
+// ── City Autocomplete ──────────────────────────────────────────────────────
+.city-autocomplete {
+  position: relative;
+  flex: 1;
+}
+
+.city-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: #1D1B17;
+  border: 1px solid rgba(201, 168, 76, 0.25);
+  border-radius: 10px;
+  overflow: hidden;
+  z-index: 100;
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+
+  &--empty {
+    padding: 12px 16px;
+    color: #8A7E72;
+    font-size: 13px;
+    text-align: center;
+    list-style: none;
+  }
+}
+
+.city-dropdown__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background 0.15s;
+  gap: 8px;
+
+  &:hover {
+    background: rgba(201, 168, 76, 0.10);
+  }
+}
+
+.city-dropdown__name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #EDE0C4;
+}
+
+.city-dropdown__state {
+  font-size: 11px;
+  color: #8A7E72;
+  white-space: nowrap;
 }
 
 // ── Responsive ────────────────────────────────────────────────────────────

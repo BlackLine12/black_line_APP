@@ -13,15 +13,43 @@
     </div>
 
     <div class="match-topbar__search">
-      <input
-        class="city-input"
-        type="text"
-        placeholder="¿En qué ciudad?"
-        [value]="city()"
-        (input)="city.set($any($event.target).value)"
-        (keyup.enter)="search()"
-      />
-      <button class="btn-gold" (click)="search()" [disabled]="loading() || !city().trim()">
+      <div class="city-autocomplete">
+        <input
+          class="city-input"
+          type="text"
+          placeholder="¿En qué ciudad?"
+          [value]="cityQuery()"
+          (input)="onCityInput($any($event.target).value)"
+          (focus)="showDropdown.set(cityQuery().trim().length > 0)"
+          (blur)="onCityBlur()"
+          (keyup.escape)="showDropdown.set(false)"
+          autocomplete="off"
+        />
+        @if (showDropdown() && filteredCities().length > 0) {
+          <ul class="city-dropdown" role="listbox">
+            @for (c of filteredCities(); track c.name) {
+              <li
+                class="city-dropdown__item"
+                role="option"
+                (mousedown)="selectCity(c)"
+              >
+                <span class="city-dropdown__name">{{ c.name }}</span>
+                <span class="city-dropdown__state">{{ c.state }}</span>
+              </li>
+            }
+          </ul>
+        }
+        @if (showDropdown() && cityQuery().trim().length > 0 && filteredCities().length === 0) {
+          <div class="city-dropdown city-dropdown--empty">
+            Sin ciudades con ese nombre
+          </div>
+        }
+      </div>
+      <button
+        class="btn-gold"
+        (click)="search()"
+        [disabled]="loading() || !city().trim() || !hasQuote() || !cityValid()"
+      >
         @if (loading()) { <span class="spinner"></span> } @else { Buscar }
       </button>
     </div>
@@ -33,7 +61,15 @@
     <!-- Lista de artistas -->
     <div class="match-results">
 
-      @if (!searched() && !loading()) {
+      @if (!hasQuote() && !loading()) {
+        <div class="empty-state empty-state--no-quote">
+          <div class="empty-state__icon">◈</div>
+          <h3>Crea tu cotización primero</h3>
+          <p>Para ver artistas personalizados, primero necesitas completar tu cotización.</p>
+          <a routerLink="/client/cotizador" class="btn-gold">Ir al Cotizador →</a>
+        </div>
+      }
+      @if (hasQuote() && !searched() && !loading()) {
         <div class="empty-state">
           <div class="empty-state__icon">✦</div>
           <h3>Encuentra tu artista ideal</h3>
