@@ -421,15 +421,18 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
       </div>
-      <h2 class="success-title">¡Cotización enviada!</h2>
+      <h2 class="success-title">¡Cotización guardada!</h2>
       <p class="success-message">
-        Hemos recibido tu solicitud. Los artistas especializados en tu estilo se pondrán en contacto contigo en las próximas 24 horas.
+        Tu cotización fue registrada. Ahora elige una ciudad para encontrar artistas disponibles.
       </p>
       <button type="button" (click)="goToMatch()" class="btn-match">
-        Ver artistas disponibles
+        Buscar artistas ahora →
+      </button>
+      <button type="button" (click)="goToCotizaciones()" class="btn-reset">
+        Ver mis cotizaciones
       </button>
       <button type="button" (click)="resetForm()" class="btn-reset">
-        Crear nueva cotización
+        Crear otra cotización
       </button>
     </div>
   }

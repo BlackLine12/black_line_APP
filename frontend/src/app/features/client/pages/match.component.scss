@@ -159,6 +159,21 @@ $font-body:   'Inter', sans-serif;
     box-shadow: 0 0 0 1px rgba(201,168,76,0.3), 0 4px 24px rgba(201,168,76,0.12) !important;
   }
 
+  &--specialist {
+    border-color: rgba(201,168,76,0.35);
+  }
+
+  &__specialist-badge {
+    background: linear-gradient(90deg, rgba(201,168,76,0.15), transparent);
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+    padding: 6px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    color: $gold;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
   &__thumb {
     width: 100%;
     height: 180px;
@@ -244,6 +259,12 @@ $font-body:   'Inter', sans-serif;
   font-size: 11px;
   padding: 2px 10px;
   border-radius: 999px;
+
+  &--match {
+    background: rgba(201,168,76,0.2);
+    border-color: rgba(201,168,76,0.5);
+    font-weight: 600;
+  }
 }
 
 .price-label {
@@ -331,6 +352,34 @@ $font-body:   'Inter', sans-serif;
   }
 
   strong { color: $gold; }
+}
+
+.empty-state--no-results {
+  .empty-state__hint {
+    font-size: 13px;
+    color: $text-s;
+    margin-top: 8px;
+    line-height: 1.6;
+    strong { color: $gold; }
+  }
+}
+
+.btn-outline-sm {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 8px 20px;
+  border: 1px solid rgba(201, 168, 76, 0.4);
+  border-radius: 8px;
+  color: $gold;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: border-color 0.2s, background 0.2s;
+
+  &:hover {
+    border-color: $gold;
+    background: rgba(201, 168, 76, 0.06);
+  }
 }
 
 .empty-state--no-quote {
@@ -498,6 +547,30 @@ textarea.input { resize: vertical; }
   gap: 8px;
   padding-bottom: 16px;
   border-bottom: 1px solid $divider;
+}
+
+.consent-signature {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid $divider;
+
+  &__label {
+    font-size: 13px;
+    font-weight: 600;
+    color: $text-p;
+    margin: 0;
+
+    .required { color: $gold; }
+  }
+
+  &__hint {
+    font-size: 11px;
+    color: $text-s;
+    margin: 0 0 4px;
+    font-style: italic;
+  }
 }
 
 .consent-terms {
@@ -675,6 +748,14 @@ textarea.input { resize: vertical; }
   }
 }
 
+.city-dropdown__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
 .city-dropdown__name {
   font-size: 14px;
   font-weight: 500;
@@ -685,6 +766,23 @@ textarea.input { resize: vertical; }
   font-size: 11px;
   color: #8A7E72;
   white-space: nowrap;
+}
+
+.city-dropdown__count {
+  font-size: 11px;
+  color: $gold;
+  font-weight: 500;
+  white-space: nowrap;
+  background: rgba(201, 168, 76, 0.08);
+  padding: 2px 8px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.city-dropdown__item--has-artists {
+  &:hover .city-dropdown__count {
+    background: rgba(201, 168, 76, 0.16);
+  }
 }
 
 // ── Responsive ────────────────────────────────────────────────────────────

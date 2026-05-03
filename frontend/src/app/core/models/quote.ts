@@ -42,6 +42,7 @@ export interface ArtistMatchCard {
   estimated_price: string;
   styles: { id: number; name: string }[];
   portfolio_thumbnail: string | null;
+  style_match: boolean;
 }
 
 export interface MatchResponse {
@@ -94,6 +95,9 @@ export interface HealthConsentPayload {
   is_pregnant: boolean;
   has_skin_condition: boolean;
   skin_condition_detail: string;
+  has_hemophilia: boolean;
+  hemophilia_detail: string;
+  signature_data: string;
   terms_accepted: boolean;
 }
 

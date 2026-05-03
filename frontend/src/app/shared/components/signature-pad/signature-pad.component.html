@@ -1,0 +1,25 @@
+<div class="signature-pad" [class.signature-pad--disabled]="isDisabled()">
+  <canvas
+    #canvas
+    class="signature-pad__canvas"
+    width="600"
+    height="160"
+    [class.signature-pad__canvas--empty]="isEmpty()"
+    aria-label="Área de firma digital"
+  ></canvas>
+
+  <div class="signature-pad__footer">
+    <span class="signature-pad__hint">
+      @if (isEmpty()) {
+        Firma aquí con el cursor o con tu dedo
+      } @else {
+        <span class="signature-pad__done">✓ Firma capturada</span>
+      }
+    </span>
+    @if (!isEmpty() && !isDisabled()) {
+      <button type="button" class="signature-pad__clear" (click)="clear()">
+        Borrar
+      </button>
+    }
+  </div>
+</div>

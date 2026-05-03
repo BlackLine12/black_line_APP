@@ -1,0 +1,79 @@
+<div class="cotizaciones-page">
+
+  <div class="page-header">
+    <div class="page-header__text">
+      <h1 class="page-title">Mis Cotizaciones</h1>
+      <p class="page-subtitle">Retoma cualquier cotización para buscar artistas en tu ciudad.</p>
+    </div>
+    <a routerLink="/client/cotizador" class="btn-gold">+ Nueva cotización</a>
+  </div>
+
+  @if (loading()) {
+    <div class="skeleton-list">
+      @for (n of [1,2,3]; track n) {
+        <div class="quote-skeleton"></div>
+      }
+    </div>
+  }
+
+  @if (error()) {
+    <div class="error-banner">{{ error() }}</div>
+  }
+
+  @if (!loading() && !error() && quotes().length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">◈</div>
+      <h3>Aún no tienes cotizaciones</h3>
+      <p>Crea tu primera cotización para encontrar artistas que se adapten a tu idea.</p>
+      <a routerLink="/client/cotizador" class="btn-gold">Crear mi primera cotización →</a>
+    </div>
+  }
+
+  @if (!loading() && quotes().length > 0) {
+    <div class="quotes-list">
+      @for (quote of quotes(); track quote.id) {
+        <div class="quote-card">
+          <div class="quote-card__header">
+            <div class="quote-card__meta">
+              <span class="quote-card__date">{{ formatDate(quote.created_at) }}</span>
+              <span class="quote-card__id">#{{ quote.id }}</span>
+            </div>
+            @if (quote.is_color) {
+              <span class="badge-color">A color</span>
+            } @else {
+              <span class="badge-bw">Blanco y negro</span>
+            }
+          </div>
+
+          <div class="quote-card__body">
+            <div class="quote-detail">
+              <span class="quote-detail__label">Estilo</span>
+              <span class="quote-detail__value">{{ quote.style_name }}</span>
+            </div>
+            <div class="quote-detail">
+              <span class="quote-detail__label">Zona</span>
+              <span class="quote-detail__value">{{ quote.body_part_display }}</span>
+            </div>
+            <div class="quote-detail">
+              <span class="quote-detail__label">Tamaño</span>
+              <span class="quote-detail__value">{{ quote.size_cm }} cm</span>
+            </div>
+            <div class="quote-detail quote-detail--price">
+              <span class="quote-detail__label">Estimado de mercado</span>
+              <span class="quote-detail__value quote-detail__value--price">
+                {{ formatMXN(estimatedRange(quote).min) }} – {{ formatMXN(estimatedRange(quote).max) }}
+              </span>
+            </div>
+          </div>
+
+          <div class="quote-card__footer">
+            <button class="btn-gold btn-full" (click)="buscarArtistas(quote)">
+              Buscar artistas →
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+</div>

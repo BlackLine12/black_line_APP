@@ -159,6 +159,8 @@ class HealthConsentSerializer(serializers.ModelSerializer):
             "has_chronic_disease", "chronic_disease_detail",
             "takes_medication", "medication_detail",
             "is_pregnant", "has_skin_condition", "skin_condition_detail",
+            "has_hemophilia", "hemophilia_detail",
+            "signature_data",
             "terms_accepted", "created_at",
         ]
         read_only_fields = ["id", "created_at"]
@@ -167,6 +169,13 @@ class HealthConsentSerializer(serializers.ModelSerializer):
         if not value:
             raise serializers.ValidationError(
                 "Debe aceptar los términos y política de privacidad para continuar."
+            )
+        return value
+
+    def validate_signature_data(self, value):
+        if not value or not value.startswith("data:image/"):
+            raise serializers.ValidationError(
+                "La firma digital es obligatoria."
             )
         return value
 
@@ -200,6 +209,7 @@ class ArtistMatchCardSerializer(serializers.ModelSerializer):
     """
     Serializer de SALIDA: Tarjeta de artista en resultados de matchmaking.
     Incluye estilos, bio, thumbnail de portafolio y precio estimado (annotated).
+    style_match indica si el artista domina el estilo exacto del quote.
     """
 
     artist_id = serializers.IntegerField(source="id")
@@ -211,13 +221,14 @@ class ArtistMatchCardSerializer(serializers.ModelSerializer):
         decimal_places=2,
         read_only=True,
     )
+    style_match = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = ArtistProfile
         fields = [
             "artist_id", "artist_name", "city", "bio",
             "minimum_setup_fee", "estimated_price",
-            "styles", "portfolio_thumbnail",
+            "styles", "portfolio_thumbnail", "style_match",
         ]
 
     def get_artist_name(self, obj):

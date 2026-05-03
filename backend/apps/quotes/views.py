@@ -34,15 +34,15 @@ Donde:
 from decimal import Decimal
 
 from django.db.models import (
+    BooleanField,
     F,
-    Q,
     Value,
     Case,
     When,
     DecimalField,
     ExpressionWrapper,
 )
-from django.db.models.functions import Greatest, Concat
+from django.db.models.functions import Greatest
 
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -229,25 +229,19 @@ class ArtistMatchView(APIView):
             ArtistProfile.objects
             # -- RN 2.6.2: Solo artistas con perfil completo y activos --
             .filter(
-                # El usuario vinculado debe estar activo
                 user__is_active=True,
-                # Debe tener al menos la tarifa base configurada (> 0)
                 base_hourly_rate__gt=0,
-                # Debe tener tarifa minima configurada (> 0)
                 minimum_setup_fee__gt=0,
             )
-            # -- RN 2.6.2: Debe dominar al menos un estilo --
-            # (la siguiente condicion tambien filtra por el estilo solicitado)
-            .filter(styles=style)
+            # -- Debe tener al menos un estilo registrado --
+            .filter(styles__isnull=False)
             # -- RF-2: Filtro por ciudad --
             .filter(city__iexact=city)
-            # -- ANNOTATE: Calcular el precio estimado en SQL --
-            # ExpressionWrapper envuelve la expresion aritmetica y define
-            # el output_field para que Django genere el CAST correcto.
+            .distinct()
+            # -- ANNOTATE: price + estilo exacto --
             .annotate(
                 estimated_price=Greatest(
                     ExpressionWrapper(
-                        # size_cm (constante) x tarifa x zona x color
                         Value(size_cm, output_field=DecimalField())
                         * F("base_hourly_rate")
                         * Value(zone_mult, output_field=DecimalField())
@@ -257,6 +251,12 @@ class ArtistMatchView(APIView):
                     F("minimum_setup_fee"),
                     output_field=DecimalField(max_digits=12, decimal_places=2),
                 ),
+                # Artistas que dominan el estilo exacto aparecen primero
+                style_match=Case(
+                    When(styles=style, then=Value(True)),
+                    default=Value(False),
+                    output_field=BooleanField(),
+                ),
             )
         )
 
@@ -264,8 +264,8 @@ class ArtistMatchView(APIView):
         if max_price is not None:
             queryset = queryset.filter(estimated_price__lte=max_price)
 
-        # -- 5. Ordenar por precio estimado ascendente --
-        queryset = queryset.order_by("estimated_price")
+        # -- 5. Especialistas del estilo solicitado primero, luego por precio --
+        queryset = queryset.order_by("-style_match", "estimated_price")
 
         # -- 6. Prefetch relaciones para evitar N+1 queries --
         queryset = queryset.select_related("user").prefetch_related("styles", "portfolio_images")

@@ -152,6 +152,10 @@ export class CotizadorComponent implements OnInit {
     this.router.navigate(['/client/match']);
   }
 
+  goToCotizaciones(): void {
+    this.router.navigate(['/client/cotizaciones']);
+  }
+
   resetForm(): void {
     this.quoteForm.reset({ is_color: false, size_cm: 10, accept_terms: false });
     this.submitted.set(false);

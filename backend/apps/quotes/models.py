@@ -207,6 +207,23 @@ class HealthConsent(models.Model):
         default="",
         verbose_name="Descripción de condición de piel",
     )
+    has_hemophilia = models.BooleanField(
+        default=False,
+        verbose_name="¿Tiene hemofilia u otro trastorno de coagulación?",
+        help_text="Incluye hemofilia A, B, enfermedad de von Willebrand, etc.",
+    )
+    hemophilia_detail = models.TextField(
+        blank=True,
+        default="",
+        verbose_name="Descripción del trastorno de coagulación",
+    )
+
+    # ── Firma digital ──────────────────────────────────────────────────────
+    signature_data = models.TextField(
+        default="",
+        verbose_name="Firma digital (base64)",
+        help_text="Imagen PNG de la firma del cliente codificada en base64.",
+    )
 
     # ── Consentimiento legal (LFPDPPP) ────────────────────────────────────
     terms_accepted = models.BooleanField(
