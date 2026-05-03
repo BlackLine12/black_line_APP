@@ -10,3 +10,4 @@ export { NavbarComponent } from './navbar.component';
 export { FooterComponent } from './footer.component';
 export { BtnComponent }    from './btn.component';
 export type { BtnVariant, BtnSize } from './btn.component';
+export { SignaturePadComponent } from './signature-pad/signature-pad.component';

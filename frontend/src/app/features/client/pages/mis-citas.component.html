@@ -138,6 +138,17 @@
 
           <div class="consent-field">
             <label class="consent-check">
+              <input type="checkbox" formControlName="has_hemophilia" />
+              ¿Tienes hemofilia u otro trastorno de coagulación?
+            </label>
+            @if (consentForm.get('has_hemophilia')?.value) {
+              <input type="text" formControlName="hemophilia_detail"
+                placeholder="Ej. hemofilia A, von Willebrand…" class="consent-input" />
+            }
+          </div>
+
+          <div class="consent-field">
+            <label class="consent-check">
               <input type="checkbox" formControlName="has_chronic_disease" />
               ¿Padeces alguna enfermedad crónica?
             </label>
@@ -173,6 +184,15 @@
             @if (consentForm.get('has_skin_condition')?.value) {
               <input type="text" formControlName="skin_condition_detail"
                 placeholder="Describe la condición" class="consent-input" />
+            }
+          </div>
+
+          <div class="consent-field consent-field--signature">
+            <p class="consent-field__label">Firma digital <span class="required">*</span></p>
+            <p class="consent-field__hint">Firma para confirmar que la información es verídica.</p>
+            <app-signature-pad formControlName="signature_data"></app-signature-pad>
+            @if (consentForm.get('signature_data')?.invalid && consentForm.get('signature_data')?.touched) {
+              <span class="consent-field__error">La firma es obligatoria</span>
             }
           </div>
 

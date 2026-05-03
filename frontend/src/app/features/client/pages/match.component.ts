@@ -3,18 +3,21 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { QuoteService } from '../../../core/services/quote.service';
+import { ArtistService, CityCount } from '../../../core/services/artist.service';
 import { ArtistMatchCard, MatchSearchParams, AppointmentCreatePayload, HealthConsentPayload } from '../../../core/models/quote';
 import { MexicanCity, filterCities } from '../../../core/data/cities-mx';
+import { SignaturePadComponent } from '../../../shared/components/signature-pad/signature-pad.component';
 
 @Component({
   selector: 'app-match',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, SignaturePadComponent],
   templateUrl: './match.component.html',
   styleUrl: './match.component.scss',
 })
 export class MatchComponent implements OnInit {
   private readonly quoteService = inject(QuoteService);
+  private readonly artistService = inject(ArtistService);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
 
@@ -24,6 +27,9 @@ export class MatchComponent implements OnInit {
   searchError = signal('');
   searched = signal(false);
   city = signal('');
+
+  // ── Conteo de artistas por ciudad ──────────────────────────────────────
+  cityCounts = signal<CityCount[]>([]);
 
   // ── Autocomplete de ciudad ─────────────────────────────────────────────
   // cityQuery: texto que escribe el usuario en el input
@@ -56,6 +62,9 @@ export class MatchComponent implements OnInit {
     is_pregnant: [false],
     has_skin_condition: [false],
     skin_condition_detail: [''],
+    has_hemophilia: [false],
+    hemophilia_detail: [''],
+    signature_data: ['', Validators.required],
     terms_accepted: [false, Validators.requiredTrue],
   });
 
@@ -73,6 +82,11 @@ export class MatchComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.artistService.getCityCounts().subscribe({
+      next: (data) => this.cityCounts.set(data),
+      error: () => { /* no crítico — el dropdown funciona sin conteos */ },
+    });
+
     // lastQuote ya se restaura desde sessionStorage en QuoteService.restoreQuote()
     // Si después del restore sigue null, intentar desde API
     if (!this.quote()) {
@@ -85,6 +99,14 @@ export class MatchComponent implements OnInit {
         error: () => { /* silencioso — ya se muestra el estado "sin cotización" */ },
       });
     }
+  }
+
+  /** Devuelve el conteo de artistas para la ciudad dada, o null si no hay datos */
+  getCityCount(cityName: string): number | null {
+    const entry = this.cityCounts().find(
+      (c) => c.city.toLowerCase() === cityName.toLowerCase()
+    );
+    return entry?.count ?? null;
   }
 
   // ── Autocomplete: seleccionar ciudad del dropdown ──────────────────────
@@ -145,7 +167,16 @@ export class MatchComponent implements OnInit {
     this.selectedArtist.set(artist);
     this.step.set('appointment');
     this.appointmentForm.reset();
-    this.consentForm.reset({ has_allergies: false, has_chronic_disease: false, takes_medication: false, is_pregnant: false, has_skin_condition: false, terms_accepted: false });
+    this.consentForm.reset({
+      has_allergies: false, allergies_detail: '',
+      has_chronic_disease: false, chronic_disease_detail: '',
+      takes_medication: false, medication_detail: '',
+      is_pregnant: false,
+      has_skin_condition: false, skin_condition_detail: '',
+      has_hemophilia: false, hemophilia_detail: '',
+      signature_data: '',
+      terms_accepted: false,
+    });
     this.submitError.set('');
   }
 

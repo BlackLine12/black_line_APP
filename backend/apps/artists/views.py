@@ -1,8 +1,9 @@
 from django.db import transaction
-from django.db.models import Max
+from django.db.models import Count, Max
 from rest_framework import viewsets, permissions, status, parsers
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.views import APIView
 
 from .models import TattooStyle, ArtistProfile, PortfolioImage
 from .serializers import (
@@ -144,5 +145,35 @@ class PortfolioImageViewSet(viewsets.ModelViewSet):
                 image = image_map[image_id]
                 image.position = total - index
                 image.save(update_fields=["position"])
+
+
+# ---------------------------------------------------------------------------
+# GET /api/artists/cities/  — Ciudades con artistas activos y su conteo
+# ---------------------------------------------------------------------------
+
+class ArtistCityCountView(APIView):
+    """
+    Devuelve la lista de ciudades con al menos un artista activo y completo,
+    ordenadas de mayor a menor cantidad de artistas.
+
+    Respuesta: [{city: str, count: int}]
+    """
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        rows = (
+            ArtistProfile.objects
+            .filter(
+                user__is_active=True,
+                base_hourly_rate__gt=0,
+                minimum_setup_fee__gt=0,
+            )
+            .exclude(city="")
+            .values("city")
+            .annotate(count=Count("id"))
+            .order_by("-count", "city")
+        )
+        return Response(list(rows))
 
         return Response(self.get_serializer(self.get_queryset(), many=True).data)

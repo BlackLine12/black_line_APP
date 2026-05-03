@@ -110,6 +110,7 @@ export class ClientDashboardComponent implements OnInit {
     return `En ${days} días`;
   }
 
-  goToCotizador(): void  { this.router.navigate(['/client/cotizador']); }
-  goToMisCitas(): void   { this.router.navigate(['/client/mis-citas']); }
+  goToCotizador(): void      { this.router.navigate(['/client/cotizador']); }
+  goToMisCitas(): void       { this.router.navigate(['/client/mis-citas']); }
+  goToCotizaciones(): void   { this.router.navigate(['/client/cotizaciones']); }
 }

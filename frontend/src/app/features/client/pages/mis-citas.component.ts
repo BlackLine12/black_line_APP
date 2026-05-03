@@ -4,11 +4,12 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { Router } from '@angular/router';
 import { QuoteService } from '../../../core/services/quote.service';
 import { Appointment, AppointmentStatusPayload, HealthConsentPayload } from '../../../core/models/quote';
+import { SignaturePadComponent } from '../../../shared/components/signature-pad/signature-pad.component';
 
 @Component({
   selector: 'app-mis-citas',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, SignaturePadComponent],
   templateUrl: './mis-citas.component.html',
   styleUrl: './mis-citas.component.scss',
 })
@@ -39,6 +40,9 @@ export class MisCitasComponent implements OnInit {
     is_pregnant: [false],
     has_skin_condition: [false],
     skin_condition_detail: [''],
+    has_hemophilia: [false],
+    hemophilia_detail: [''],
+    signature_data: ['', Validators.required],
     terms_accepted: [false, Validators.requiredTrue],
   });
 
@@ -112,6 +116,9 @@ export class MisCitasComponent implements OnInit {
       is_pregnant: false,
       has_skin_condition: false,
       skin_condition_detail: '',
+      has_hemophilia: false,
+      hemophilia_detail: '',
+      signature_data: '',
       terms_accepted: false,
     });
   }

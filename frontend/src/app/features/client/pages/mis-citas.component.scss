@@ -328,6 +328,33 @@ $font-b:   'Inter', sans-serif;
   border-top: 1px solid rgba(201, 168, 76, 0.1);
 }
 
+.consent-field--signature {
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.1);
+
+  .required { color: #c9a84c; }
+}
+
+.consent-field__label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ede0c4;
+  margin: 0;
+}
+
+.consent-field__hint {
+  font-size: 0.75rem;
+  color: #8a7e72;
+  margin: 0 0 4px;
+  font-style: italic;
+}
+
+.consent-field__error {
+  font-size: 0.75rem;
+  color: #e57373;
+  margin-top: 2px;
+}
+
 .consent-check {
   display: flex;
   align-items: center;
