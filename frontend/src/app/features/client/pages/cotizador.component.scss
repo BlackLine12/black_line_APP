@@ -127,7 +127,7 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
   border-radius: 6px;
   border: 1px solid rgba($danger, 0.35);
   background: rgba($danger, 0.08);
-  color: lighten($danger, 10%);
+  color: color.adjust($danger, $lightness: 10%);
   font-size: 13px;
   animation: fadeSlideIn 0.3s ease;
 }
@@ -912,51 +912,6 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────
-// SUCCESS STATE
-// ─────────────────────────────────────────────────────────────────────────
-.success-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  padding: 48px 24px;
-  text-align: center;
-}
-
-.success-state__ring {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: rgba($success, 0.12);
-  border: 2px solid rgba($success, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: pricePop 0.5s ease both;
-}
-
-.success-state__check {
-  width: 40px;
-  height: 40px;
-  color: $success;
-}
-
-.success-state__title {
-  font-family: $font-serif;
-  font-size: 28px;
-  font-weight: 700;
-  color: $cream;
-  margin: 0;
-}
-
-.success-state__desc {
-  font-size: 15px;
-  color: $muted;
-  max-width: 400px;
-  line-height: 1.65;
-  margin: 0;
-}
 
 /* ════════════════════════════════════════════════════════════════════════════ */
 /* NUEVO LAYOUT - SIDEBAR + MAIN CONTAINER */
@@ -1392,11 +1347,14 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
 
 /* Success state */
 .success-state {
-  display: flex !important;
+  min-height: calc(100vh - 64px); // 64px = altura del navbar
+  display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 1.5rem;
   padding: 4rem 2rem;
+  text-align: center;
 }
 
 .success-icon {

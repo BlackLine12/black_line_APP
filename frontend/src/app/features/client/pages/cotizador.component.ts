@@ -9,20 +9,19 @@ import { BodyPartOption, QuoteRequestPayload } from '../../../core/models/quote'
 
 // ── Precio base por zona del cuerpo ────────────────────────────────────────
 const BODY_PART_FACTOR: Record<string, number> = {
-  BRAZO:      1.0,
-  ANTEBRAZO:  0.9,
-  PIERNA:     1.1,
-  ESPALDA:    1.4,
-  PECHO:      1.3,
-  COSTILLAS:  1.5,
-  CUELLO:     1.2,
-  MANO:       0.8,
-  PIE:        0.8,
-  HOMBRO:     1.0,
+  BRAZO:      1.00,
+  ANTEBRAZO:  1.00,
+  PIERNA:     1.10,
+  HOMBRO:     1.05,
+  ESPALDA:    1.30,
+  PECHO:      1.25,
+  COSTILLAS:  1.50,
+  CUELLO:     1.40,
+  MANO:       1.35,
+  PIE:        1.35,
 };
-
-// Tarifa base MXN por cm²; color añade 30 %
-const BASE_RATE_MXN = 120;
+const COLOR_MULTIPLIER = 1.20;  // corregido para coincidir con backend (era 1.3)
+const BASE_RATE_MXN    = 150;   // MXN por cm (tarifa de mercado promedio)
 
 @Component({
   selector: 'app-cotizador',
@@ -69,12 +68,13 @@ export class CotizadorComponent implements OnInit {
   // ── Precio estimado reactivo (signal mutable, actualizada por valueChanges)
   estimatedPrice = signal<{ min: number; max: number } | null>(null);
 
-  private _calcPrice(v: any): { min: number; max: number } | null {
-    if (!v.body_part || !v.size_cm) return null;
-    const factor    = BODY_PART_FACTOR[v.body_part] ?? 1;
-    const colorMult = v.is_color ? 1.3 : 1;
-    const area      = Math.PI * (v.size_cm / 2) ** 2;
-    const price     = Math.round(BASE_RATE_MXN * factor * colorMult * Math.sqrt(area) / 10) * 10;
+  private _calcPrice(v: Record<string, unknown>): { min: number; max: number } | null {
+    if (!v['body_part'] || !v['size_cm']) return null;
+    const factor    = BODY_PART_FACTOR[v['body_part'] as string] ?? 1;
+    const colorMult = v['is_color'] ? COLOR_MULTIPLIER : 1.0;
+    const size_cm   = v['size_cm'] as number;
+    // Fórmula canónica: igual al backend pero con tarifa de mercado fija
+    const price = Math.round(BASE_RATE_MXN * size_cm * factor * colorMult / 10) * 10;
     return { min: price, max: Math.round(price * 1.35 / 10) * 10 };
   }
 
@@ -173,7 +173,7 @@ export class CotizadorComponent implements OnInit {
     this.quoteService.createQuote(payload).subscribe({
       next: (quote) => {
         this.loading.set(false);
-        this.quoteService.lastQuote.set(quote);
+        this.quoteService.setLastQuote(quote);
         this.submitted.set(true);
       },
       error: (err) => {

@@ -91,6 +91,17 @@ class QuoteRequestCreateView(APIView):
 
     permission_classes = [IsAuthenticated]
 
+    def get(self, request):
+        """Lista las cotizaciones del cliente autenticado, más reciente primero."""
+        quotes = (
+            QuoteRequest.objects
+            .filter(client=request.user)
+            .select_related("tattoo_style")
+            .order_by("-created_at")
+        )
+        serializer = QuoteRequestSerializer(quotes, many=True)
+        return Response({"count": quotes.count(), "results": serializer.data})
+
     def post(self, request):
         serializer = QuoteRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

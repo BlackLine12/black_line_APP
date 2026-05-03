@@ -18,12 +18,38 @@ export class QuoteService {
   private readonly http = inject(HttpClient);
   private readonly base = `${environment.apiUrl}/quotes`;
 
-  /** Estado compartido entre Cotizador → Match */
-  lastQuote = signal<QuoteRequestResponse | null>(null);
+  private readonly QUOTE_KEY = 'bl_last_quote';
+
+  /** Estado compartido entre Cotizador → Match; se restaura desde sessionStorage al iniciar */
+  lastQuote = signal<QuoteRequestResponse | null>(this.restoreQuote());
+
+  private restoreQuote(): QuoteRequestResponse | null {
+    try {
+      const raw = sessionStorage.getItem(this.QUOTE_KEY);
+      return raw ? (JSON.parse(raw) as QuoteRequestResponse) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  /** Actualiza lastQuote y sincroniza con sessionStorage */
+  setLastQuote(quote: QuoteRequestResponse | null): void {
+    this.lastQuote.set(quote);
+    if (quote) {
+      sessionStorage.setItem(this.QUOTE_KEY, JSON.stringify(quote));
+    } else {
+      sessionStorage.removeItem(this.QUOTE_KEY);
+    }
+  }
 
   /** RF-1: Crear solicitud de cotización */
   createQuote(payload: QuoteRequestPayload): Observable<QuoteRequestResponse> {
     return this.http.post<QuoteRequestResponse>(`${this.base}/`, payload);
+  }
+
+  /** Listar cotizaciones del usuario autenticado */
+  getMyQuotes(): Observable<{ count: number; results: QuoteRequestResponse[] }> {
+    return this.http.get<{ count: number; results: QuoteRequestResponse[] }>(`${this.base}/`);
   }
 
   /** RF-2: Motor de matchmaking */

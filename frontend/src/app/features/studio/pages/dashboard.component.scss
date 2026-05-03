@@ -595,35 +595,64 @@
   line-height: 1;
 }
 
-/* ── Button Ver Perfil ───────────────────────────────────────────────────── */
-.btn-public-profile {
+/* ── City autocomplete ───────────────────────────────────────────────────── */
+.city-autocomplete {
+  position: relative;
+}
+
+.city-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: #1a1714;
+  border: 1px solid rgba(201, 168, 76, 0.25);
+  border-radius: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0.35rem 0;
+  max-height: 240px;
+  overflow-y: auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.city-dropdown__item {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  width: 100%;
-  border: 1px solid rgba(201, 168, 76, 0.3);
-  border-radius: 16px;
-  background: linear-gradient(135deg, #c9a84c, #a0832d);
-  padding: 0.95rem 1rem;
-  color: #0c0a08;
-  font-size: 0.9rem;
-  font-weight: 700;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0.55rem 1rem;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  transition: background 0.15s;
+
+  &:hover {
+    background: rgba(201, 168, 76, 0.08);
+  }
 }
 
-.btn-public-profile:hover {
-  transform: translateY(-2px);
-  background: linear-gradient(135deg, #ddc157, #b5942a);
-  box-shadow: 0 8px 20px rgba(201, 168, 76, 0.18);
+.city-dropdown__name {
+  color: #ede0c4;
+  font-size: 0.88rem;
 }
 
-.btn-public-profile:active {
-  transform: translateY(0);
+.city-dropdown__state {
+  color: #8a7e72;
+  font-size: 0.75rem;
 }
 
-.btn-public-profile svg {
-  width: 18px;
-  height: 18px;
+.city-valid-badge {
+  margin-left: 0.5rem;
+  color: #4caf7a;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
 }
+
+.city-invalid-badge {
+  margin-left: 0.5rem;
+  color: #c9a84c;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
