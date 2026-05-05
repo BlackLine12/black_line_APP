@@ -68,21 +68,11 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
   z-index: 2;
 }
 
-.art-logo__bar {
-  display: inline-block;
-  width: 149px;
-  height: 22px;
-  border-radius: 4px;
-  background: $gold;
-  opacity: 0.85;
-}
-
-.art-logo__text {
-  font-family: $font-mono;
-  font-size: 14px;
-  font-weight: 700;
-  color: $cream;
-  letter-spacing: 2px;
+.art-logo__img {
+  height: 36px;
+  width: auto;
+  display: block;
+  object-fit: contain;
 }
 
 .art-quote {
@@ -220,40 +210,15 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
   gap: 6px;
 }
 
-.auth-card__brand-line {
+.auth-card__logo-img {
+  height: 40px;
+  width: auto;
   display: block;
-  width: 40px;
-  height: 2px;
-  background: linear-gradient(180deg, $gold 0%, $gold-dim 100%);
-  border-radius: 1px;
-}
-
-.auth-card__brand-inner {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.auth-card__logo-square {
-  display: inline-block;
-  width: 36px;
-  height: 36px;
-  border-radius: 4px;
-  background: linear-gradient(135deg, $gold 0%, $gold-dim 100%);
-  flex-shrink: 0;
-}
-
-.auth-card__logo-name {
-  font-family: $font-serif;
-  font-size: 26px;
-  font-weight: 700;
-  color: $cream;
+  object-fit: contain;
 }
 
 .auth-card__logo-tagline {
   display: block;
-  width: 100%;
   font-family: $font-mono;
   font-size: 10px;
   color: $muted;
