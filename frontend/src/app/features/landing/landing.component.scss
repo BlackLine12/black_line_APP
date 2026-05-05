@@ -43,26 +43,9 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
   text-decoration: none;
 }
 
-.navbar__logo-mark {
-  display: inline-block;
-  width: 26px;
-  height: 26px;
-  border-radius: 2px;
-  background: linear-gradient(135deg, $gold 0%, $gold-dim 100%);
-}
-
-.navbar__logo-black {
-  font-family: $font-serif;
-  font-size: 22px;
-  font-weight: 700;
-  color: $cream;
-}
-
-.navbar__logo-line {
-  font-family: $font-serif;
-  font-size: 22px;
-  font-weight: 700;
-  color: $gold;
+.navbar__logo-img {
+  height: 28px;
+  width: auto;
 }
 
 .navbar__links {
