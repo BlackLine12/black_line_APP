@@ -92,13 +92,6 @@
                 >
                   @if (actionLoading() === appt.id) { Procesando… } @else { Aceptar nueva fecha }
                 </button>
-                <button
-                  class="btn-outline-danger"
-                  (click)="rejectCounterOffer(appt)"
-                  [disabled]="actionLoading() === appt.id"
-                >
-                  Rechazar
-                </button>
               </div>
             </div>
           }
@@ -125,71 +118,128 @@
       } @else {
         <form [formGroup]="consentForm" (ngSubmit)="submitConsent()" class="consent-form">
 
-          <div class="consent-field">
-            <label class="consent-check">
-              <input type="checkbox" formControlName="has_allergies" />
-              ¿Tienes alergias?
-            </label>
-            @if (consentForm.get('has_allergies')?.value) {
-              <input type="text" formControlName="allergies_detail"
-                placeholder="Describe tus alergias" class="consent-input" />
-            }
+          <p class="consent-intro">
+            Requerido por normativa sanitaria. Responda con precisión — la información es estrictamente confidencial (LFPDPPP).
+          </p>
+
+          <div class="health-questions">
+
+            <div class="health-q">
+              <div class="health-q__row">
+                <span class="health-q__text">¿Tiene alergias conocidas?</span>
+                <div class="health-toggle">
+                  <label class="health-toggle__opt" [class.health-toggle__opt--yes]="consentForm.value.has_allergies === true">
+                    <input type="radio" formControlName="has_allergies" [value]="true" /> Sí
+                  </label>
+                  <label class="health-toggle__opt" [class.health-toggle__opt--no]="consentForm.value.has_allergies === false">
+                    <input type="radio" formControlName="has_allergies" [value]="false" /> No
+                  </label>
+                </div>
+              </div>
+              @if (consentForm.value.has_allergies) {
+                <input type="text" formControlName="allergies_detail"
+                  placeholder="Especifique: medicamentos, látex, tintas…" class="consent-input" />
+              }
+            </div>
+
+            <div class="health-q">
+              <div class="health-q__row">
+                <span class="health-q__text">¿Trastorno de coagulación o hemofilia?</span>
+                <div class="health-toggle">
+                  <label class="health-toggle__opt" [class.health-toggle__opt--yes]="consentForm.value.has_hemophilia === true">
+                    <input type="radio" formControlName="has_hemophilia" [value]="true" /> Sí
+                  </label>
+                  <label class="health-toggle__opt" [class.health-toggle__opt--no]="consentForm.value.has_hemophilia === false">
+                    <input type="radio" formControlName="has_hemophilia" [value]="false" /> No
+                  </label>
+                </div>
+              </div>
+              @if (consentForm.value.has_hemophilia) {
+                <input type="text" formControlName="hemophilia_detail"
+                  placeholder="Ej. hemofilia A, von Willebrand…" class="consent-input" />
+              }
+            </div>
+
+            <div class="health-q">
+              <div class="health-q__row">
+                <span class="health-q__text">¿Padece alguna enfermedad crónica?</span>
+                <div class="health-toggle">
+                  <label class="health-toggle__opt" [class.health-toggle__opt--yes]="consentForm.value.has_chronic_disease === true">
+                    <input type="radio" formControlName="has_chronic_disease" [value]="true" /> Sí
+                  </label>
+                  <label class="health-toggle__opt" [class.health-toggle__opt--no]="consentForm.value.has_chronic_disease === false">
+                    <input type="radio" formControlName="has_chronic_disease" [value]="false" /> No
+                  </label>
+                </div>
+              </div>
+              @if (consentForm.value.has_chronic_disease) {
+                <input type="text" formControlName="chronic_disease_detail"
+                  placeholder="Ej. diabetes, hipertensión, coagulopatías…" class="consent-input" />
+              }
+            </div>
+
+            <div class="health-q">
+              <div class="health-q__row">
+                <span class="health-q__text">¿Toma medicamentos actualmente?</span>
+                <div class="health-toggle">
+                  <label class="health-toggle__opt" [class.health-toggle__opt--yes]="consentForm.value.takes_medication === true">
+                    <input type="radio" formControlName="takes_medication" [value]="true" /> Sí
+                  </label>
+                  <label class="health-toggle__opt" [class.health-toggle__opt--no]="consentForm.value.takes_medication === false">
+                    <input type="radio" formControlName="takes_medication" [value]="false" /> No
+                  </label>
+                </div>
+              </div>
+              @if (consentForm.value.takes_medication) {
+                <input type="text" formControlName="medication_detail"
+                  placeholder="Nombre y dosis (anticoagulantes, corticoides…)" class="consent-input" />
+              }
+            </div>
+
+            <div class="health-q">
+              <div class="health-q__row">
+                <span class="health-q__text">¿Embarazo o período de lactancia?</span>
+                <div class="health-toggle">
+                  <label class="health-toggle__opt" [class.health-toggle__opt--yes]="consentForm.value.is_pregnant === true">
+                    <input type="radio" formControlName="is_pregnant" [value]="true" /> Sí
+                  </label>
+                  <label class="health-toggle__opt" [class.health-toggle__opt--no]="consentForm.value.is_pregnant === false">
+                    <input type="radio" formControlName="is_pregnant" [value]="false" /> No
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="health-q health-q--last">
+              <div class="health-q__row">
+                <span class="health-q__text">¿Condición de piel activa?</span>
+                <div class="health-toggle">
+                  <label class="health-toggle__opt" [class.health-toggle__opt--yes]="consentForm.value.has_skin_condition === true">
+                    <input type="radio" formControlName="has_skin_condition" [value]="true" /> Sí
+                  </label>
+                  <label class="health-toggle__opt" [class.health-toggle__opt--no]="consentForm.value.has_skin_condition === false">
+                    <input type="radio" formControlName="has_skin_condition" [value]="false" /> No
+                  </label>
+                </div>
+              </div>
+              @if (consentForm.value.has_skin_condition) {
+                <input type="text" formControlName="skin_condition_detail"
+                  placeholder="Ej. psoriasis, queloide, dermatitis…" class="consent-input" />
+              }
+            </div>
+
           </div>
 
-          <div class="consent-field">
-            <label class="consent-check">
-              <input type="checkbox" formControlName="has_hemophilia" />
-              ¿Tienes hemofilia u otro trastorno de coagulación?
-            </label>
-            @if (consentForm.get('has_hemophilia')?.value) {
-              <input type="text" formControlName="hemophilia_detail"
-                placeholder="Ej. hemofilia A, von Willebrand…" class="consent-input" />
-            }
-          </div>
-
-          <div class="consent-field">
-            <label class="consent-check">
-              <input type="checkbox" formControlName="has_chronic_disease" />
-              ¿Padeces alguna enfermedad crónica?
-            </label>
-            @if (consentForm.get('has_chronic_disease')?.value) {
-              <input type="text" formControlName="chronic_disease_detail"
-                placeholder="Describe la enfermedad" class="consent-input" />
-            }
-          </div>
-
-          <div class="consent-field">
-            <label class="consent-check">
-              <input type="checkbox" formControlName="takes_medication" />
-              ¿Tomas medicación regularmente?
-            </label>
-            @if (consentForm.get('takes_medication')?.value) {
-              <input type="text" formControlName="medication_detail"
-                placeholder="Indica la medicación" class="consent-input" />
-            }
-          </div>
-
-          <div class="consent-field">
-            <label class="consent-check">
-              <input type="checkbox" formControlName="is_pregnant" />
-              ¿Estás embarazada?
-            </label>
-          </div>
-
-          <div class="consent-field">
-            <label class="consent-check">
-              <input type="checkbox" formControlName="has_skin_condition" />
-              ¿Tienes alguna condición de piel?
-            </label>
-            @if (consentForm.get('has_skin_condition')?.value) {
-              <input type="text" formControlName="skin_condition_detail"
-                placeholder="Describe la condición" class="consent-input" />
-            }
-          </div>
+          @if (allHealthClear) {
+            <div class="health-all-clear">
+              <span class="health-all-clear__icon">✓</span>
+              Sin antecedentes de salud declarados
+            </div>
+          }
 
           <div class="consent-field consent-field--signature">
             <p class="consent-field__label">Firma digital <span class="required">*</span></p>
-            <p class="consent-field__hint">Firma para confirmar que la información es verídica.</p>
+            <p class="consent-field__hint">Firma para confirmar que la información proporcionada es verídica.</p>
             <app-signature-pad formControlName="signature_data"></app-signature-pad>
             @if (consentForm.get('signature_data')?.invalid && consentForm.get('signature_data')?.touched) {
               <span class="consent-field__error">La firma es obligatoria</span>
@@ -199,12 +249,23 @@
           <div class="consent-field consent-field--terms">
             <label class="consent-check">
               <input type="checkbox" formControlName="terms_accepted" />
-              Acepto los términos y confirmo que la información es verídica.
+              Acepto los términos del servicio y declaro que la información proporcionada es verídica (LFPDPPP).
             </label>
           </div>
 
           @if (consentError()) {
             <p class="consent-error">{{ consentError() }}</p>
+          }
+
+          @if (consentForm.invalid && !consentSubmitting()) {
+            <ul class="consent-pending">
+              @if (consentForm.get('signature_data')?.invalid) {
+                <li>Firma digital pendiente</li>
+              }
+              @if (consentForm.get('terms_accepted')?.invalid) {
+                <li>Acepta los términos para continuar</li>
+              }
+            </ul>
           }
 
           <button type="submit"

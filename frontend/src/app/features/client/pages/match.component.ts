@@ -68,6 +68,12 @@ export class MatchComponent implements OnInit {
     terms_accepted: [false, Validators.requiredTrue],
   });
 
+  get allHealthClear(): boolean {
+    const v = this.consentForm.value;
+    return !v.has_allergies && !v.has_chronic_disease && !v.takes_medication
+        && !v.is_pregnant && !v.has_skin_condition && !v.has_hemophilia;
+  }
+
   // ── Quote del wizard ───────────────────────────────────────────────────
   quote = computed(() => this.quoteService.lastQuote());
 

@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -46,6 +46,12 @@ export class MisCitasComponent implements OnInit {
     terms_accepted: [false, Validators.requiredTrue],
   });
 
+  get allHealthClear(): boolean {
+    const v = this.consentForm.value;
+    return !v.has_allergies && !v.has_chronic_disease && !v.takes_medication
+        && !v.is_pregnant && !v.has_skin_condition && !v.has_hemophilia;
+  }
+
   ngOnInit(): void {
     this.load();
   }
@@ -77,24 +83,6 @@ export class MisCitasComponent implements OnInit {
       },
       error: (err) => {
         this.actionError.set(err.error?.detail ?? 'Error al aceptar la contraoferta.');
-        this.actionLoading.set(null);
-      },
-    });
-  }
-
-  rejectCounterOffer(appt: Appointment): void {
-    this.actionLoading.set(appt.id);
-    this.actionError.set('');
-    const payload: AppointmentStatusPayload = { status: 'REJECTED' };
-    this.quoteService.updateAppointmentStatus(appt.id, payload).subscribe({
-      next: (updated) => {
-        this.appointments.update((list) =>
-          list.map((a) => (a.id === updated.id ? updated : a))
-        );
-        this.actionLoading.set(null);
-      },
-      error: (err) => {
-        this.actionError.set(err.error?.detail ?? 'Error al rechazar la contraoferta.');
         this.actionLoading.set(null);
       },
     });
