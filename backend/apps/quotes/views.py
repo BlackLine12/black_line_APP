@@ -324,7 +324,7 @@ class AppointmentStatusUpdateView(APIView):
     PATCH /api/quotes/appointments/<pk>/status/
     Máquina de estados:
       PENDING       → APPROVED | REJECTED | COUNTER_OFFER  (artista)
-      COUNTER_OFFER → APPROVED                              (cliente)
+      COUNTER_OFFER → APPROVED | REJECTED                  (cliente)
     """
     permission_classes = [IsAuthenticated]
 
@@ -349,9 +349,9 @@ class AppointmentStatusUpdateView(APIView):
                     {"detail": "Solo el cliente puede responder a la contraoferta."},
                     status=status.HTTP_403_FORBIDDEN,
                 )
-            if new_status != Appointment.Status.APPROVED:
+            if new_status not in (Appointment.Status.APPROVED, Appointment.Status.REJECTED):
                 return Response(
-                    {"detail": "Desde COUNTER_OFFER solo puede pasar a APPROVED."},
+                    {"detail": "Desde COUNTER_OFFER solo puede pasar a APPROVED o REJECTED."},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
         else:

@@ -88,6 +88,24 @@ export class MisCitasComponent implements OnInit {
     });
   }
 
+  rejectCounterOffer(appt: Appointment): void {
+    this.actionLoading.set(appt.id);
+    this.actionError.set('');
+    const payload: AppointmentStatusPayload = { status: 'REJECTED' };
+    this.quoteService.updateAppointmentStatus(appt.id, payload).subscribe({
+      next: (updated) => {
+        this.appointments.update((list) =>
+          list.map((a) => (a.id === updated.id ? updated : a))
+        );
+        this.actionLoading.set(null);
+      },
+      error: (err) => {
+        this.actionError.set(err.error?.detail ?? 'Error al rechazar la contraoferta.');
+        this.actionLoading.set(null);
+      },
+    });
+  }
+
   // ── Health consent modal ───────────────────────────────────────────────────
 
   openConsentModal(appt: Appointment): void {
