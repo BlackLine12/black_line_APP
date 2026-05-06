@@ -23,6 +23,9 @@
         <a routerLink="/studio/dashboard"
            routerLinkActive="navbar__link--active"
            class="navbar__link">Dashboard</a>
+        <a routerLink="/studio/solicitudes"
+          routerLinkActive="navbar__link--active"
+          class="navbar__link">Solicitudes</a>
         <a routerLink="/studio/portafolio"
            routerLinkActive="navbar__link--active"
            class="navbar__link">Portafolio</a>
@@ -46,6 +49,9 @@
         <a routerLink="/client/cotizador"
            routerLinkActive="navbar__link--active"
            class="navbar__link">Cotizador</a>
+        <a routerLink="/client/cotizaciones"
+          routerLinkActive="navbar__link--active"
+          class="navbar__link">Cotizaciones</a>
         <a routerLink="/client/match"
            routerLinkActive="navbar__link--active"
            class="navbar__link">Match</a>
@@ -99,6 +105,7 @@
           <span class="navbar__mobile-label navbar__mobile-label--studio">Studio</span>
         }
         <a routerLink="/studio/dashboard"   (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Dashboard</a>
+        <a routerLink="/studio/solicitudes" (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Solicitudes</a>
         <a routerLink="/studio/portafolio"  (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Portafolio</a>
         <a routerLink="/studio/agenda"      (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Agenda</a>
       }
@@ -108,6 +115,7 @@
           <span class="navbar__mobile-label navbar__mobile-label--client">Cliente</span>
         }
         <a routerLink="/client/cotizador"   (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Cotizador</a>
+        <a routerLink="/client/cotizaciones" (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Cotizaciones</a>
         <a routerLink="/client/match"       (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Match</a>
         <a routerLink="/client/mis-citas"   (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Mis Citas</a>
       }
