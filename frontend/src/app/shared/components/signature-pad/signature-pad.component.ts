@@ -76,6 +76,7 @@ export class SignaturePadComponent implements ControlValueAccessor, AfterViewIni
   // ── Canvas drawing ─────────────────────────────────────────────────────────
 
   clear(notify = true): void {
+    if (!this.ctx) return;
     const canvas = this.canvasRef.nativeElement;
     this.ctx.clearRect(0, 0, canvas.width, canvas.height);
     this.isEmpty.set(true);

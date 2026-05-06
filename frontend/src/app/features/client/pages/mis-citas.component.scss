@@ -245,6 +245,102 @@ $font-b:   'Inter', sans-serif;
   &:disabled { opacity: 0.4; cursor: not-allowed; }
 }
 
+/* ── Health questionnaire (Sí/No toggle pattern) ────────────────────────── */
+.consent-intro {
+  font-size: 0.8rem;
+  color: #8a7e72;
+  line-height: 1.5;
+  margin: 0 0 4px;
+  font-style: italic;
+}
+
+.health-questions {
+  display: flex;
+  flex-direction: column;
+}
+
+.health-q {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 13px 0;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.08);
+
+  &--last { border-bottom: none; }
+}
+
+.health-q__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.health-q__text {
+  font-size: 0.875rem;
+  color: #ede0c4;
+  line-height: 1.4;
+  flex: 1;
+}
+
+.health-toggle {
+  display: flex;
+  border: 1px solid rgba(201, 168, 76, 0.15);
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.health-toggle__opt {
+  display: flex;
+  align-items: center;
+  padding: 5px 13px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8a7e72;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  user-select: none;
+
+  input[type="radio"] { display: none; }
+
+  & + & { border-left: 1px solid rgba(201, 168, 76, 0.15); }
+
+  &:hover:not(.health-toggle__opt--yes):not(.health-toggle__opt--no) {
+    color: #ede0c4;
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  &--yes {
+    background: rgba(220, 70, 70, 0.12);
+    color: #e07070;
+  }
+
+  &--no {
+    background: rgba(50, 180, 80, 0.10);
+    color: #5cb870;
+  }
+}
+
+.health-all-clear {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  background: rgba(50, 180, 80, 0.07);
+  border: 1px solid rgba(50, 180, 80, 0.2);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  color: #5cb870;
+  font-weight: 500;
+  margin-bottom: 4px;
+
+  &__icon {
+    font-size: 13px;
+    font-weight: 700;
+  }
+}
+
 /* ── Health consent CTA ──────────────────────────────────────────────────── */
 .btn-consent {
   margin-top: 6px;
@@ -390,6 +486,29 @@ $font-b:   'Inter', sans-serif;
 .consent-submit {
   margin-top: 0.5rem;
   width: 100%;
+}
+
+.consent-pending {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  li {
+    font-size: 0.75rem;
+    color: #8a7e72;
+    padding-left: 12px;
+    position: relative;
+
+    &::before {
+      content: '·';
+      position: absolute;
+      left: 0;
+      color: #c9a84c;
+    }
+  }
 }
 
 .consent-error {
