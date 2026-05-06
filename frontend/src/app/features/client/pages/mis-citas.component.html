@@ -92,6 +92,13 @@
                 >
                   @if (actionLoading() === appt.id) { Procesando… } @else { Aceptar nueva fecha }
                 </button>
+                <button
+                  class="btn-outline-danger"
+                  (click)="rejectCounterOffer(appt)"
+                  [disabled]="actionLoading() === appt.id"
+                >
+                  Rechazar
+                </button>
               </div>
             </div>
           }
