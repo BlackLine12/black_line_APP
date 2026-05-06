@@ -20,6 +20,7 @@ export interface ArtistProfile {
   city: string;
   base_hourly_rate: string;
   minimum_setup_fee: string;
+  profile_photo: string | null;
   styles: TattooStyle[];
   style_ids?: number[];
   portfolio_images: PortfolioImage[];

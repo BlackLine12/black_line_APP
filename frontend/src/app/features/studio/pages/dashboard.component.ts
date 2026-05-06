@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ArtistService } from '../services/artist.service';
@@ -14,6 +14,8 @@ import { MexicanCity, filterCities } from '../../../core/data/cities-mx';
   styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent implements OnInit {
+  @ViewChild('photoInput') photoInput!: ElementRef<HTMLInputElement>;
+
   private readonly fb = inject(FormBuilder);
   private readonly artistService = inject(ArtistService);
 
@@ -27,6 +29,9 @@ export class DashboardComponent implements OnInit {
   saving = false;
   saveMessage = '';
   saveSuccess = false;
+
+  uploadingPhoto = false;
+  photoPreview: string | null = null;
 
   activeSection = 'info';
 
@@ -87,6 +92,7 @@ export class DashboardComponent implements OnInit {
     this.artistService.getMyProfile().subscribe({
       next: (profile) => {
         this.profile = profile;
+        this.photoPreview = profile.profile_photo;
         this.profileForm.patchValue({
           bio: profile.bio,
           city: profile.city,
@@ -94,7 +100,6 @@ export class DashboardComponent implements OnInit {
           minimum_setup_fee: profile.minimum_setup_fee,
         });
         this.selectedStyleIds = new Set(profile.styles.map((s) => s.id));
-        // Seed autocomplete from saved profile city
         const savedCity = profile.city ?? '';
         this.cityQuery.set(savedCity);
         const inCatalog = savedCity
@@ -104,6 +109,32 @@ export class DashboardComponent implements OnInit {
         this.loading = false;
       },
       error: () => (this.loading = false),
+    });
+  }
+
+  triggerPhotoUpload(): void {
+    this.photoInput.nativeElement.click();
+  }
+
+  onPhotoSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = e => (this.photoPreview = e.target?.result as string);
+    reader.readAsDataURL(file);
+
+    this.uploadingPhoto = true;
+    this.artistService.uploadProfilePhoto(file).subscribe({
+      next: updated => {
+        this.profile = updated;
+        this.photoPreview = updated.profile_photo;
+        this.uploadingPhoto = false;
+      },
+      error: () => {
+        this.uploadingPhoto = false;
+        this.photoPreview = this.profile?.profile_photo ?? null;
+      },
     });
   }
 

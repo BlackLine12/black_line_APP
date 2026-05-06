@@ -1,0 +1,192 @@
+<!-- ══════════════════ BANDEJA DE SOLICITUDES ══════════════════ -->
+<section class="sol-page px-4 py-8 sm:px-6 lg:px-8">
+  <div class="sol-inner mx-auto max-w-5xl space-y-10">
+
+    <!-- ── Header ────────────────────────────────────────────── -->
+    <div class="sol-hero animate-fade-in-down">
+      <div class="sol-hero__eyebrow">
+        <span class="sol-hero__dot"></span>
+        ESTUDIO · SOLICITUDES
+      </div>
+      <h1 class="sol-hero__title">Bandeja de Solicitudes</h1>
+      <p class="sol-hero__subtitle">Revisa y gestiona las peticiones de cita de tus clientes.</p>
+
+      <div class="sol-stats-row">
+        <div class="sol-badge sol-badge--gold">
+          <span class="sol-badge__num">{{ pendingCount }}</span>
+          <span class="sol-badge__label">Pendientes</span>
+        </div>
+        <div class="sol-badge sol-badge--purple">
+          <span class="sol-badge__num">{{ counterOfferCount }}</span>
+          <span class="sol-badge__label">Contraofertas</span>
+        </div>
+        <div class="sol-badge">
+          <span class="sol-badge__num">{{ approvedCount }}</span>
+          <span class="sol-badge__label">Aprobadas</span>
+        </div>
+        <div class="sol-badge">
+          <span class="sol-badge__num">{{ appointments.length }}</span>
+          <span class="sol-badge__label">Total</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Filtros ────────────────────────────────────────────── -->
+    <div class="sol-filters-bar">
+      @for (f of filters; track f.value) {
+        <button
+          type="button"
+          (click)="activeFilter = f.value"
+          [class]="activeFilter === f.value ? 'sol-filter sol-filter--active' : 'sol-filter'"
+        >
+          {{ f.label }}
+          @if (f.value === 'PENDING' && pendingCount > 0) {
+            <span class="sol-filter__badge">{{ pendingCount }}</span>
+          }
+          @if (f.value === 'COUNTER_OFFER' && counterOfferCount > 0) {
+            <span class="sol-filter__badge sol-filter__badge--purple">{{ counterOfferCount }}</span>
+          }
+        </button>
+      }
+    </div>
+
+    <!-- ── Lista ──────────────────────────────────────────────── -->
+    @if (loading) {
+      <div class="sol-loading">
+        <svg class="h-6 w-6 animate-spin text-[#c9a84c]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+        </svg>
+        <span>Cargando solicitudes…</span>
+      </div>
+    } @else if (filteredAppointments.length === 0) {
+      <div class="sol-empty">
+        <p>No hay solicitudes{{ activeFilter !== 'ALL' ? ' en este estado' : '' }}.</p>
+      </div>
+    } @else {
+      <div class="sol-list">
+        @for (appt of filteredAppointments; track appt.id) {
+          <article class="sol-card" [class.sol-card--pending]="appt.status === 'PENDING'">
+
+            <!-- Cabecera: cliente + estado -->
+            <div class="sol-card__header">
+              <div class="sol-card__client">
+                <div class="sol-card__avatar">
+                  {{ appt.client_name.substring(0, 2).toUpperCase() }}
+                </div>
+                <div>
+                  <p class="sol-card__name">{{ appt.client_name }}</p>
+                  <p class="sol-card__email">{{ appt.client_email }}</p>
+                </div>
+              </div>
+              <div class="sol-card__meta">
+                <time class="sol-card__date">
+                  {{ appt.scheduled_at | date:'dd MMM yyyy · HH:mm' }}
+                </time>
+                <span [class]="'sol-status sol-status--' + appt.status.toLowerCase()">
+                  {{ statusLabel(appt.status) }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Datos de la cotización -->
+            @if (appt.quote_detail) {
+              <div class="sol-card__quote">
+                <div class="sol-quote-chip">
+                  <span class="sol-quote-chip__label">Estilo</span>
+                  <span class="sol-quote-chip__value">{{ appt.quote_detail.style_name }}</span>
+                </div>
+                <div class="sol-quote-chip">
+                  <span class="sol-quote-chip__label">Zona</span>
+                  <span class="sol-quote-chip__value">{{ appt.quote_detail.body_part_display }}</span>
+                </div>
+                <div class="sol-quote-chip">
+                  <span class="sol-quote-chip__label">Tamaño</span>
+                  <span class="sol-quote-chip__value">{{ appt.quote_detail.size_cm }} cm</span>
+                </div>
+                <div class="sol-quote-chip">
+                  <span class="sol-quote-chip__label">Color</span>
+                  <span class="sol-quote-chip__value">{{ appt.quote_detail.is_color ? 'A color' : 'Blanco y negro' }}</span>
+                </div>
+                @if (appt.estimated_price) {
+                  <div class="sol-quote-chip sol-quote-chip--price">
+                    <span class="sol-quote-chip__label">Precio estimado</span>
+                    <span class="sol-quote-chip__value">
+                      {{ appt.estimated_price | currency:'MXN':'symbol-narrow':'1.0-0' }}
+                    </span>
+                  </div>
+                }
+              </div>
+            }
+
+            <!-- Contraoferta activa (solo lectura) -->
+            @if (appt.status === 'COUNTER_OFFER' && appt.counter_offer_datetime) {
+              <div class="sol-card__counteroffer">
+                <p class="sol-card__counteroffer-label">Contraoferta propuesta — esperando respuesta del cliente</p>
+                <p class="sol-card__counteroffer-date">
+                  {{ appt.counter_offer_datetime | date:'dd MMM yyyy · HH:mm' }}
+                </p>
+                @if (appt.counter_offer_note) {
+                  <p class="sol-card__counteroffer-note">{{ appt.counter_offer_note }}</p>
+                }
+              </div>
+            }
+
+            <!-- Mensaje de acción inline -->
+            @if (actionMessages.get(appt.id); as msg) {
+              <div [class]="msg.success ? 'sol-msg sol-msg--success' : 'sol-msg sol-msg--error'">
+                {{ msg.text }}
+              </div>
+            }
+
+            <!-- Acciones (solo PENDING) -->
+            @if (appt.status === 'PENDING') {
+              @if (counterOfferForId !== appt.id) {
+                <div class="sol-card__actions">
+                  <button type="button" class="sol-btn sol-btn--approve" (click)="approve(appt.id)">
+                    Aprobar
+                  </button>
+                  <button type="button" class="sol-btn sol-btn--offer" (click)="openCounterOffer(appt.id)">
+                    Contraofertar
+                  </button>
+                  <button type="button" class="sol-btn sol-btn--reject" (click)="reject(appt.id)">
+                    Rechazar
+                  </button>
+                </div>
+              } @else {
+                <form class="sol-offer-form" [formGroup]="counterOfferForm" (ngSubmit)="submitCounterOffer(appt.id)">
+                  <p class="sol-offer-form__title">Proponer fecha alternativa</p>
+                  <div class="sol-offer-form__fields">
+                    <div>
+                      <label class="sol-label">Nueva fecha y hora</label>
+                      <input type="datetime-local" formControlName="counter_offer_datetime" class="sol-input" />
+                    </div>
+                    <div>
+                      <label class="sol-label">Nota (opcional)</label>
+                      <textarea
+                        formControlName="counter_offer_note"
+                        rows="2"
+                        placeholder="Ej. Prefiero a las 11 am, el estudio estará más tranquilo."
+                        class="sol-input sol-textarea"
+                      ></textarea>
+                    </div>
+                  </div>
+                  <div class="sol-offer-form__actions">
+                    <button type="submit" [disabled]="counterOfferForm.invalid" class="sol-btn sol-btn--approve">
+                      Enviar contraoferta
+                    </button>
+                    <button type="button" class="sol-btn sol-btn--ghost" (click)="cancelCounterOffer()">
+                      Cancelar
+                    </button>
+                  </div>
+                </form>
+              }
+            }
+
+          </article>
+        }
+      </div>
+    }
+
+  </div>
+</section>

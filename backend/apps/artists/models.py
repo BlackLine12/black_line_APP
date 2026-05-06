@@ -39,6 +39,12 @@ class ArtistProfile(models.Model):
         default=0,
         verbose_name="Tarifa Mínima (apertura de agujas)",
     )
+    profile_photo = models.ImageField(
+        upload_to="profiles/",
+        blank=True,
+        null=True,
+        verbose_name="Foto de Perfil",
+    )
     styles = models.ManyToManyField(
         TattooStyle,
         blank=True,

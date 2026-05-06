@@ -44,6 +44,8 @@ from django.db.models import (
 )
 from django.db.models.functions import Greatest
 
+from .pricing import BODY_PART_MULTIPLIERS, BW_MULTIPLIER, COLOR_MULTIPLIER
+
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
@@ -114,32 +116,8 @@ class QuoteRequestCreateView(APIView):
 # ===========================================================================
 
 # ---------------------------------------------------------------------------
-# Multiplicadores de negocio
+# Multiplicadores de negocio — definidos en pricing.py (fuente de verdad)
 # ---------------------------------------------------------------------------
-# Estos multiplicadores representan reglas de negocio parametrizables.
-# En produccion podrian provenir de una tabla de configuracion; aqui se
-# declaran como constantes para mantener la logica en el ORM (sin bucles).
-
-# 1) Multiplicadores por zona del cuerpo
-#    Zonas sensibles o de dificil acceso tienen mayor coste de ejecucion.
-BODY_PART_MULTIPLIERS: dict[str, Decimal] = {
-    "BRAZO":      Decimal("1.00"),
-    "ANTEBRAZO":  Decimal("1.00"),
-    "PIERNA":     Decimal("1.10"),
-    "HOMBRO":     Decimal("1.05"),
-    "ESPALDA":    Decimal("1.30"),
-    "PECHO":      Decimal("1.25"),
-    "COSTILLAS":  Decimal("1.50"),   # Zona muy dolorosa -> mayor dificultad
-    "CUELLO":     Decimal("1.40"),
-    "MANO":       Decimal("1.35"),
-    "PIE":        Decimal("1.35"),
-}
-
-# 2) Multiplicador por color
-#    Si el tatuaje es a color, se incrementa un 20 % por la complejidad
-#    adicional de mezclas de tinta y capas de saturacion.
-COLOR_MULTIPLIER = Decimal("1.20")
-BW_MULTIPLIER = Decimal("1.00")
 
 
 class ArtistMatchView(APIView):

@@ -59,6 +59,40 @@ class ArtistProfileViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(profile)
         return Response(serializer.data)
 
+    @action(
+        detail=False,
+        methods=["post"],
+        url_path="me/photo",
+        parser_classes=[parsers.MultiPartParser, parsers.FormParser],
+    )
+    def upload_photo(self, request):
+        """POST /api/artists/profiles/me/photo/ — sube o reemplaza la foto de perfil."""
+        if request.user.user_type not in ("STUDIO", "ADMIN"):
+            return Response(
+                {"detail": "Solo artistas pueden subir foto de perfil."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        file = request.FILES.get("photo")
+        if not file:
+            return Response({"detail": "El campo 'photo' es obligatorio."}, status=status.HTTP_400_BAD_REQUEST)
+
+        allowed_mime = {"image/jpeg", "image/png", "image/webp"}
+        if file.content_type not in allowed_mime:
+            return Response(
+                {"detail": "Formato no permitido. Usa JPEG, PNG o WebP."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if file.size > 5 * 1024 * 1024:
+            return Response({"detail": "La imagen no puede superar 5 MB."}, status=status.HTTP_400_BAD_REQUEST)
+
+        profile, _ = ArtistProfile.objects.get_or_create(user=request.user)
+        if profile.profile_photo:
+            profile.profile_photo.delete(save=False)
+        profile.profile_photo = file
+        profile.save(update_fields=["profile_photo"])
+        serializer = self.get_serializer(profile)
+        return Response(serializer.data)
+
     @action(detail=False, methods=["get"], url_path="me/stats")
     def my_stats(self, request):
         """GET /api/artists/profiles/me/stats/"""

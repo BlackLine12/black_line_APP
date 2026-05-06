@@ -31,6 +31,12 @@ export class ArtistService {
     return this.http.get<ArtistProfile>(`${this.baseUrl}/profiles/${id}/`);
   }
 
+  uploadProfilePhoto(file: File): Observable<ArtistProfile> {
+    const formData = new FormData();
+    formData.append('photo', file);
+    return this.http.post<ArtistProfile>(`${this.baseUrl}/profiles/me/photo/`, formData);
+  }
+
   // ── Portfolio Images ───────────────────────────────────────
   getPortfolioImages(): Observable<PortfolioImage[]> {
     return this.http.get<PortfolioImage[]>(`${this.baseUrl}/portfolio/`);

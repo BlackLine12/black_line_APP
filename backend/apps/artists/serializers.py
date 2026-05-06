@@ -37,10 +37,11 @@ class ArtistProfileSerializer(serializers.ModelSerializer):
             "city",
             "base_hourly_rate",
             "minimum_setup_fee",
+            "profile_photo",
             "styles",
             "style_ids",
             "portfolio_images",
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "user", "created_at", "updated_at"]
+        read_only_fields = ["id", "user", "profile_photo", "created_at", "updated_at"]

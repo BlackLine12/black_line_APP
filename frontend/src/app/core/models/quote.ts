@@ -59,6 +59,13 @@ export interface AppointmentCreatePayload {
   scheduled_at: string;
 }
 
+export interface AppointmentQuoteDetail {
+  style_name: string;
+  body_part_display: string;
+  size_cm: number;
+  is_color: boolean;
+}
+
 export interface Appointment {
   id: number;
   client_name: string;
@@ -67,6 +74,8 @@ export interface Appointment {
   artist_name: string;
   artist_city: string;
   quote: number | null;
+  quote_detail: AppointmentQuoteDetail | null;
+  estimated_price: string | null;
   scheduled_at: string;
   status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'COUNTER_OFFER';
   status_display: string;

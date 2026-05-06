@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from .models import QuoteRequest, Appointment, HealthConsent, CalendarBlock
+from .pricing import calculate_estimated_price
 from apps.artists.models import TattooStyle, ArtistProfile
 
 
@@ -86,8 +87,18 @@ class MatchSearchSerializer(serializers.Serializer):
 # RF-4 – Serializers para Citas (Appointment)
 # ===========================================================================
 
+class QuoteDetailSerializer(serializers.ModelSerializer):
+    """Datos de la cotización embebidos en la respuesta de Appointment."""
+    style_name = serializers.CharField(source="tattoo_style.name", read_only=True)
+    body_part_display = serializers.CharField(source="get_body_part_display", read_only=True)
+
+    class Meta:
+        model = QuoteRequest
+        fields = ["style_name", "body_part_display", "size_cm", "is_color"]
+
+
 class AppointmentReadSerializer(serializers.ModelSerializer):
-    """Serializer de lectura con información expandida de cliente y artista."""
+    """Serializer de lectura con información expandida de cliente, artista y cotización."""
     client_name = serializers.SerializerMethodField()
     client_email = serializers.EmailField(source="client.email", read_only=True)
     artist_name = serializers.SerializerMethodField()
@@ -95,13 +106,16 @@ class AppointmentReadSerializer(serializers.ModelSerializer):
     artist_id = serializers.IntegerField(source="artist.id", read_only=True)
     status_display = serializers.CharField(source="get_status_display", read_only=True)
     has_health_consent = serializers.SerializerMethodField()
+    quote_detail = QuoteDetailSerializer(source="quote", read_only=True)
+    estimated_price = serializers.SerializerMethodField()
 
     class Meta:
         model = Appointment
         fields = [
             "id", "client_name", "client_email",
             "artist_id", "artist_name", "artist_city",
-            "quote", "scheduled_at", "status", "status_display",
+            "quote", "quote_detail", "estimated_price",
+            "scheduled_at", "status", "status_display",
             "counter_offer_datetime", "counter_offer_note",
             "has_health_consent", "created_at", "updated_at",
         ]
@@ -114,6 +128,23 @@ class AppointmentReadSerializer(serializers.ModelSerializer):
 
     def get_has_health_consent(self, obj):
         return hasattr(obj, "health_consent")
+
+    def get_estimated_price(self, obj):
+        if not obj.quote:
+            return None
+        q = obj.quote
+        artist = obj.artist
+        try:
+            price = calculate_estimated_price(
+                size_cm=q.size_cm,
+                body_part=q.body_part,
+                is_color=q.is_color,
+                base_hourly_rate=artist.base_hourly_rate,
+                minimum_setup_fee=artist.minimum_setup_fee,
+            )
+            return str(price)
+        except Exception:
+            return None
 
 
 class AppointmentCreateSerializer(serializers.ModelSerializer):
