@@ -14,6 +14,7 @@ class User(AbstractUser):
     user_type = models.CharField(max_length=20, choices=UserType.choices,
                                     default=UserType.CLIENT, verbose_name="Tipo de Usuario")
     phone = models.CharField(max_length=20, blank=True, null=True, verbose_name="Teléfono")
+    profile_photo = models.ImageField(upload_to="users/profiles/", blank=True, null=True, verbose_name="Foto de Perfil")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Creación")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Fecha de Actualización")
 

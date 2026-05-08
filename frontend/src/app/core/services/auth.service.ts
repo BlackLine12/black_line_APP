@@ -159,4 +159,14 @@ export class AuthService {
       return null;
     }
   }
+
+  /** Update local user state without re-logging */
+  updateUser(partial: Partial<User>): void {
+    const current = this._user();
+    if (current) {
+      const updated = { ...current, ...partial };
+      this.saveUser(updated);
+      this._user.set(updated);
+    }
+  }
 }

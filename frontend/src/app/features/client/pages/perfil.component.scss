@@ -47,11 +47,39 @@ $font-b:  'Inter', system-ui, sans-serif;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
 
   span {
     font-family: $font-h;
     font-size: 28px;
     color: $gold;
+  }
+
+  .avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .avatar-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  &:hover .avatar-overlay {
+    opacity: 1;
+  }
+
+  &.loading .avatar-overlay {
+    opacity: 1;
   }
 }
 

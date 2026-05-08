@@ -1,6 +1,6 @@
 import { Component, inject, signal, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { QuoteService } from '../../../core/services/quote.service';
 import { Appointment, AppointmentStatusPayload } from '../../../core/models/quote';
 import { HealthConsentFormComponent } from '../../../shared/components/health-consent-form/health-consent-form.component';
@@ -8,7 +8,7 @@ import { HealthConsentFormComponent } from '../../../shared/components/health-co
 @Component({
   selector: 'app-cita-detalle',
   standalone: true,
-  imports: [CommonModule, RouterLink, HealthConsentFormComponent],
+  imports: [CommonModule, HealthConsentFormComponent],
   templateUrl: './cita-detalle.component.html',
   styleUrl: './cita-detalle.component.scss',
 })

@@ -168,6 +168,16 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
   flex-shrink: 0;
 }
 
+.navbar__user-img {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba($gold, 0.35);
+  flex-shrink: 0;
+}
+
+
 .navbar__user-name {
   font-size: 13px;
   font-weight: 500;

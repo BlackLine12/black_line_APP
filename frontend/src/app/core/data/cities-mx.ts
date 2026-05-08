@@ -3,6 +3,18 @@ export interface MexicanCity {
   state: string;
 }
 
+/** Lista de estados únicos, ordenados alfabéticamente */
+export const STATES_MX: string[] = [
+  'Aguascalientes', 'Baja California', 'Baja California Sur', 'Campeche',
+  'Chiapas', 'Chihuahua', 'Ciudad de México', 'Coahuila', 'Colima',
+  'Durango', 'Estado de México', 'Guanajuato', 'Guerrero', 'Hidalgo',
+  'Jalisco', 'Michoacán', 'Morelos', 'Nayarit', 'Nuevo León', 'Oaxaca',
+  'Puebla', 'Querétaro', 'Quintana Roo', 'San Luis Potosí', 'Sinaloa',
+  'Sonora', 'Tabasco', 'Tamaulipas', 'Tlaxcala', 'Veracruz', 'Yucatán',
+  'Zacatecas',
+];
+
+
 export const CITIES_MX: MexicanCity[] = [
   // Aguascalientes
   { name: 'Aguascalientes', state: 'Aguascalientes' },
@@ -202,4 +214,8 @@ export function filterCities(query: string): MexicanCity[] {
       c.name.toLowerCase().includes(q) ||
       c.state.toLowerCase().includes(q),
   ).slice(0, 8);
+}
+
+export function getCitiesByState(state: string): MexicanCity[] {
+  return CITIES_MX.filter(c => c.state === state);
 }
