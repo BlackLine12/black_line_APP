@@ -1,0 +1,191 @@
+<section class="sol-det px-4 py-8 sm:px-6 lg:px-8">
+  <div class="sol-det__inner mx-auto max-w-4xl">
+
+    <!-- ── Breadcrumb ─────────────────────────────────────────── -->
+    <div class="sol-det__breadcrumb">
+      <button class="sol-det__back" (click)="back()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+        </svg>
+        Solicitudes
+      </button>
+    </div>
+
+    <!-- ── Loading ───────────────────────────────────────────── -->
+    @if (loading()) {
+      <div class="sol-det__loading">
+        <svg class="h-6 w-6 animate-spin text-[#c9a84c]" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+        </svg>
+        <span>Cargando solicitud…</span>
+      </div>
+    }
+
+    @if (error()) {
+      <div class="sol-det__error">{{ error() }}</div>
+    }
+
+    <!-- ── Contenido ─────────────────────────────────────────── -->
+    @if (appointment(); as appt) {
+
+      <!-- Header -->
+      <div class="sol-det__header">
+        <div class="sol-det__client">
+          <div class="sol-det__avatar">
+            {{ appt.client_name.substring(0, 2).toUpperCase() }}
+          </div>
+          <div>
+            <h1 class="sol-det__name">{{ appt.client_name }}</h1>
+            <p class="sol-det__email">{{ appt.client_email }}</p>
+          </div>
+        </div>
+        <span [class]="'sol-status sol-status--' + appt.status.toLowerCase()">
+          {{ statusLabel(appt.status) }}
+        </span>
+      </div>
+
+      <!-- Grid de detalles + acciones -->
+      <div class="sol-det__layout">
+
+        <!-- Panel izquierdo: info -->
+        <div class="sol-det__info-col">
+
+          <!-- Detalles de la cita -->
+          <div class="sol-card">
+            <h2 class="sol-card__title">Detalles de la cita</h2>
+            <div class="sol-rows">
+              <div class="sol-row">
+                <span class="sol-row__label">Fecha solicitada</span>
+                <span class="sol-row__value">{{ appt.scheduled_at | date:'dd MMM yyyy · HH:mm' }}</span>
+              </div>
+              <div class="sol-row">
+                <span class="sol-row__label">Recibida el</span>
+                <span class="sol-row__value">{{ appt.created_at | date:'dd MMM yyyy · HH:mm' }}</span>
+              </div>
+              <div class="sol-row">
+                <span class="sol-row__label">Cuestionario de salud</span>
+                <span class="sol-row__value" [class.text-ok]="appt.has_health_consent" [class.text-warn]="!appt.has_health_consent">
+                  {{ appt.has_health_consent ? 'Enviado ✓' : 'Pendiente' }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cotización -->
+          @if (appt.quote_detail) {
+            <div class="sol-card">
+              <h2 class="sol-card__title">Cotización del cliente</h2>
+              <div class="sol-chips">
+                <div class="sol-chip">
+                  <span class="sol-chip__label">Estilo</span>
+                  <span class="sol-chip__value">{{ appt.quote_detail.style_name }}</span>
+                </div>
+                <div class="sol-chip">
+                  <span class="sol-chip__label">Zona</span>
+                  <span class="sol-chip__value">{{ appt.quote_detail.body_part_display }}</span>
+                </div>
+                <div class="sol-chip">
+                  <span class="sol-chip__label">Tamaño</span>
+                  <span class="sol-chip__value">{{ appt.quote_detail.size_cm }} cm</span>
+                </div>
+                <div class="sol-chip">
+                  <span class="sol-chip__label">Color</span>
+                  <span class="sol-chip__value">{{ appt.quote_detail.is_color ? 'A color' : 'B&N' }}</span>
+                </div>
+                @if (appt.estimated_price) {
+                  <div class="sol-chip sol-chip--price">
+                    <span class="sol-chip__label">Precio estimado</span>
+                    <span class="sol-chip__value">{{ appt.estimated_price | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Contraoferta en curso (solo lectura) -->
+          @if (appt.status === 'COUNTER_OFFER' && appt.counter_offer_datetime) {
+            <div class="sol-card sol-card--offer">
+              <h2 class="sol-card__title sol-card__title--offer">Contraoferta enviada</h2>
+              <div class="sol-rows">
+                <div class="sol-row sol-row--highlight">
+                  <span class="sol-row__label">Fecha propuesta</span>
+                  <span class="sol-row__value">{{ appt.counter_offer_datetime | date:'dd MMM yyyy · HH:mm' }}</span>
+                </div>
+                @if (appt.counter_offer_note) {
+                  <div class="sol-row">
+                    <span class="sol-row__label">Nota</span>
+                    <span class="sol-row__value">{{ appt.counter_offer_note }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+        </div>
+
+        <!-- Panel derecho: acciones -->
+        <div class="sol-det__action-col">
+          <div class="sol-card sol-card--actions">
+            <h2 class="sol-card__title">Gestionar solicitud</h2>
+
+            @if (actionSuccess()) {
+              <div class="sol-success">{{ actionSuccess() }}</div>
+            }
+
+            @if (actionError()) {
+              <div class="sol-error">{{ actionError() }}</div>
+            }
+
+            @if (appt.status === 'PENDING') {
+              @if (!showOfferForm()) {
+                <div class="sol-action-btns">
+                  <button class="sol-btn sol-btn--approve" (click)="approve()" [disabled]="actionLoading()">
+                    Aprobar cita
+                  </button>
+                  <button class="sol-btn sol-btn--offer" (click)="openCounterOffer()" [disabled]="actionLoading()">
+                    Contraofertar
+                  </button>
+                  <button class="sol-btn sol-btn--reject" (click)="reject()" [disabled]="actionLoading()">
+                    Rechazar
+                  </button>
+                </div>
+              } @else {
+                <form class="sol-offer-form" [formGroup]="counterOfferForm" (ngSubmit)="submitCounterOffer()">
+                  <p class="sol-offer-form__title">Proponer fecha alternativa</p>
+                  <div class="sol-field">
+                    <label class="sol-label">Nueva fecha y hora</label>
+                    <input type="datetime-local" formControlName="counter_offer_datetime" class="sol-input" />
+                  </div>
+                  <div class="sol-field">
+                    <label class="sol-label">Nota para el cliente (opcional)</label>
+                    <textarea
+                      formControlName="counter_offer_note"
+                      rows="3"
+                      placeholder="Ej. Prefiero a las 11 am, el estudio estará más tranquilo."
+                      class="sol-input sol-textarea"
+                    ></textarea>
+                  </div>
+                  <div class="sol-offer-form__actions">
+                    <button type="submit" [disabled]="counterOfferForm.invalid || actionLoading()" class="sol-btn sol-btn--approve">
+                      Enviar contraoferta
+                    </button>
+                    <button type="button" class="sol-btn sol-btn--ghost" (click)="cancelCounterOffer()">
+                      Cancelar
+                    </button>
+                  </div>
+                </form>
+              }
+            } @else {
+              <p class="sol-no-actions">
+                Esta solicitud ya fue <strong>{{ statusLabel(appt.status) | lowercase }}</strong> y no admite más cambios.
+              </p>
+            }
+          </div>
+        </div>
+
+      </div>
+    }
+
+  </div>
+</section>

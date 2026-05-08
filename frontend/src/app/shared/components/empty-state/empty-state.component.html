@@ -1,0 +1,10 @@
+<div class="empty-state">
+  <div class="empty-state__icon">{{ icon() }}</div>
+  <h3 class="empty-state__title">{{ title() }}</h3>
+  @if (subtitle()) {
+    <p class="empty-state__subtitle">{{ subtitle() }}</p>
+  }
+  @if (ctaLabel() && ctaRoute()) {
+    <a class="empty-state__cta" [routerLink]="ctaRoute()">{{ ctaLabel() }}</a>
+  }
+</div>

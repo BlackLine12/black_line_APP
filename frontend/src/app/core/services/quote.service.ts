@@ -76,6 +76,11 @@ export class QuoteService {
     return this.http.get<Appointment[]>(`${this.base}/appointments/`);
   }
 
+  /** RF-4: Obtener detalle de una cita */
+  getAppointmentById(id: number): Observable<Appointment> {
+    return this.http.get<Appointment>(`${this.base}/appointments/${id}/`);
+  }
+
   /** RF-4: Cambiar estado de una cita */
   updateAppointmentStatus(id: number, payload: AppointmentStatusPayload): Observable<Appointment> {
     return this.http.patch<Appointment>(`${this.base}/appointments/${id}/status/`, payload);

@@ -1,0 +1,195 @@
+// ── Tokens ────────────────────────────────────────────────────────────────
+$gold:    #C9A84C;
+$gold-a:  rgba(201, 168, 76, 0.08);
+$cream:   #EDE0C4;
+$muted:   #8A7E72;
+$bg:      #0C0A08;
+$border:  rgba(201, 168, 76, 0.12);
+$green:   #5cb870;
+$red:     #e07070;
+
+// ── Questions list ────────────────────────────────────────────────────────
+.hcf__questions {
+  display: flex;
+  flex-direction: column;
+}
+
+.hcf__q {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 13px 0;
+  border-bottom: 1px solid $border;
+
+  &--last { border-bottom: none; }
+}
+
+.hcf__q-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.hcf__q-text {
+  font-size: 0.875rem;
+  color: $cream;
+  line-height: 1.4;
+  flex: 1;
+}
+
+// ── Sí / No toggle ────────────────────────────────────────────────────────
+.hcf__toggle {
+  display: flex;
+  border: 1px solid rgba(201, 168, 76, 0.15);
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.hcf__toggle-opt {
+  display: flex;
+  align-items: center;
+  padding: 5px 13px;
+  font-size: 12px;
+  font-weight: 600;
+  color: $muted;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  user-select: none;
+
+  input[type="radio"] { display: none; }
+
+  & + & { border-left: 1px solid rgba(201, 168, 76, 0.15); }
+
+  &:hover:not(.hcf__toggle-opt--yes):not(.hcf__toggle-opt--no) {
+    color: $cream;
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  &--yes { background: rgba(220, 70, 70, 0.12); color: $red; }
+  &--no  { background: rgba(50, 180, 80, 0.10);  color: $green; }
+}
+
+// ── Detail textarea ───────────────────────────────────────────────────────
+.hcf__textarea {
+  background: $bg;
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: $cream;
+  font-size: 0.85rem;
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  font-family: inherit;
+
+  &:focus {
+    outline: none;
+    border-color: rgba(201, 168, 76, 0.5);
+  }
+}
+
+// ── All-clear banner ──────────────────────────────────────────────────────
+.hcf__all-clear {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  background: rgba(50, 180, 80, 0.07);
+  border: 1px solid rgba(50, 180, 80, 0.2);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  color: $green;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.hcf__all-clear-icon { font-size: 13px; font-weight: 700; }
+
+// ── Signature section ─────────────────────────────────────────────────────
+.hcf__signature {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  border-top: 1px solid $border;
+  border-bottom: 1px solid $border;
+}
+
+.hcf__signature-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: $cream;
+  margin: 0;
+}
+
+.hcf__signature-hint {
+  font-size: 0.75rem;
+  color: $muted;
+  margin: 0 0 4px;
+  font-style: italic;
+}
+
+.hcf__required { color: $gold; }
+
+// ── Terms ─────────────────────────────────────────────────────────────────
+.hcf__terms {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hcf__terms-label {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: $cream;
+  font-size: 0.875rem;
+  cursor: pointer;
+
+  input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: $gold;
+    flex-shrink: 0;
+  }
+}
+
+.hcf__link-gold {
+  color: $gold;
+  text-decoration: none;
+  &:hover { text-decoration: underline; }
+}
+
+// ── Field error ───────────────────────────────────────────────────────────
+.hcf__field-error {
+  font-size: 0.75rem;
+  color: $red;
+  margin-top: 2px;
+}
+
+// ── Pending list ──────────────────────────────────────────────────────────
+.hcf__pending {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  li {
+    font-size: 0.75rem;
+    color: $muted;
+    padding-left: 12px;
+    position: relative;
+
+    &::before {
+      content: '·';
+      position: absolute;
+      left: 0;
+      color: $gold;
+    }
+  }
+}

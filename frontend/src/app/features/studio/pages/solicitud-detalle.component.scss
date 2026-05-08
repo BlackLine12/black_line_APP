@@ -1,0 +1,331 @@
+:host {
+  display: block;
+  background:
+    radial-gradient(circle at top center, rgba(201, 168, 76, 0.06), transparent 28%),
+    linear-gradient(180deg, #0c0a08 0%, #11110f 100%);
+  min-height: 100vh;
+}
+
+$gold:   #C9A84C;
+$cream:  #EDE0C4;
+$muted:  #8A7E72;
+$green:  #86efac;
+$red:    #fca5a5;
+$purple: #c4b5fd;
+$border: rgba(201, 168, 76, 0.14);
+$font-h: Georgia, 'Times New Roman', serif;
+
+.sol-det { color: $cream; }
+
+.sol-det__inner { display: flex; flex-direction: column; gap: 2rem; }
+
+// ── Breadcrumb ────────────────────────────────────────────────────────────
+.sol-det__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: $muted;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 6px 0;
+  transition: color 0.2s;
+
+  &:hover { color: $cream; }
+}
+
+// ── Loading / Error ───────────────────────────────────────────────────────
+.sol-det__loading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: $muted;
+  padding: 2rem 0;
+}
+
+.sol-det__error {
+  padding: 14px 18px;
+  background: rgba(252,165,165,0.1);
+  border: 1px solid rgba(252,165,165,0.25);
+  border-radius: 12px;
+  color: $red;
+  font-size: 14px;
+}
+
+// ── Header ────────────────────────────────────────────────────────────────
+.sol-det__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.sol-det__client {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.sol-det__avatar {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  border: 1px solid rgba($gold, 0.25);
+  background: rgba($gold, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: $font-h;
+  font-size: 1rem;
+  font-weight: 700;
+  color: $gold;
+  flex-shrink: 0;
+}
+
+.sol-det__name  { margin: 0; font-family: $font-h; font-size: 1.5rem; color: #fff8ea; }
+.sol-det__email { margin: 0.2rem 0 0; color: $muted; font-size: 0.85rem; }
+
+// ── Status ────────────────────────────────────────────────────────────────
+.sol-status {
+  display: inline-block;
+  padding: 0.3rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sol-status--pending       { background: rgba(251,191,36,0.12);  color: #fbbf24; border: 1px solid rgba(251,191,36,0.25); }
+.sol-status--approved      { background: rgba(134,239,172,0.1);  color: $green;  border: 1px solid rgba(134,239,172,0.22); }
+.sol-status--rejected      { background: rgba(252,165,165,0.1);  color: $red;    border: 1px solid rgba(252,165,165,0.22); }
+.sol-status--counter_offer { background: rgba(167,139,250,0.1);  color: $purple; border: 1px solid rgba(167,139,250,0.22); }
+
+// ── Layout ────────────────────────────────────────────────────────────────
+.sol-det__layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 1.5rem;
+  align-items: start;
+
+  @media (max-width: 860px) { grid-template-columns: 1fr; }
+}
+
+.sol-det__info-col   { display: flex; flex-direction: column; gap: 1.25rem; }
+.sol-det__action-col { position: sticky; top: 88px; }
+
+// ── Cards ─────────────────────────────────────────────────────────────────
+.sol-card {
+  padding: 1.25rem 1.5rem;
+  border: 1px solid $border;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(22,18,15,0.98), rgba(14,11,9,0.98));
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  &--offer { border-color: rgba(167,139,250,0.25); background: rgba(167,139,250,0.04); }
+  &--actions { gap: 1.25rem; }
+}
+
+.sol-card__title {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: $muted;
+
+  &--offer { color: $purple; }
+}
+
+// ── Info rows ─────────────────────────────────────────────────────────────
+.sol-rows { display: flex; flex-direction: column; gap: 12px; }
+
+.sol-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+
+  &__label {
+    font-size: 11px;
+    color: $muted;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    padding-top: 2px;
+  }
+
+  &__value {
+    font-size: 14px;
+    color: $cream;
+    text-align: right;
+  }
+
+  &--highlight &__value { color: $gold; font-weight: 600; }
+}
+
+.text-ok  { color: #86efac !important; }
+.text-warn { color: #fbbf24 !important; }
+
+// ── Chips ─────────────────────────────────────────────────────────────────
+.sol-chips { display: flex; flex-wrap: wrap; gap: 0.55rem; }
+
+.sol-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid rgba($gold, 0.12);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.02);
+  min-width: 80px;
+
+  &--price {
+    border-color: rgba($gold, 0.3);
+    background: rgba($gold, 0.06);
+
+    .sol-chip__value { color: $gold; font-size: 1rem; }
+  }
+
+  &__label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: $muted;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+
+  &__value { font-size: 0.9rem; font-weight: 600; color: $cream; }
+}
+
+// ── Action buttons ────────────────────────────────────────────────────────
+.sol-action-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.sol-btn {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:disabled { opacity: 0.45; cursor: not-allowed; }
+}
+
+.sol-btn--approve {
+  border: 1px solid rgba(134,239,172,0.3);
+  background: rgba(134,239,172,0.1);
+  color: $green;
+  &:hover:not(:disabled) { background: rgba(134,239,172,0.18); }
+}
+
+.sol-btn--offer {
+  border: 1px solid rgba(167,139,250,0.3);
+  background: rgba(167,139,250,0.08);
+  color: $purple;
+  &:hover:not(:disabled) { background: rgba(167,139,250,0.15); }
+}
+
+.sol-btn--reject {
+  border: 1px solid rgba(252,165,165,0.3);
+  background: rgba(252,165,165,0.08);
+  color: $red;
+  &:hover:not(:disabled) { background: rgba(252,165,165,0.15); }
+}
+
+.sol-btn--ghost {
+  border: 1px solid rgba($gold, 0.2);
+  background: transparent;
+  color: $muted;
+  &:hover { color: $cream; border-color: rgba($gold, 0.35); }
+}
+
+// ── Counter-offer form ────────────────────────────────────────────────────
+.sol-offer-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.sol-offer-form__title {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: $gold;
+}
+
+.sol-offer-form__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sol-field { display: flex; flex-direction: column; gap: 0.4rem; }
+
+.sol-label {
+  color: #b9ad9d;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.sol-input {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid rgba($gold, 0.16);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.03);
+  color: $cream;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+  color-scheme: dark;
+
+  &::placeholder { color: #7a7068; }
+
+  &:focus {
+    outline: none;
+    border-color: rgba($gold, 0.45);
+    box-shadow: 0 0 0 3px rgba($gold, 0.1);
+  }
+}
+
+.sol-textarea { resize: vertical; min-height: 72px; font-family: inherit; }
+
+// ── Feedback ──────────────────────────────────────────────────────────────
+.sol-success {
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  background: rgba(134,239,172,0.1);
+  border: 1px solid rgba(134,239,172,0.25);
+  color: #bbf7d0;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.sol-error {
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  background: rgba(252,165,165,0.1);
+  border: 1px solid rgba(252,165,165,0.25);
+  color: #fecdd3;
+  font-size: 0.88rem;
+}
+
+.sol-no-actions {
+  font-size: 13px;
+  color: $muted;
+  line-height: 1.6;
+  margin: 0;
+
+  strong { color: $cream; }
+}

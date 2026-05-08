@@ -3,6 +3,7 @@ import { ClientDashboardComponent } from './dashboard.component';
 import { CotizadorComponent }       from './cotizador.component';
 import { MatchComponent }           from './match.component';
 import { MisCitasComponent }        from './mis-citas.component';
+import { CitaDetalleComponent }     from './cita-detalle.component';
 import { MisCotizacionesComponent } from './mis-cotizaciones.component';
 
 export const CLIENT_ROUTES: Routes = [
@@ -12,4 +13,5 @@ export const CLIENT_ROUTES: Routes = [
   { path: 'cotizaciones',   component: MisCotizacionesComponent },
   { path: 'match',          component: MatchComponent },
   { path: 'mis-citas',      component: MisCitasComponent },
+  { path: 'citas/:id',      component: CitaDetalleComponent },
 ];
