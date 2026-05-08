@@ -2,7 +2,9 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { ArtistService } from '../services/artist.service';
+import { MediaUrlService } from '../../../core/services/media-url.service';
 import { PortfolioImage } from '../../../core/models/artist';
+
 
 @Component({
   selector: 'app-portfolio-upload',
@@ -13,6 +15,8 @@ import { PortfolioImage } from '../../../core/models/artist';
 })
 export class PortfolioUploadComponent implements OnInit {
   private readonly artistService = inject(ArtistService);
+  readonly mediaUrl              = inject(MediaUrlService);
+
 
   images: PortfolioImage[] = [];
   description = '';

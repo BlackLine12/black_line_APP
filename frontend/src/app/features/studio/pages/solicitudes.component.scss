@@ -69,12 +69,21 @@
 .sol-badge--gold {
   border-color: rgba(201, 168, 76, 0.3);
   background: rgba(201, 168, 76, 0.08);
+  .sol-badge__num { color: #c9a84c; }
 }
 
 .sol-badge--purple {
   border-color: rgba(167, 139, 250, 0.3);
   background: rgba(167, 139, 250, 0.06);
+  .sol-badge__num { color: #c4b5fd; }
 }
+
+.sol-badge--green {
+  border-color: rgba(134, 239, 172, 0.3);
+  background: rgba(134, 239, 172, 0.06);
+  .sol-badge__num { color: #86efac; }
+}
+
 
 .sol-badge__num {
   font-family: Georgia, serif;
@@ -225,7 +234,34 @@
   gap: 0.4rem;
 }
 
-.sol-card__date { color: #b9ad9d; font-size: 0.85rem; }
+.sol-card__dates {
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+}
+
+.sol-card__date {
+  color: #b9ad9d;
+  font-size: 0.82rem;
+  display: flex;
+  gap: .35rem;
+  align-items: baseline;
+}
+
+.sol-card__date--created {
+  font-size: .76rem;
+  color: #7a7068;
+}
+
+.sol-card__date-label {
+  color: #6a6058;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+
 
 .sol-btn-detail {
   font-size: 0.78rem;

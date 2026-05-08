@@ -1,9 +1,11 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '@env/environment';
 import { User } from '../../../core/models/user';
+import { MediaUrlService } from '../../../core/services/media-url.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-perfil',
@@ -16,6 +18,10 @@ export class PerfilComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly fb = inject(FormBuilder);
   private readonly baseUrl = `${environment.apiUrl}/auth`;
+  private readonly mediaUrl = inject(MediaUrlService);
+  private readonly authService = inject(AuthService);
+
+  @ViewChild('photoInput') photoInput!: ElementRef<HTMLInputElement>;
 
   user = signal<User | null>(null);
   loading = signal(true);
@@ -24,6 +30,11 @@ export class PerfilComponent implements OnInit {
   profileSaving = signal(false);
   profileSuccess = signal(false);
   profileSaveError = signal('');
+
+  uploadingPhoto = signal(false);
+  photoPreview = signal<string | null>(null);
+
+  photoSrc = computed(() => this.mediaUrl.resolve(this.photoPreview()));
 
   passwordSaving = signal(false);
   passwordSuccess = signal(false);
@@ -50,6 +61,7 @@ export class PerfilComponent implements OnInit {
     this.http.get<User>(`${this.baseUrl}/profile/`).subscribe({
       next: (u) => {
         this.user.set(u);
+        this.photoPreview.set(u.profile_photo ?? null);
         this.loading.set(false);
         this.profileForm.patchValue({
           first_name: u.first_name,
@@ -77,8 +89,8 @@ export class PerfilComponent implements OnInit {
         this.profileSaving.set(false);
         this.profileSuccess.set(true);
         this.user.set(u);
-        // sync signal in AuthService via sessionStorage
-        sessionStorage.setItem('bl_user', JSON.stringify(u));
+        this.photoPreview.set(u.profile_photo ?? null);
+        this.authService.updateUser(u);
         setTimeout(() => this.profileSuccess.set(false), 3000);
       },
       error: (err) => {
@@ -89,6 +101,37 @@ export class PerfilComponent implements OnInit {
     });
   }
 
+  triggerPhotoUpload(): void {
+    this.photoInput.nativeElement.click();
+  }
+
+  onPhotoSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = e => this.photoPreview.set(e.target?.result as string);
+    reader.readAsDataURL(file);
+
+    this.uploadingPhoto.set(true);
+    
+    const formData = new FormData();
+    formData.append('profile_photo', file);
+
+    this.http.patch<User>(`${this.baseUrl}/profile-photo/`, formData).subscribe({
+      next: (u) => {
+        this.user.set(u);
+        this.photoPreview.set(u.profile_photo ?? null);
+        this.authService.updateUser(u);
+        this.uploadingPhoto.set(false);
+      },
+      error: () => {
+        this.uploadingPhoto.set(false);
+        this.photoPreview.set(this.user()?.profile_photo ?? null);
+      }
+    });
+  }
+
   changePassword(): void {
     if (this.passwordForm.invalid) return;
 
@@ -96,9 +139,13 @@ export class PerfilComponent implements OnInit {
     this.passwordSuccess.set(false);
     this.passwordSaveError.set('');
 
-    const { current_password, new_password } = this.passwordForm.value;
+    const { current_password, new_password, confirm_password } = this.passwordForm.value;
 
-    this.http.post(`${this.baseUrl}/change-password/`, { current_password, new_password }).subscribe({
+    this.http.post(`${this.baseUrl}/change-password/`, { 
+      old_password: current_password, 
+      new_password, 
+      new_password_confirm: confirm_password 
+    }).subscribe({
       next: () => {
         this.passwordSaving.set(false);
         this.passwordSuccess.set(true);
@@ -107,7 +154,7 @@ export class PerfilComponent implements OnInit {
       },
       error: (err) => {
         this.passwordSaving.set(false);
-        const detail = err.error?.current_password?.[0] ?? err.error?.detail ?? 'Error al cambiar la contraseña.';
+        const detail = err.error?.old_password?.[0] ?? err.error?.detail ?? 'Error al cambiar la contraseña.';
         this.passwordSaveError.set(detail);
       },
     });

@@ -76,6 +76,34 @@ class ChangePasswordView(APIView):
         )
 
 
+class UserPhotoUploadView(APIView):
+    """
+    Vista para subir la foto de perfil del usuario.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def patch(self, request):
+        photo = request.data.get('profile_photo')
+        if not photo:
+            return Response({"detail": "No photo provided"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user = request.user
+        user.profile_photo = photo
+        user.save()
+        
+        # Si el usuario es artista, sincronizar también su perfil de artista
+        if user.user_type == 'STUDIO':
+            from apps.artists.models import ArtistProfile
+            try:
+                artist = ArtistProfile.objects.get(user=user)
+                artist.profile_photo = photo
+                artist.save()
+            except ArtistProfile.DoesNotExist:
+                pass
+
+        return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+
+
 class LogoutView(APIView):
     """
     Vista para cerrar sesión invalidando el refresh token.

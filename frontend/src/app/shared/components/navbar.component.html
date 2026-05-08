@@ -48,9 +48,6 @@
         <a routerLink="/client/mis-citas"
            routerLinkActive="navbar__link--active"
            class="navbar__link">Mis Citas</a>
-        <a routerLink="/client/perfil"
-           routerLinkActive="navbar__link--active"
-           class="navbar__link">Mi Perfil</a>
       }
 
       <!-- Admin links -->
@@ -61,9 +58,6 @@
         <a routerLink="/admin/estilos"
            routerLinkActive="navbar__link--active"
            class="navbar__link navbar__link--admin">Estilos</a>
-        <a routerLink="/client/perfil"
-           routerLinkActive="navbar__link--active"
-           class="navbar__link navbar__link--admin">Mi Perfil</a>
       }
     </div>
 
@@ -71,10 +65,15 @@
     <div class="navbar__right">
       @if (userName()) {
         <div class="navbar__user">
-          <span class="navbar__user-avatar">{{ userName().charAt(0).toUpperCase() }}</span>
+          @if (userPhoto()) {
+            <img [src]="userPhoto()" alt="Avatar" class="navbar__user-img" />
+          } @else {
+            <span class="navbar__user-avatar">{{ userName().charAt(0).toUpperCase() }}</span>
+          }
           <span class="navbar__user-name">{{ userName() }}</span>
         </div>
       }
+
 
       <button id="btn-logout" (click)="logout()" class="navbar__logout">
         <svg xmlns="http://www.w3.org/2000/svg" class="navbar__logout-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -119,13 +118,11 @@
         <a routerLink="/client/cotizaciones" (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Cotizaciones</a>
         <a routerLink="/client/match"        (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Match</a>
         <a routerLink="/client/mis-citas"    (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Mis Citas</a>
-        <a routerLink="/client/perfil"       (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Mi Perfil</a>
       }
 
       @if (isAdmin()) {
         <a routerLink="/admin/dashboard" (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link navbar__mobile-link--admin">Panel</a>
         <a routerLink="/admin/estilos"   (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link navbar__mobile-link--admin">Estilos</a>
-        <a routerLink="/client/perfil"   (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link navbar__mobile-link--admin">Mi Perfil</a>
       }
 
       <div class="navbar__mobile-footer">

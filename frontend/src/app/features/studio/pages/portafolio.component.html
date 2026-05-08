@@ -1,16 +1,320 @@
-<section class="portfolio-page px-4 py-8 sm:px-6 lg:px-8">
-  <div class="portfolio-page__inner mx-auto max-w-5xl">
-    <div class="portfolio-page__header animate-fade-in-down">
-      <div class="portfolio-page__eyebrow">
-        <span class="portfolio-page__eyebrow-dot"></span>
-        ESTUDIO · PORTAFOLIO VISUAL
+<!-- ═══════════════════ PORTAFOLIO ═══════════════════ -->
+<section class="port-page">
+  <div class="port-inner">
+
+    <div class="port-layout">
+      <!-- ── Sidebar ──────────────────────────────────────────────────── -->
+      <aside class="port-sidebar">
+        <div class="port-hero">
+          <div class="port-eyebrow">
+            <span class="port-eyebrow__dot"></span>
+            ESTUDIO · PORTAFOLIO VISUAL
+          </div>
+          <h1 class="port-title">Mi Portafolio</h1>
+          <p class="port-subtitle">Sube y organiza tus trabajos para que los clientes conozcan tu estilo antes de agendar.</p>
+          
+          <div class="port-hero__counter">
+            <span class="port-hero__num">{{ images.length }}</span>
+            <span class="port-hero__label">foto{{ images.length !== 1 ? 's' : '' }} publicadas</span>
+          </div>
+        </div>
+
+        <div class="port-actions">
+          <button class="port-btn port-btn--primary" (click)="openUploadModal()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            Subir nueva foto
+          </button>
+        </div>
+
+        @if (statusMessage) {
+          <div [class]="statusType === 'success' ? 'port-alert port-alert--ok' : 'port-alert port-alert--err'">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="port-alert__icon">
+              @if (statusType === 'success') {
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+              } @else {
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/>
+              }
+            </svg>
+            {{ statusMessage }}
+          </div>
+        }
+      </aside>
+
+      <!-- ── Contenido Principal ──────────────────────────────────────── -->
+      <div class="port-main">
+
+
+    <!-- ── Galería ─────────────────────────────────────────────────── -->
+    @if (loadingList) {
+      <div class="port-loading">
+        <svg class="h-7 w-7 animate-spin text-gold" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+        </svg>
+        <span>Cargando portafolio…</span>
       </div>
-      <h1 class="portfolio-page__title">Portafolio</h1>
-      <p class="portfolio-page__subtitle">
-        Sube, ordena y revisa tus trabajos anteriores con una experiencia visual alineada al resto de BlackLine.
-      </p>
+    } @else if (images.length === 0) {
+      <div class="port-empty">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="port-empty__icon">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/>
+        </svg>
+        <p>Tu portafolio está vacío.</p>
+        <p class="port-empty__hint">Sube tu primera imagen para empezar a mostrar tu trabajo a los clientes.</p>
+      </div>
+    } @else {
+      <div class="port-grid">
+        @for (img of images; track img.id; let i = $index) {
+          <article class="port-card">
+            <!-- Número de posición -->
+            <div class="port-card__pos">#{{ i + 1 }}</div>
+
+            <!-- Imagen -->
+            <button type="button" class="port-card__img-btn" (click)="openViewer(i)" aria-label="Ver imagen en pantalla completa">
+              <img [src]="imageSrc(img)" [alt]="img.description || 'Imagen de portafolio'" class="port-card__img" loading="lazy"/>
+            </button>
+
+            <!-- Overlay con acciones -->
+            <div class="port-card__overlay">
+              <div class="port-card__info">
+                <p class="port-card__desc">{{ img.description || 'Sin descripción' }}</p>
+                <p class="port-card__date">{{ img.created_at | date:'dd MMM yyyy' }}</p>
+              </div>
+
+              <div class="port-card__actions">
+                <!-- Subir -->
+                <button
+                  type="button"
+                  class="port-card__action"
+                  title="Mover arriba"
+                  [disabled]="i === 0 || uploading || reordering"
+                  (click)="moveImage(i, -1)"
+                  aria-label="Mover imagen hacia arriba"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="h-4 w-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18"/>
+                  </svg>
+                </button>
+                <!-- Bajar -->
+                <button
+                  type="button"
+                  class="port-card__action"
+                  title="Mover abajo"
+                  [disabled]="i === images.length - 1 || uploading || reordering"
+                  (click)="moveImage(i, 1)"
+                  aria-label="Mover imagen hacia abajo"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="h-4 w-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"/>
+                  </svg>
+                </button>
+                <!-- Editar -->
+                <button
+                  type="button"
+                  class="port-card__action port-card__action--edit"
+                  title="Editar descripción"
+                  (click)="openEditModal(img)"
+                  aria-label="Editar descripción"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                  </svg>
+                </button>
+                <!-- Eliminar -->
+                <button
+                  type="button"
+                  class="port-card__action port-card__action--danger"
+                  title="Eliminar imagen"
+                  (click)="deleteImage(img.id)"
+                  aria-label="Eliminar imagen del portafolio"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-4 w-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+      }
+      </div>
     </div>
 
-    <app-portfolio-upload />
+    <!-- ── Lightbox ──────────────────────────────────────────────────── -->
+    @if (viewerIndex !== null && images[viewerIndex]) {
+      <div
+        class="port-viewer"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Visor de imagen"
+        (click)="closeViewer()"
+      >
+        <div class="port-viewer__panel" (click)="$event.stopPropagation()">
+          <!-- Cerrar -->
+          <button type="button" class="port-viewer__close" (click)="closeViewer()" aria-label="Cerrar">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-5 w-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
+            </svg>
+          </button>
+
+          <!-- Imagen -->
+          <div class="port-viewer__media">
+            <img
+              [src]="imageSrc(images[viewerIndex])"
+              [alt]="images[viewerIndex].description || 'Portafolio'"
+              class="port-viewer__img"
+            />
+
+            <!-- Flechas laterales -->
+            @if (images.length > 1) {
+              <button
+                type="button"
+                class="port-viewer__arrow port-viewer__arrow--prev"
+                (click)="prevImage()"
+                aria-label="Imagen anterior"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="h-5 w-5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/>
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="port-viewer__arrow port-viewer__arrow--next"
+                (click)="nextImage()"
+                aria-label="Imagen siguiente"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="h-5 w-5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/>
+                </svg>
+              </button>
+            }
+          </div>
+
+          <!-- Info lateral -->
+          <div class="port-viewer__info">
+            <p class="port-viewer__counter">{{ viewerIndex + 1 }} / {{ images.length }}</p>
+            <h3 class="port-viewer__desc">{{ images[viewerIndex].description || 'Sin descripción' }}</h3>
+            <p class="port-viewer__date">{{ images[viewerIndex].created_at | date:'dd MMM yyyy' }}</p>
+
+            <div class="port-viewer__controls">
+              @if (images.length > 1) {
+                <button type="button" class="port-viewer__btn" (click)="prevImage()">← Anterior</button>
+                <button type="button" class="port-viewer__btn" (click)="nextImage()">Siguiente →</button>
+              }
+              <button type="button" class="port-viewer__btn port-viewer__btn--del" (click)="deleteImage(images[viewerIndex].id)">
+                Eliminar imagen
+              </button>
+            </div>
+
+            <p class="port-viewer__hint">Pulsa ESC o ← → para navegar</p>
+          </div>
+        </div>
+      </div>
+    }
+
   </div>
 </section>
+
+<!-- ── Modals ────────────────────────────────────────────────────────────── -->
+
+<!-- Modal: Subir Foto -->
+@if (isUploadModalOpen) {
+  <div class="port-modal" (click)="closeUploadModal()">
+    <div class="port-modal__content" (click)="$event.stopPropagation()">
+      <div class="port-modal__header">
+        <h2 class="port-modal__title">Subir nueva foto</h2>
+        <button class="port-modal__close" (click)="closeUploadModal()">&times;</button>
+      </div>
+      
+      <div class="port-modal__body">
+        <!-- Paso 1: Seleccionar archivo -->
+        @if (!fileToUpload) {
+          <div class="port-upload-prompt" (click)="fileInput.click()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="port-upload-icon">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            <p>Haz clic para elegir una imagen</p>
+            <span>JPG, PNG, WebP (Máx. 5MB)</span>
+          </div>
+        } @else {
+          <!-- Paso 2: Preview y Descripción -->
+          <div class="port-upload-preview">
+            <img [src]="uploadPreview" alt="Vista previa" class="port-upload-img" />
+            <div class="port-upload-info">
+              <label class="port-label">Descripción</label>
+              <textarea
+                [(ngModel)]="uploadDescription"
+                class="port-input port-textarea"
+                placeholder="Ej. Realismo a color en antebrazo — 6 horas"
+                rows="3"
+                maxlength="255"
+              ></textarea>
+            </div>
+          </div>
+        }
+        
+        <input
+          #fileInput
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          class="hidden"
+          (change)="onFileSelected($event)"
+        />
+      </div>
+
+      <div class="port-modal__footer">
+        <button class="port-btn" (click)="closeUploadModal()">Cancelar</button>
+        <button
+          class="port-btn port-btn--primary"
+          [disabled]="!fileToUpload || uploading"
+          (click)="confirmUpload()"
+        >
+          @if (uploading) {
+            Subiendo...
+          } @else {
+            Guardar imagen
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal: Editar Descripción -->
+@if (isEditModalOpen && imageToEdit) {
+  <div class="port-modal" (click)="closeEditModal()">
+    <div class="port-modal__content" (click)="$event.stopPropagation()">
+      <div class="port-modal__header">
+        <h2 class="port-modal__title">Editar descripción</h2>
+        <button class="port-modal__close" (click)="closeEditModal()">&times;</button>
+      </div>
+      <div class="port-modal__body">
+        <div class="port-upload-preview">
+          <img [src]="imageSrc(imageToEdit)" alt="Vista previa" class="port-upload-img port-upload-img--small" />
+          <div class="port-upload-info">
+            <label class="port-label">Nueva descripción</label>
+            <textarea
+              [(ngModel)]="editDescription"
+              class="port-input port-textarea"
+              placeholder="Escribe la descripción..."
+              rows="3"
+              maxlength="255"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="port-modal__footer">
+        <button class="port-btn" (click)="closeEditModal()">Cancelar</button>
+        <button
+          class="port-btn port-btn--primary"
+          [disabled]="savingEdit"
+          (click)="confirmEdit()"
+        >
+          {{ savingEdit ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

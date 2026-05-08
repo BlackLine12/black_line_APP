@@ -78,11 +78,13 @@
           </div>
           <button type="button" class="portfolio-card__image-button" (click)="openViewer(index)">
             <img
-              [src]="img.image"
+              [src]="mediaUrl.resolve(img.image) ?? ''"
               [alt]="img.description || 'Portafolio'"
               class="portfolio-card__image"
+              loading="lazy"
             />
           </button>
+
           <div class="portfolio-card__overlay">
             <div class="portfolio-card__meta">
               @if (img.description) {
@@ -133,8 +135,9 @@
 
         @if (images[viewerIndex]) {
           <div class="portfolio-viewer__media">
-            <img [src]="images[viewerIndex].image" [alt]="images[viewerIndex].description || 'Portafolio'" />
+            <img [src]="mediaUrl.resolve(images[viewerIndex].image) ?? ''" [alt]="images[viewerIndex].description || 'Portafolio'" />
           </div>
+
 
           <div class="portfolio-viewer__body">
             <div>
