@@ -62,6 +62,17 @@
            routerLinkActive="navbar__link--active"
            class="navbar__link">Mi Perfil</a>
       }
+
+      <!-- Admin-only links -->
+      @if (isAdmin()) {
+        <span class="navbar__divider"></span>
+        <a routerLink="/admin/dashboard"
+           routerLinkActive="navbar__link--active"
+           class="navbar__link navbar__link--admin">Admin</a>
+        <a routerLink="/admin/estilos"
+           routerLinkActive="navbar__link--active"
+           class="navbar__link navbar__link--admin">Estilos</a>
+      }
     </div>
 
     <!-- ── Right: usuario + logout + hamburger ──────────── -->
@@ -122,6 +133,13 @@
         <a routerLink="/client/match"       (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Match</a>
         <a routerLink="/client/mis-citas"   (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Mis Citas</a>
         <a routerLink="/client/perfil"      (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Mi Perfil</a>
+      }
+
+      @if (isAdmin()) {
+        <span class="navbar__mobile-label navbar__mobile-label--admin">Admin</span>
+        <a routerLink="/admin/dashboard" (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link navbar__mobile-link--admin">Panel Admin</a>
+        <a routerLink="/admin/estilos"   (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link navbar__mobile-link--admin">Estilos</a>
+        <a href="/admin/"                target="_blank"                      class="navbar__mobile-link navbar__mobile-link--admin">Django Admin ↗</a>
       }
 
       <div class="navbar__mobile-footer">

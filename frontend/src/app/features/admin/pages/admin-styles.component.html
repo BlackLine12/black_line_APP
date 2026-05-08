@@ -1,0 +1,115 @@
+<div class="styles-page">
+
+  <div class="styles-page__header">
+    <div class="styles-page__breadcrumb">
+      <a routerLink="/admin/dashboard" class="breadcrumb__back">← Panel admin</a>
+    </div>
+    <div class="styles-page__title-row">
+      <h1 class="styles-page__title">Estilos de Tatuaje</h1>
+      <button class="btn-gold" (click)="openCreate()" [disabled]="showCreateForm()">
+        + Nuevo estilo
+      </button>
+    </div>
+  </div>
+
+  @if (error()) {
+    <div class="banner banner--error">{{ error() }}</div>
+  }
+
+  @if (deleteError()) {
+    <div class="banner banner--error">{{ deleteError() }}</div>
+  }
+
+  <!-- Formulario de creación -->
+  @if (showCreateForm()) {
+    <div class="form-card">
+      <h2 class="form-card__title">Nuevo estilo</h2>
+      <form [formGroup]="createForm" (ngSubmit)="submitCreate()" class="inline-form">
+        <input
+          class="field-input"
+          formControlName="name"
+          type="text"
+          placeholder="Ej. Realismo, Acuarela…"
+          autofocus
+        />
+        @if (createForm.get('name')?.invalid && createForm.get('name')?.touched) {
+          <span class="field-error">Nombre requerido (máx. 100 caracteres)</span>
+        }
+        @if (createError()) {
+          <span class="field-error">{{ createError() }}</span>
+        }
+        <div class="form-actions">
+          <button type="submit" class="btn-gold" [disabled]="createForm.invalid || creating()">
+            @if (creating()) { <span class="spinner"></span> Creando… } @else { Crear }
+          </button>
+          <button type="button" class="btn-ghost" (click)="cancelCreate()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  }
+
+  <!-- Lista de estilos -->
+  @if (loading()) {
+    <div class="skeleton-list">
+      @for (n of [1,2,3,4,5]; track n) {
+        <div class="skeleton skeleton--row"></div>
+      }
+    </div>
+  }
+
+  @if (!loading() && styles().length === 0 && !error()) {
+    <div class="empty-state">
+      <div class="empty-state__icon">◈</div>
+      <p>No hay estilos registrados.</p>
+      <button class="btn-gold" (click)="openCreate()">Crear el primero</button>
+    </div>
+  }
+
+  @if (!loading() && styles().length > 0) {
+    <div class="styles-list">
+      @for (style of styles(); track style.id) {
+        <div class="style-row" [class.style-row--editing]="editingId() === style.id">
+
+          @if (editingId() === style.id) {
+            <!-- Modo edición inline -->
+            <form [formGroup]="editForm" (ngSubmit)="submitEdit(style.id)" class="edit-form">
+              <input class="field-input" formControlName="name" type="text" />
+              @if (editForm.get('name')?.invalid && editForm.get('name')?.touched) {
+                <span class="field-error">Nombre requerido</span>
+              }
+              @if (editError()) {
+                <span class="field-error">{{ editError() }}</span>
+              }
+              <div class="form-actions">
+                <button type="submit" class="btn-sm btn-sm--gold" [disabled]="editForm.invalid || editSaving()">
+                  @if (editSaving()) { <span class="spinner spinner--sm"></span> } @else { Guardar }
+                </button>
+                <button type="button" class="btn-sm btn-sm--ghost" (click)="cancelEdit()">Cancelar</button>
+              </div>
+            </form>
+
+          } @else if (deletingId() === style.id) {
+            <!-- Confirmación de borrado -->
+            <div class="delete-confirm">
+              <span class="delete-confirm__text">¿Eliminar <strong>{{ style.name }}</strong>?</span>
+              <div class="form-actions">
+                <button class="btn-sm btn-sm--danger" (click)="submitDelete(style.id)">Eliminar</button>
+                <button class="btn-sm btn-sm--ghost" (click)="cancelDelete()">Cancelar</button>
+              </div>
+            </div>
+
+          } @else {
+            <!-- Vista normal -->
+            <span class="style-row__name">{{ style.name }}</span>
+            <div class="style-row__actions">
+              <button class="btn-sm btn-sm--ghost" (click)="startEdit(style)">Editar</button>
+              <button class="btn-sm btn-sm--danger-outline" (click)="confirmDelete(style.id)">Eliminar</button>
+            </div>
+          }
+
+        </div>
+      }
+    </div>
+  }
+
+</div>

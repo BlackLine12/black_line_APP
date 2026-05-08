@@ -259,6 +259,7 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
 
   &--studio { color: #A5B4FC; }
   &--client  { color: $gold; }
+  &--admin   { color: #f87171; }
 }
 
 .navbar__mobile-link {
@@ -275,6 +276,16 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
     background: rgba($cream, 0.05);
     color: $cream;
   }
+}
+
+.navbar__mobile-link--admin {
+  color: rgba(#f87171, 0.7);
+  &:hover { color: #f87171; }
+}
+
+.navbar__link--admin {
+  color: rgba(#f87171, 0.8);
+  &:hover, &.navbar__link--active { color: #f87171; }
 }
 
 .navbar__mobile-footer {

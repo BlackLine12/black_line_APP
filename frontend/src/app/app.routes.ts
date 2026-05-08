@@ -42,6 +42,12 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/studio/pages/studio.routes').then(m => m.STUDIO_ROUTES),
       },
+      {
+        path: 'admin',
+        canActivate: [roleGuard('ADMIN')],
+        loadChildren: () =>
+          import('./features/admin/pages/admin.routes').then(m => m.ADMIN_ROUTES),
+      },
     ],
   },
 
