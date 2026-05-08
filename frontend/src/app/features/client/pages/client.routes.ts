@@ -6,6 +6,7 @@ import { MisCitasComponent }        from './mis-citas.component';
 import { CitaDetalleComponent }     from './cita-detalle.component';
 import { MisCotizacionesComponent } from './mis-cotizaciones.component';
 import { ArtistaPerfilComponent }   from './artista-perfil.component';
+import { PerfilComponent }          from './perfil.component';
 
 export const CLIENT_ROUTES: Routes = [
   { path: '',                redirectTo: 'dashboard', pathMatch: 'full' },
@@ -16,4 +17,5 @@ export const CLIENT_ROUTES: Routes = [
   { path: 'mis-citas',       component: MisCitasComponent },
   { path: 'citas/:id',       component: CitaDetalleComponent },
   { path: 'artistas/:id',    component: ArtistaPerfilComponent },
+  { path: 'perfil',          component: PerfilComponent },
 ];
