@@ -66,25 +66,11 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
   &:hover { opacity: 0.85; }
 }
 
-.navbar__brand-mark {
-  display: inline-block;
-  width: 24px;
-  height: 24px;
-  border-radius: 3px;
-  background: linear-gradient(135deg, $gold 0%, $gold-dim 100%);
-  flex-shrink: 0;
-}
-
-.navbar__brand-text {
-  font-family: $font-serif;
-  font-size: 20px;
-  font-weight: 700;
-  color: $cream;
-  line-height: 1;
-}
-
-.navbar__brand-line {
-  color: $gold;
+.navbar__brand-img {
+  height: 36px;
+  width: auto;
+  display: block;
+  object-fit: contain;
 }
 
 // ── Desktop links ──────────────────────────────────────────────────────────
