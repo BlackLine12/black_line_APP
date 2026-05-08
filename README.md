@@ -21,6 +21,7 @@ El proyecto está construido como un monorepo fullstack:
 
 - [Descripción funcional](#descripción-funcional)
 - [Arquitectura general](#arquitectura-general)
+- [Rutas del frontend](#rutas-del-frontend)
 - [Tecnologías](#tecnologías)
 - [Requisitos previos](#requisitos-previos)
 - [Inicio rápido con Docker](#inicio-rápido-con-docker)
@@ -31,6 +32,7 @@ El proyecto está construido como un monorepo fullstack:
 - [Estructura del repositorio](#estructura-del-repositorio)
 - [Pruebas](#pruebas)
 - [Troubleshooting](#troubleshooting)
+- [Changelog](#changelog)
 
 ## Descripción funcional
 
@@ -47,6 +49,35 @@ Roles soportados:
 - CLIENT
 - STUDIO
 - ADMIN
+
+## Rutas del frontend
+
+Todas las rutas autenticadas pasan primero por `authGuard`. Las rutas de rol usan `roleGuard`, que redirige a `/403` si el rol no coincide. El rol ADMIN tiene bypass total y puede acceder a cualquier ruta.
+
+| Ruta | Componente | Rol requerido |
+|---|---|---|
+| `/` | `LandingComponent` | público (redirige si autenticado) |
+| `/auth/login` | `LoginComponent` | público |
+| `/auth/register` | `RegisterComponent` | público |
+| `/403` | `ForbiddenComponent` | — |
+| `/404` y `**` | `NotFoundComponent` | — |
+| `/client/dashboard` | `ClientDashboardComponent` | CLIENT |
+| `/client/cotizador` | `CotizadorComponent` | CLIENT |
+| `/client/cotizaciones` | `MisCotizacionesComponent` | CLIENT |
+| `/client/match` | `MatchComponent` | CLIENT |
+| `/client/mis-citas` | `MisCitasComponent` | CLIENT |
+| `/client/citas/:id` | `CitaDetalleComponent` | CLIENT |
+| `/client/artistas/:id` | `ArtistaPerfilComponent` | CLIENT |
+| `/client/perfil` | `PerfilComponent` | CLIENT (ADMIN también) |
+| `/studio/dashboard` | `DashboardComponent` | STUDIO |
+| `/studio/solicitudes` | `SolicitudesComponent` | STUDIO |
+| `/studio/solicitudes/:id` | `SolicitudDetalleComponent` | STUDIO |
+| `/studio/agenda` | `AgendaComponent` | STUDIO |
+| `/studio/portafolio` | `PortafolioComponent` | STUDIO |
+| `/admin/dashboard` | `AdminDashboardComponent` | ADMIN |
+| `/admin/estilos` | `AdminStylesComponent` | ADMIN |
+
+---
 
 ## Arquitectura general
 
@@ -294,4 +325,105 @@ npm test
 
 ---
 
-Si necesitas, puedo agregar una sección de flujo por rol (CLIENT/STUDIO) y un diagrama de estado de citas directamente en este README.
+## Changelog
+
+### Branch `BL-corrections-arturo` — Mayo 2026
+
+#### Componentes compartidos refactorizados
+
+**`HealthConsentFormComponent`** (`shared/components/health-consent-form/`)
+- Extraído de `MatchComponent` y `MisCitasComponent` donde estaba duplicado.
+- Implementa `ControlValueAccessor` + `Validator` para integrarse como control de formulario estándar.
+- API pública: `isValid`, `getValue()`, `reset()`, `markAllTouched()`.
+- Los componentes padre lo consumen vía `@ViewChild`.
+
+**`EmptyStateComponent`** (`shared/components/empty-state/`)
+- Componente genérico para estados vacíos con inputs: `icon`, `title`, `subtitle`, `ctaLabel`, `ctaRoute`.
+
+#### Nuevas páginas — Cliente
+
+**`CitaDetalleComponent`** (`/client/citas/:id`)
+- Vista de detalle de una cita. Muestra datos completos, estado y cotización asociada.
+- Permite al cliente aceptar o rechazar una contraoferta del artista.
+- Panel lateral con `HealthConsentFormComponent` para firmar el consentimiento de salud si la cita fue aprobada.
+
+**`ArtistaPerfilComponent`** (`/client/artistas/:id`)
+- Perfil público del artista con galería de portafolio.
+- Lightbox para ver imágenes en tamaño completo.
+- Botón "Ver perfil" añadido en las tarjetas de resultados de búsqueda (`MatchComponent`).
+
+**`PerfilComponent`** (`/client/perfil`)
+- Edición de datos personales: nombre, apellido, username, teléfono (email de solo lectura).
+- Cambio de contraseña con validación de coincidencia y toggle mostrar/ocultar.
+- Accesible también desde el dashboard (acción rápida) y la navbar.
+
+#### Nuevas páginas — Studio
+
+**`SolicitudDetalleComponent`** (`/studio/solicitudes/:id`)
+- Detalle de una solicitud de cita entrante.
+- Acciones: aprobar, rechazar, o proponer una contraoferta con nueva fecha y nota.
+
+#### Nuevas páginas — Admin
+
+**`AdminDashboardComponent`** (`/admin/dashboard`)
+- Panel global con 4 métricas: artistas registrados, citas totales, citas pendientes, estilos de tatuaje.
+- Tabla con las 5 citas más recientes de toda la plataforma.
+- Links directos al gestor de estilos y al Django Admin nativo.
+
+**`AdminStylesComponent`** (`/admin/estilos`)
+- CRUD completo de estilos de tatuaje (`TattooStyle`).
+- Crear, editar inline por fila, y eliminar con confirmación.
+
+#### Páginas de error
+
+**`NotFoundComponent`** (`/404`, wildcard `**`)
+- Reemplaza el redirect silencioso a `/` que existía antes.
+- Detecta si el usuario está autenticado y muestra el CTA correspondiente.
+
+**`ForbiddenComponent`** (`/403`)
+- Mostrada cuando `roleGuard` detecta un rol incorrecto (antes redirigía silenciosamente al dashboard del propio usuario).
+
+#### Cambios en servicios y guards
+
+- **`ArtistService` (core):** añadido `getProfileById(id)` → `GET /api/artists/profiles/{id}/`.
+- **`QuoteService`:** añadidos `getAppointmentById(id)`, `createAppointment(payload)`, `submitHealthConsent(id, payload)`.
+- **`AgendaService` (studio):** añadido `getAppointmentById(id)`.
+- **`AuthService`:** `redirectByRole()` ahora envía al ADMIN a `/admin/dashboard` en lugar de al Django Admin directamente.
+- **`roleGuard`:** en caso de rol incorrecto redirige a `/403` en lugar del propio dashboard del usuario.
+
+#### Cambios en la navbar
+
+- Signals `isClient` e `isStudio` ya **no incluyen** al rol ADMIN para evitar mostrar links de otros roles.
+- Cada rol ve únicamente sus propios links:
+  - CLIENT: Panel · Cotizador · Cotizaciones · Match · Mis Citas · Mi Perfil
+  - STUDIO: Dashboard · Solicitudes · Portafolio · Agenda
+  - ADMIN: Panel · Estilos · Mi Perfil
+
+#### Cuenta admin de prueba
+
+Creada con el comando `python manage.py shell`. Credenciales para el entorno de desarrollo:
+
+```
+Email:      admin@blackline.mx
+Contraseña: BlackLine2024!
+```
+
+Para crear una nueva cuenta admin en cualquier entorno:
+
+```bash
+docker compose exec backend python manage.py shell -c "
+from apps.users.models import User
+User.objects.create_superuser(
+    email='admin@ejemplo.com',
+    username='admin',
+    password='TuContraseña123!',
+    first_name='Admin',
+    last_name='BlackLine',
+    user_type='ADMIN',
+)
+"
+```
+
+#### Nota técnica importante
+
+`GET /api/quotes/appointments/` devuelve un **array directo** (no paginado), a diferencia de la mayoría de endpoints que devuelven `{count, next, previous, results}`. Tenerlo en cuenta al consumir este endpoint en nuevos componentes.

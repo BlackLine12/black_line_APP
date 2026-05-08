@@ -86,6 +86,9 @@
                 <span [class]="'sol-status sol-status--' + appt.status.toLowerCase()">
                   {{ statusLabel(appt.status) }}
                 </span>
+                <a [routerLink]="['/studio/solicitudes', appt.id]" class="sol-btn-detail">
+                  Ver detalle →
+                </a>
               </div>
             </div>
 

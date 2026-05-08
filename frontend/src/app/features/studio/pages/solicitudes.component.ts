@@ -1,5 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AgendaService } from '../services/agenda.service';
 import { Appointment } from '../../../core/models/quote';
@@ -9,7 +10,7 @@ type StatusFilter = 'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED' | 'COUNTER_OFFER
 @Component({
   selector: 'app-solicitudes',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, DatePipe, CurrencyPipe],
+  imports: [CommonModule, RouterLink, ReactiveFormsModule, DatePipe, CurrencyPipe],
   templateUrl: './solicitudes.component.html',
   styleUrl: './solicitudes.component.scss',
 })

@@ -65,8 +65,7 @@ export class AuthService {
     } else if (type === 'CLIENT') {
       this.router.navigate(['/client/dashboard']);
     } else if (type === 'ADMIN') {
-      // ADMIN gestiona vía Django Admin — salir de la SPA evita el loop con noAuthGuard
-      window.location.href = '/admin/';
+      this.router.navigate(['/admin/dashboard']);
     } else {
       this.router.navigate(['/auth/login']);
     }

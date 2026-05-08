@@ -227,6 +227,17 @@
 
 .sol-card__date { color: #b9ad9d; font-size: 0.85rem; }
 
+.sol-btn-detail {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(201, 168, 76, 0.7);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  transition: color 0.2s;
+
+  &:hover { color: #c9a84c; }
+}
+
 // ── Status badge ──────────────────────────────────────────────────────────────
 
 .sol-status {

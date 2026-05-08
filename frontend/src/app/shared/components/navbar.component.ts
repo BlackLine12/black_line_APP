@@ -13,9 +13,9 @@ export class NavbarComponent {
   readonly authService = inject(AuthService);
   readonly mobileMenuOpen = signal(false);
 
-  readonly isAdmin = computed(() => this.authService.userType() === 'ADMIN');
-  readonly isStudio = computed(() => this.authService.userType() === 'STUDIO' || this.isAdmin());
-  readonly isClient = computed(() => this.authService.userType() === 'CLIENT' || this.isAdmin());
+  readonly isAdmin  = computed(() => this.authService.userType() === 'ADMIN');
+  readonly isStudio = computed(() => this.authService.userType() === 'STUDIO');
+  readonly isClient = computed(() => this.authService.userType() === 'CLIENT');
   readonly userName = computed(() => {
     const u = this.authService.user();
     if (!u) return '';

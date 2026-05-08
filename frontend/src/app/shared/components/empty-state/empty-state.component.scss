@@ -1,0 +1,52 @@
+$gold:  #C9A84C;
+$cream: #EDE0C4;
+$muted: #8A7E72;
+$font-serif: 'Playfair Display', Georgia, serif;
+$font-sans:  'Inter', system-ui, sans-serif;
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 80px 40px;
+  font-family: $font-sans;
+}
+
+.empty-state__icon {
+  font-size: 48px;
+  color: rgba(201, 168, 76, 0.2);
+  margin-bottom: 24px;
+  line-height: 1;
+}
+
+.empty-state__title {
+  font-family: $font-serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: $cream;
+  margin: 0 0 12px;
+}
+
+.empty-state__subtitle {
+  font-size: 15px;
+  color: $muted;
+  margin: 0 0 28px;
+  line-height: 1.6;
+  max-width: 400px;
+}
+
+.empty-state__cta {
+  display: inline-block;
+  padding: 12px 28px;
+  background: $gold;
+  color: #0C0A08;
+  font-family: $font-sans;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: opacity 0.2s;
+
+  &:hover { opacity: 0.88; }
+}

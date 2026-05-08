@@ -1,0 +1,148 @@
+<form [formGroup]="form" class="hcf">
+
+  <div class="hcf__questions">
+
+    <div class="hcf__q">
+      <div class="hcf__q-row">
+        <span class="hcf__q-text">¿Tiene alergias conocidas?</span>
+        <div class="hcf__toggle">
+          <label class="hcf__toggle-opt" [class.hcf__toggle-opt--yes]="form.value.has_allergies === true">
+            <input type="radio" formControlName="has_allergies" [value]="true" /> Sí
+          </label>
+          <label class="hcf__toggle-opt" [class.hcf__toggle-opt--no]="form.value.has_allergies === false">
+            <input type="radio" formControlName="has_allergies" [value]="false" /> No
+          </label>
+        </div>
+      </div>
+      @if (form.value.has_allergies) {
+        <textarea formControlName="allergies_detail" class="hcf__textarea"
+          placeholder="Especifique: medicamentos, látex, tintas…" rows="2"></textarea>
+      }
+    </div>
+
+    <div class="hcf__q">
+      <div class="hcf__q-row">
+        <span class="hcf__q-text">¿Trastorno de coagulación o hemofilia?</span>
+        <div class="hcf__toggle">
+          <label class="hcf__toggle-opt" [class.hcf__toggle-opt--yes]="form.value.has_hemophilia === true">
+            <input type="radio" formControlName="has_hemophilia" [value]="true" /> Sí
+          </label>
+          <label class="hcf__toggle-opt" [class.hcf__toggle-opt--no]="form.value.has_hemophilia === false">
+            <input type="radio" formControlName="has_hemophilia" [value]="false" /> No
+          </label>
+        </div>
+      </div>
+      @if (form.value.has_hemophilia) {
+        <textarea formControlName="hemophilia_detail" class="hcf__textarea"
+          placeholder="Ej. hemofilia A, von Willebrand…" rows="2"></textarea>
+      }
+    </div>
+
+    <div class="hcf__q">
+      <div class="hcf__q-row">
+        <span class="hcf__q-text">¿Padece alguna enfermedad crónica?</span>
+        <div class="hcf__toggle">
+          <label class="hcf__toggle-opt" [class.hcf__toggle-opt--yes]="form.value.has_chronic_disease === true">
+            <input type="radio" formControlName="has_chronic_disease" [value]="true" /> Sí
+          </label>
+          <label class="hcf__toggle-opt" [class.hcf__toggle-opt--no]="form.value.has_chronic_disease === false">
+            <input type="radio" formControlName="has_chronic_disease" [value]="false" /> No
+          </label>
+        </div>
+      </div>
+      @if (form.value.has_chronic_disease) {
+        <textarea formControlName="chronic_disease_detail" class="hcf__textarea"
+          placeholder="Ej. diabetes, hipertensión, coagulopatías…" rows="2"></textarea>
+      }
+    </div>
+
+    <div class="hcf__q">
+      <div class="hcf__q-row">
+        <span class="hcf__q-text">¿Toma medicamentos actualmente?</span>
+        <div class="hcf__toggle">
+          <label class="hcf__toggle-opt" [class.hcf__toggle-opt--yes]="form.value.takes_medication === true">
+            <input type="radio" formControlName="takes_medication" [value]="true" /> Sí
+          </label>
+          <label class="hcf__toggle-opt" [class.hcf__toggle-opt--no]="form.value.takes_medication === false">
+            <input type="radio" formControlName="takes_medication" [value]="false" /> No
+          </label>
+        </div>
+      </div>
+      @if (form.value.takes_medication) {
+        <textarea formControlName="medication_detail" class="hcf__textarea"
+          placeholder="Nombre y dosis (anticoagulantes, corticoides…)" rows="2"></textarea>
+      }
+    </div>
+
+    <div class="hcf__q">
+      <div class="hcf__q-row">
+        <span class="hcf__q-text">¿Embarazo o período de lactancia?</span>
+        <div class="hcf__toggle">
+          <label class="hcf__toggle-opt" [class.hcf__toggle-opt--yes]="form.value.is_pregnant === true">
+            <input type="radio" formControlName="is_pregnant" [value]="true" /> Sí
+          </label>
+          <label class="hcf__toggle-opt" [class.hcf__toggle-opt--no]="form.value.is_pregnant === false">
+            <input type="radio" formControlName="is_pregnant" [value]="false" /> No
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="hcf__q hcf__q--last">
+      <div class="hcf__q-row">
+        <span class="hcf__q-text">¿Condición de piel activa?</span>
+        <div class="hcf__toggle">
+          <label class="hcf__toggle-opt" [class.hcf__toggle-opt--yes]="form.value.has_skin_condition === true">
+            <input type="radio" formControlName="has_skin_condition" [value]="true" /> Sí
+          </label>
+          <label class="hcf__toggle-opt" [class.hcf__toggle-opt--no]="form.value.has_skin_condition === false">
+            <input type="radio" formControlName="has_skin_condition" [value]="false" /> No
+          </label>
+        </div>
+      </div>
+      @if (form.value.has_skin_condition) {
+        <textarea formControlName="skin_condition_detail" class="hcf__textarea"
+          placeholder="Ej. psoriasis, queloide, dermatitis…" rows="2"></textarea>
+      }
+    </div>
+
+  </div>
+
+  @if (allHealthClear) {
+    <div class="hcf__all-clear">
+      <span class="hcf__all-clear-icon">✓</span>
+      Sin antecedentes de salud declarados
+    </div>
+  }
+
+  <div class="hcf__signature">
+    <p class="hcf__signature-label">Firma digital <span class="hcf__required">*</span></p>
+    <p class="hcf__signature-hint">Al firmar confirmas que la información proporcionada es verídica.</p>
+    <app-signature-pad formControlName="signature_data"></app-signature-pad>
+    @if (form.get('signature_data')?.invalid && form.get('signature_data')?.touched) {
+      <span class="hcf__field-error">La firma es obligatoria</span>
+    }
+  </div>
+
+  <div class="hcf__terms">
+    <label class="hcf__terms-label">
+      <input type="checkbox" formControlName="terms_accepted" />
+      Acepto los <a href="#" class="hcf__link-gold">términos del servicio</a> y el aviso de privacidad (LFPDPPP)
+    </label>
+    @if (form.get('terms_accepted')?.invalid && form.get('terms_accepted')?.touched) {
+      <span class="hcf__field-error">Debes aceptar los términos para continuar</span>
+    }
+  </div>
+
+  @if (form.invalid) {
+    <ul class="hcf__pending">
+      @if (form.get('signature_data')?.invalid) {
+        <li>Firma digital pendiente</li>
+      }
+      @if (form.get('terms_accepted')?.invalid) {
+        <li>Acepta los términos para continuar</li>
+      }
+    </ul>
+  }
+
+</form>

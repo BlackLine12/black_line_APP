@@ -14,6 +14,10 @@ export class AgendaService {
     return this.http.get<Appointment[]>(`${this.baseUrl}/appointments/`);
   }
 
+  getAppointmentById(id: number): Observable<Appointment> {
+    return this.http.get<Appointment>(`${this.baseUrl}/appointments/${id}/`);
+  }
+
   updateStatus(id: number, payload: AppointmentStatusPayload): Observable<Appointment> {
     return this.http.patch<Appointment>(`${this.baseUrl}/appointments/${id}/status/`, payload);
   }

@@ -66,25 +66,11 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
   &:hover { opacity: 0.85; }
 }
 
-.navbar__brand-mark {
-  display: inline-block;
-  width: 24px;
-  height: 24px;
-  border-radius: 3px;
-  background: linear-gradient(135deg, $gold 0%, $gold-dim 100%);
-  flex-shrink: 0;
-}
-
-.navbar__brand-text {
-  font-family: $font-serif;
-  font-size: 20px;
-  font-weight: 700;
-  color: $cream;
-  line-height: 1;
-}
-
-.navbar__brand-line {
-  color: $gold;
+.navbar__brand-img {
+  height: 36px;
+  width: auto;
+  display: block;
+  object-fit: contain;
 }
 
 // ── Desktop links ──────────────────────────────────────────────────────────
@@ -273,6 +259,7 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
 
   &--studio { color: #A5B4FC; }
   &--client  { color: $gold; }
+  &--admin   { color: #f87171; }
 }
 
 .navbar__mobile-link {
@@ -289,6 +276,16 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
     background: rgba($cream, 0.05);
     color: $cream;
   }
+}
+
+.navbar__mobile-link--admin {
+  color: rgba(#f87171, 0.7);
+  &:hover { color: #f87171; }
+}
+
+.navbar__link--admin {
+  color: rgba(#f87171, 0.8);
+  &:hover, &.navbar__link--active { color: #f87171; }
 }
 
 .navbar__mobile-footer {
