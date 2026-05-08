@@ -1,15 +1,13 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '@env/environment';
 import { forkJoin } from 'rxjs';
-import { ArtistProfile } from '../../../core/models/artist';
+import { ArtistProfile, TattooStyle } from '../../../core/models/artist';
 import { Appointment } from '../../../core/models/quote';
-import { User } from '../../../core/models/user';
-import { TattooStyle } from '../../../core/models/artist';
 
-interface PaginatedResponse<T> { count: number; results: T[]; }
+interface Paginated<T> { count: number; results: T[]; }
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -25,28 +23,28 @@ export class AdminDashboardComponent implements OnInit {
   loading = signal(true);
   error   = signal('');
 
-  totalArtists     = signal(0);
+  totalArtists      = signal(0);
   totalAppointments = signal(0);
-  totalStyles      = signal(0);
-  pendingCount     = signal(0);
-  approvedCount    = signal(0);
+  totalStyles       = signal(0);
+  pendingCount      = signal(0);
+  approvedCount     = signal(0);
   recentAppointments = signal<Appointment[]>([]);
 
   ngOnInit(): void {
     forkJoin({
-      artists:      this.http.get<PaginatedResponse<ArtistProfile>>(`${this.api}/artists/profiles/`),
-      appointments: this.http.get<PaginatedResponse<Appointment>>(`${this.api}/quotes/appointments/`),
-      styles:       this.http.get<PaginatedResponse<TattooStyle>>(`${this.api}/artists/styles/`),
+      artists:      this.http.get<Paginated<ArtistProfile>>(`${this.api}/artists/profiles/`),
+      // appointments devuelve lista directa (no paginada)
+      appointments: this.http.get<Appointment[]>(`${this.api}/quotes/appointments/`),
+      styles:       this.http.get<Paginated<TattooStyle>>(`${this.api}/artists/styles/`),
     }).subscribe({
       next: ({ artists, appointments, styles }) => {
         this.totalArtists.set(artists.count);
-        this.totalAppointments.set(appointments.count);
+        this.totalAppointments.set(appointments.length);
         this.totalStyles.set(styles.count);
 
-        const appts = appointments.results;
-        this.pendingCount.set(appts.filter(a => a.status === 'PENDING').length);
-        this.approvedCount.set(appts.filter(a => a.status === 'APPROVED').length);
-        this.recentAppointments.set(appts.slice(0, 5));
+        this.pendingCount.set(appointments.filter(a => a.status === 'PENDING').length);
+        this.approvedCount.set(appointments.filter(a => a.status === 'APPROVED').length);
+        this.recentAppointments.set(appointments.slice(0, 5));
         this.loading.set(false);
       },
       error: () => {
