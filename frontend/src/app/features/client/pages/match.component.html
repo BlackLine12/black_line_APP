@@ -170,7 +170,14 @@
                   <span class="price-value">{{ formatPrice(artist.estimated_price) }}</span>
                 </div>
                 <div class="price-min">Mínimo: {{ formatPrice(artist.minimum_setup_fee) }}</div>
-                <button class="btn-select">Elegir</button>
+                <div class="artist-card__btns">
+                  <a class="btn-profile"
+                     [routerLink]="['/client/artistas', artist.artist_id]"
+                     (click)="$event.stopPropagation()">
+                    Ver perfil
+                  </a>
+                  <button class="btn-select">Elegir</button>
+                </div>
               </div>
             </div>
           }

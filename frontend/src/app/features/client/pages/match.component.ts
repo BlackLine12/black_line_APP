@@ -1,7 +1,7 @@
 import { Component, inject, signal, computed, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterModule } from '@angular/router';
 import { QuoteService } from '../../../core/services/quote.service';
 import { ArtistService, CityCount } from '../../../core/services/artist.service';
 import { ArtistMatchCard, MatchSearchParams, AppointmentCreatePayload } from '../../../core/models/quote';
@@ -11,7 +11,7 @@ import { HealthConsentFormComponent } from '../../../shared/components/health-co
 @Component({
   selector: 'app-match',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, HealthConsentFormComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, RouterModule, HealthConsentFormComponent],
   templateUrl: './match.component.html',
   styleUrl: './match.component.scss',
 })

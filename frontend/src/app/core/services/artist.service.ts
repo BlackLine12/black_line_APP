@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '@env/environment';
+import { ArtistProfile } from '../models/artist';
 
 export interface CityCount {
   city: string;
@@ -15,5 +16,9 @@ export class ArtistService {
 
   getCityCounts(): Observable<CityCount[]> {
     return this.http.get<CityCount[]>(`${this.base}/cities/`);
+  }
+
+  getProfileById(id: number): Observable<ArtistProfile> {
+    return this.http.get<ArtistProfile>(`${this.base}/profiles/${id}/`);
   }
 }

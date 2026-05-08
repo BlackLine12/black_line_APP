@@ -1,0 +1,392 @@
+$bg:      #0C0A08;
+$bg-card: #111110;
+$bg-alt:  #0F0D0B;
+$gold:    #C9A84C;
+$gold-a:  rgba(201, 168, 76, 0.12);
+$gold-b:  rgba(201, 168, 76, 0.2);
+$cream:   #EDE0C4;
+$muted:   #8A7E72;
+$divider: #2A2420;
+$font-h:  'Playfair Display', Georgia, serif;
+$font-b:  'Inter', system-ui, sans-serif;
+
+.perfil {
+  min-height: 100vh;
+  background: $bg;
+  color: $cream;
+  font-family: $font-b;
+  padding: 40px 48px 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  @media (max-width: 768px) { padding: 24px 16px 60px; }
+}
+
+// ── Breadcrumb ────────────────────────────────────────────────────────────
+.perfil__breadcrumb { margin-bottom: 32px; }
+
+.perfil__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: $muted;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 6px 0;
+  transition: color 0.2s;
+
+  &:hover { color: $cream; }
+}
+
+// ── Layout ────────────────────────────────────────────────────────────────
+.perfil__layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 40px;
+  align-items: start;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Aside ─────────────────────────────────────────────────────────────────
+.perfil__aside {
+  position: sticky;
+  top: 88px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  @media (max-width: 900px) { position: static; }
+}
+
+.perfil__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.perfil__photo-wrap {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid $gold-b;
+  flex-shrink: 0;
+}
+
+.perfil__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.perfil__photo-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $gold-a;
+
+  span {
+    font-family: $font-h;
+    font-size: 48px;
+    color: $gold-b;
+    text-transform: uppercase;
+  }
+}
+
+.perfil__name {
+  font-family: $font-h;
+  font-size: 24px;
+  font-weight: 700;
+  color: $cream;
+  margin: 0;
+}
+
+.perfil__city {
+  font-size: 12px;
+  color: $muted;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 0;
+}
+
+// ── Card lateral ──────────────────────────────────────────────────────────
+.perfil__card {
+  background: $bg-card;
+  border: 1px solid $divider;
+  border-radius: 12px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.perfil__card-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: $muted;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin: 0;
+
+  &--mt { margin-top: 12px; }
+}
+
+.perfil__card-value {
+  font-family: $font-h;
+  font-size: 20px;
+  font-weight: 700;
+  color: $gold;
+  margin: 0;
+}
+
+// ── Estilos ───────────────────────────────────────────────────────────────
+.perfil__styles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.perfil__style-tag {
+  background: $gold-a;
+  border: 1px solid $gold-b;
+  color: $gold;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+// ── CTA ───────────────────────────────────────────────────────────────────
+.perfil__cta {
+  display: block;
+  padding: 13px 0;
+  background: $gold;
+  border-radius: 8px;
+  color: #0C0A08;
+  font-family: $font-b;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  transition: opacity 0.2s;
+
+  &:hover { opacity: 0.88; }
+}
+
+// ── Main ──────────────────────────────────────────────────────────────────
+.perfil__main {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.perfil__section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.perfil__section-title {
+  font-family: $font-h;
+  font-size: 22px;
+  font-weight: 700;
+  color: $cream;
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  border-bottom: 1px solid $divider;
+  padding-bottom: 14px;
+}
+
+.perfil__section-count {
+  font-family: $font-b;
+  font-size: 13px;
+  font-weight: 400;
+  color: $muted;
+}
+
+.perfil__bio {
+  font-size: 15px;
+  color: $muted;
+  line-height: 1.75;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+// ── Gallery ───────────────────────────────────────────────────────────────
+.perfil__gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+
+  @media (max-width: 600px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+}
+
+.perfil__gallery-item {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid $divider;
+  background: $bg-card;
+  cursor: pointer;
+  padding: 0;
+  transition: border-color 0.2s, transform 0.2s;
+
+  &:hover {
+    border-color: $gold-b;
+    transform: scale(1.02);
+
+    .perfil__gallery-overlay { opacity: 1; }
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+.perfil__gallery-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.75), transparent 50%);
+  display: flex;
+  align-items: flex-end;
+  padding: 12px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.perfil__gallery-desc {
+  font-size: 12px;
+  color: $cream;
+  line-height: 1.4;
+}
+
+// ── Empty state ───────────────────────────────────────────────────────────
+.perfil__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 48px 0;
+  text-align: center;
+}
+
+.perfil__empty-icon {
+  font-size: 40px;
+  color: rgba(201, 168, 76, 0.15);
+}
+
+.perfil__empty p {
+  font-size: 14px;
+  color: $muted;
+  margin: 0;
+}
+
+// ── Lightbox ──────────────────────────────────────────────────────────────
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.lightbox__close {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: $cream;
+  font-size: 18px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  z-index: 2001;
+
+  &:hover { background: rgba(255, 255, 255, 0.15); }
+}
+
+.lightbox__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 90vw;
+  max-height: 90vh;
+}
+
+.lightbox__img {
+  max-width: 100%;
+  max-height: calc(90vh - 60px);
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+}
+
+.lightbox__caption {
+  font-size: 13px;
+  color: rgba($cream, 0.7);
+  text-align: center;
+  margin: 0;
+  max-width: 500px;
+}
+
+// ── Skeleton ──────────────────────────────────────────────────────────────
+.perfil__skeleton-wrap { display: flex; flex-direction: column; gap: 20px; }
+.perfil__error {
+  background: rgba(220,60,60,0.1);
+  border: 1px solid rgba(220,60,60,0.3);
+  color: #e07070;
+  border-radius: 8px;
+  padding: 14px 20px;
+  font-size: 14px;
+}
+
+.skeleton {
+  border-radius: 10px;
+  background: linear-gradient(90deg, $bg-card 25%, #1a1815 50%, $bg-card 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+
+  &--hero  { height: 200px; }
+  &--block { height: 140px; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
