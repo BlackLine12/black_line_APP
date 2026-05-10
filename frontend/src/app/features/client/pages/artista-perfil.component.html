@@ -35,7 +35,7 @@
         <div class="perfil__hero">
           <div class="perfil__photo-wrap">
             @if (p.profile_photo) {
-              <img [src]="p.profile_photo" [alt]="p.username" class="perfil__photo" />
+              <img [src]="resolveImg(p.profile_photo)" [alt]="p.username" class="perfil__photo" />
             } @else {
               <div class="perfil__photo-placeholder">
                 <span>{{ p.username[0].toUpperCase() }}</span>
@@ -102,7 +102,7 @@
             <div class="perfil__gallery">
               @for (img of p.portfolio_images; track img.id) {
                 <button class="perfil__gallery-item" (click)="openLightbox(img)" aria-label="Ver imagen">
-                  <img [src]="img.image" [alt]="img.description || 'Obra del portafolio'" loading="lazy" />
+                  <img [src]="resolveImg(img.image)" [alt]="img.description || 'Obra del portafolio'" loading="lazy" />
                   @if (img.description) {
                     <div class="perfil__gallery-overlay">
                       <span class="perfil__gallery-desc">{{ img.description }}</span>
@@ -125,7 +125,7 @@
   <div class="lightbox" (click)="closeLightbox()">
     <button class="lightbox__close" (click)="closeLightbox()" aria-label="Cerrar">✕</button>
     <div class="lightbox__inner" (click)="$event.stopPropagation()">
-      <img [src]="img.image" [alt]="img.description || 'Obra'" class="lightbox__img" />
+      <img [src]="resolveImg(img.image)" [alt]="img.description || 'Obra'" class="lightbox__img" />
       @if (img.description) {
         <p class="lightbox__caption">{{ img.description }}</p>
       }

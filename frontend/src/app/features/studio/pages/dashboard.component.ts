@@ -137,7 +137,7 @@ export class DashboardComponent implements OnInit {
 
   private loadData(): void {
     this.artistService.getStyles().subscribe({
-      next:  (s) => (this.styles = s),
+      next:  (s) => (this.styles = Array.isArray(s) ? s : (s as any).results ?? []),
       error: ()  => (this.styles = []),
     });
 

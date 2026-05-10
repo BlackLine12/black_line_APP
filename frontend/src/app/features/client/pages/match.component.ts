@@ -4,7 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { Router, RouterLink, RouterModule } from '@angular/router';
 import { QuoteService } from '../../../core/services/quote.service';
 import { ArtistService, CityCount } from '../../../core/services/artist.service';
-import { ArtistMatchCard, MatchSearchParams, AppointmentCreatePayload } from '../../../core/models/quote';
+import { ArtistMatchCard, MatchSearchParams, AppointmentCreatePayload, Appointment, CalendarBlock } from '../../../core/models/quote';
 import { MexicanCity, filterCities } from '../../../core/data/cities-mx';
 import { HealthConsentFormComponent } from '../../../shared/components/health-consent-form/health-consent-form.component';
 
@@ -49,6 +49,9 @@ export class MatchComponent implements OnInit {
   submitting = signal(false);
   submitError = signal('');
   createdAppointmentId = signal<number | null>(null);
+  existingAppointments = signal<Appointment[]>([]);
+  artistCalendarBlocks = signal<CalendarBlock[]>([]);
+  dateConflictError = signal('');
 
   appointmentForm: FormGroup = this.fb.group({
     scheduled_at: ['', Validators.required],
@@ -73,6 +76,11 @@ export class MatchComponent implements OnInit {
       error: () => { /* no crítico — el dropdown funciona sin conteos */ },
     });
 
+    this.quoteService.getAppointments().subscribe({
+      next: (appts) => this.existingAppointments.set(appts),
+      error: () => { /* silencioso — la validación del backend sigue activa */ },
+    });
+
     // lastQuote ya se restaura desde sessionStorage en QuoteService.restoreQuote()
     // Si después del restore sigue null, intentar desde API
     if (!this.quote()) {
@@ -85,6 +93,38 @@ export class MatchComponent implements OnInit {
         error: () => { /* silencioso — ya se muestra el estado "sin cotización" */ },
       });
     }
+  }
+
+  onDateChange(value: string): void {
+    if (!value) { this.dateConflictError.set(''); return; }
+    const selected = new Date(value);
+
+    // Verificar conflicto con citas propias del cliente
+    const apptConflict = this.existingAppointments().find(
+      (a) => a.status !== 'REJECTED' && new Date(a.scheduled_at).getTime() === selected.getTime()
+    );
+    if (apptConflict) {
+      this.dateConflictError.set(
+        `Ya tienes una cita con ${apptConflict.artist_name} a esa fecha y hora. Elige un horario diferente.`
+      );
+      return;
+    }
+
+    // Verificar si cae dentro de un bloqueo del artista
+    const blockConflict = this.artistCalendarBlocks().find(
+      (b) => selected >= new Date(b.start_datetime) && selected < new Date(b.end_datetime)
+    );
+    if (blockConflict) {
+      const until = new Date(blockConflict.end_datetime).toLocaleString('es-MX', {
+        day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit',
+      });
+      this.dateConflictError.set(
+        `El artista no estará disponible en esa fecha. Su próxima disponibilidad es a partir del ${until}`
+      );
+      return;
+    }
+
+    this.dateConflictError.set('');
   }
 
   /** Devuelve el conteo de artistas para la ciudad dada, o null si no hay datos */
@@ -155,6 +195,12 @@ export class MatchComponent implements OnInit {
     this.appointmentForm.reset();
     this.consentFormRef?.reset();
     this.submitError.set('');
+    this.dateConflictError.set('');
+    this.artistCalendarBlocks.set([]);
+    this.quoteService.getArtistCalendarBlocks(artist.artist_id).subscribe({
+      next: (blocks) => this.artistCalendarBlocks.set(blocks),
+      error: () => { /* silencioso — el backend valida al crear */ },
+    });
   }
 
   closePanel(): void {
@@ -164,6 +210,7 @@ export class MatchComponent implements OnInit {
   // ── Paso 1: crear cita ─────────────────────────────────────────────────
   submitAppointment(): void {
     if (this.appointmentForm.invalid || !this.selectedArtist()) return;
+    if (this.dateConflictError()) return;
 
     this.submitting.set(true);
     this.submitError.set('');

@@ -548,6 +548,11 @@ $font-body:   'Inter', sans-serif;
   }
 
   &::placeholder { color: $text-s; }
+
+  &::-webkit-calendar-picker-indicator {
+    filter: brightness(0) saturate(100%) invert(93%) sepia(17%) saturate(386%) hue-rotate(330deg) brightness(105%);
+    cursor: pointer;
+  }
 }
 
 textarea.input { resize: vertical; }

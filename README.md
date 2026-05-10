@@ -427,3 +427,59 @@ User.objects.create_superuser(
 #### Nota técnica importante
 
 `GET /api/quotes/appointments/` devuelve un **array directo** (no paginado), a diferencia de la mayoría de endpoints que devuelven `{count, next, previous, results}`. Tenerlo en cuenta al consumir este endpoint en nuevos componentes.
+
+---
+
+### Branch `BL-CambiosSistema-Gael` — 09 de Mayo 2026
+
+#### Fix: Ícono del calendario en el selector de fecha
+
+**`match.component.scss`**
+- El ícono nativo del `<input type="datetime-local">` era oscuro e invisible sobre el fondo del tema. Se coloreó con `filter` CSS sobre `::-webkit-calendar-picker-indicator` usando el valor de `$text-p` (`#EDE0C4`).
+
+#### Fix: Fotos del portafolio no cargaban en la vista pública del artista
+
+**`artista-perfil.component.ts` / `.html`**
+- El componente asignaba las URLs crudas del backend (`http://backend:8000/media/...`) directamente al atributo `src`. El browser no puede resolver ese host.
+- Se inyectó `MediaUrlService` y se agregó el helper `resolveImg()`, aplicado a las tres imágenes del template: foto de perfil, galería del portafolio y lightbox.
+
+#### Mejora: Tab "Especialidades" del dashboard del artista — rediseño visual
+
+**`dashboard.component.html` / `.scss`**
+- Se reemplazaron los chips de texto (pill buttons) por una cuadrícula de tarjetas tipo checkbox, siguiendo el mismo diseño del cotizador del cliente: ícono de aguja centrado, nombre del estilo, borde dorado y check `✓` al seleccionar.
+- Grid de 3 columnas en desktop, 2 en móvil.
+
+#### Fix: Estilos no aparecían en el tab "Especialidades"
+
+**`dashboard.component.ts`**
+- El endpoint `GET /api/artists/styles/` devuelve respuesta paginada `{ count, results: [] }`. El dashboard asignaba el objeto completo a `this.styles`, dejando el `@for` sin array iterable. Se agregó la salvaguarda defensiva `Array.isArray(s) ? s : (s as any).results ?? []`, consistente con el patrón ya usado en el cotizador.
+
+#### Fix: Artista duplicado en resultados del Match
+
+**`backend/apps/quotes/views.py`**
+- El `annotate` de `style_match` usaba `Case(When(styles=style, ...))`, que genera un `JOIN` con la tabla M2M de estilos **después** del `.distinct()` ya existente, produciendo una fila por cada estilo adicional del artista.
+- Se reemplazó por `Exists()` con subquery: evalúa la condición sin agregar un `JOIN` a la query principal, eliminando los duplicados en origen.
+- Se agregaron `Exists` y `OuterRef` a los imports de `django.db.models`.
+
+#### Validación: Prevenir citas duplicadas en la misma fecha y hora
+
+**`backend/apps/quotes/views.py`**
+- En `AppointmentListCreateView.post()`, antes de guardar, se verifica si el cliente ya tiene una cita activa (estado distinto a `REJECTED`) con el mismo `scheduled_at`. Si existe, devuelve `HTTP 400` con mensaje descriptivo.
+
+**`match.component.ts` / `.html`**
+- Se cargan las citas existentes del cliente al inicializar el componente (`ngOnInit`).
+- El evento `(change)` del input de fecha ejecuta `onDateChange()`, que compara la hora seleccionada contra las citas activas del cliente.
+- Si hay conflicto, se muestra el nombre del artista con quien ya hay cita y el botón "Continuar" se deshabilita hasta elegir un horario libre.
+
+#### Validación: Bloqueos de calendario del artista en el Match
+
+**`backend/apps/quotes/views.py` / `urls.py`**
+- Nueva vista `ArtistCalendarBlocksPublicView` y nuevo endpoint `GET /api/quotes/calendar-blocks/artist/<pk>/` que devuelve los bloqueos futuros de un artista dado su `ArtistProfile.id`. Accesible a cualquier usuario autenticado.
+
+**`quote.ts` / `quote.service.ts`**
+- Nueva interface `CalendarBlock` con campos `id`, `start_datetime`, `end_datetime`, `reason`.
+- Nuevo método `getArtistCalendarBlocks(artistId)` en `QuoteService`.
+
+**`match.component.ts` / `.html`**
+- Al seleccionar un artista se cargan automáticamente sus bloqueos activos.
+- `onDateChange()` verifica si la fecha seleccionada cae dentro de un bloqueo y muestra el mensaje: _"El artista no estará disponible en esa fecha. Su próxima disponibilidad es a partir del [fecha fin]"_, formateado en locale `es-MX`.

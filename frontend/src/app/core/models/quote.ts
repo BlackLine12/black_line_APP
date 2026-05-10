@@ -92,6 +92,15 @@ export interface AppointmentStatusPayload {
   counter_offer_note?: string;
 }
 
+// ── CalendarBlock ──────────────────────────────────────────────────────────
+
+export interface CalendarBlock {
+  id: number;
+  start_datetime: string;
+  end_datetime: string;
+  reason: string;
+}
+
 // ── HealthConsent ──────────────────────────────────────────────────────────
 
 export interface HealthConsentPayload {
