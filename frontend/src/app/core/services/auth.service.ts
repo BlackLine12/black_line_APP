@@ -65,8 +65,7 @@ export class AuthService {
     } else if (type === 'CLIENT') {
       this.router.navigate(['/client/dashboard']);
     } else if (type === 'ADMIN') {
-      // ADMIN gestiona vía Django Admin — salir de la SPA evita el loop con noAuthGuard
-      window.location.href = '/admin/';
+      this.router.navigate(['/admin/dashboard']);
     } else {
       this.router.navigate(['/auth/login']);
     }
@@ -158,6 +157,16 @@ export class AuthService {
     } catch {
       sessionStorage.removeItem('bl_user');
       return null;
+    }
+  }
+
+  /** Update local user state without re-logging */
+  updateUser(partial: Partial<User>): void {
+    const current = this._user();
+    if (current) {
+      const updated = { ...current, ...partial };
+      this.saveUser(updated);
+      this._user.set(updated);
     }
   }
 }

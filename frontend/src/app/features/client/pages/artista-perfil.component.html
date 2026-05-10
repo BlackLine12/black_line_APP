@@ -1,0 +1,134 @@
+<div class="perfil">
+
+  <!-- ── Breadcrumb ─────────────────────────────────────────────────── -->
+  <div class="perfil__breadcrumb">
+    <button class="perfil__back" (click)="back()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+      </svg>
+      Resultados de búsqueda
+    </button>
+  </div>
+
+  <!-- ── Loading ───────────────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="perfil__skeleton-wrap">
+      <div class="skeleton skeleton--hero"></div>
+      <div class="skeleton skeleton--block"></div>
+      <div class="skeleton skeleton--block"></div>
+    </div>
+  }
+
+  <!-- ── Error ─────────────────────────────────────────────────────── -->
+  @if (error()) {
+    <div class="perfil__error">{{ error() }}</div>
+  }
+
+  <!-- ── Contenido ─────────────────────────────────────────────────── -->
+  @if (profile(); as p) {
+    <div class="perfil__layout">
+
+      <!-- ── Columna izquierda: info + acciones ──────────────────── -->
+      <aside class="perfil__aside">
+
+        <!-- Foto + nombre -->
+        <div class="perfil__hero">
+          <div class="perfil__photo-wrap">
+            @if (p.profile_photo) {
+              <img [src]="resolveImg(p.profile_photo)" [alt]="p.username" class="perfil__photo" />
+            } @else {
+              <div class="perfil__photo-placeholder">
+                <span>{{ p.username[0].toUpperCase() }}</span>
+              </div>
+            }
+          </div>
+          <h1 class="perfil__name">{{ p.username }}</h1>
+          <p class="perfil__city">{{ p.city }}</p>
+        </div>
+
+        <!-- Tarifas -->
+        <div class="perfil__card">
+          <p class="perfil__card-label">Tarifa base / hora</p>
+          <p class="perfil__card-value">{{ formatRate(p.base_hourly_rate) }}</p>
+          <p class="perfil__card-label perfil__card-label--mt">Tarifa mínima</p>
+          <p class="perfil__card-value">{{ formatRate(p.minimum_setup_fee) }}</p>
+        </div>
+
+        <!-- Estilos -->
+        @if (p.styles.length > 0) {
+          <div class="perfil__card">
+            <p class="perfil__card-label">Estilos</p>
+            <div class="perfil__styles">
+              @for (style of p.styles; track style.id) {
+                <span class="perfil__style-tag">{{ style.name }}</span>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- CTA -->
+        <a class="perfil__cta" routerLink="/client/match">
+          Solicitar cita →
+        </a>
+
+      </aside>
+
+      <!-- ── Columna derecha: bio + portafolio ────────────────────── -->
+      <main class="perfil__main">
+
+        <!-- Bio -->
+        @if (p.bio) {
+          <section class="perfil__section">
+            <h2 class="perfil__section-title">Sobre el artista</h2>
+            <p class="perfil__bio">{{ p.bio }}</p>
+          </section>
+        }
+
+        <!-- Portafolio -->
+        <section class="perfil__section">
+          <h2 class="perfil__section-title">
+            Portafolio
+            @if (p.portfolio_images.length > 0) {
+              <span class="perfil__section-count">{{ p.portfolio_images.length }} obra{{ p.portfolio_images.length !== 1 ? 's' : '' }}</span>
+            }
+          </h2>
+
+          @if (p.portfolio_images.length === 0) {
+            <div class="perfil__empty">
+              <span class="perfil__empty-icon">◌</span>
+              <p>Este artista aún no ha subido imágenes a su portafolio.</p>
+            </div>
+          } @else {
+            <div class="perfil__gallery">
+              @for (img of p.portfolio_images; track img.id) {
+                <button class="perfil__gallery-item" (click)="openLightbox(img)" aria-label="Ver imagen">
+                  <img [src]="resolveImg(img.image)" [alt]="img.description || 'Obra del portafolio'" loading="lazy" />
+                  @if (img.description) {
+                    <div class="perfil__gallery-overlay">
+                      <span class="perfil__gallery-desc">{{ img.description }}</span>
+                    </div>
+                  }
+                </button>
+              }
+            </div>
+          }
+        </section>
+
+      </main>
+    </div>
+  }
+
+</div>
+
+<!-- ── Lightbox ───────────────────────────────────────────────────────── -->
+@if (lightboxImg(); as img) {
+  <div class="lightbox" (click)="closeLightbox()">
+    <button class="lightbox__close" (click)="closeLightbox()" aria-label="Cerrar">✕</button>
+    <div class="lightbox__inner" (click)="$event.stopPropagation()">
+      <img [src]="resolveImg(img.image)" [alt]="img.description || 'Obra'" class="lightbox__img" />
+      @if (img.description) {
+        <p class="lightbox__caption">{{ img.description }}</p>
+      }
+    </div>
+  </div>
+}

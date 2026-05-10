@@ -1,0 +1,184 @@
+<div class="perfil-page">
+
+  <!-- ── Header ───────────────────────────────────────────────── -->
+  <div class="perfil-header">
+    <div class="perfil-header__avatar" (click)="triggerPhotoUpload()" [class.loading]="uploadingPhoto()" title="Cambiar foto de perfil">
+      @if (photoSrc()) {
+        <img [src]="photoSrc()" alt="Foto de perfil" class="avatar-img"/>
+      } @else if (user()) {
+        <span>{{ initials(user()) }}</span>
+      }
+      <div class="avatar-overlay">
+        @if (uploadingPhoto()) {
+          <span class="spinner"></span>
+        } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="icon-camera" style="width:24px; height:24px; color:white;"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z"/></svg>
+        }
+      </div>
+    </div>
+    <input #photoInput type="file" accept="image/jpeg,image/png,image/webp" style="display: none;" (change)="onPhotoSelected($event)"/>
+    <div class="perfil-header__info">
+      <h1 class="perfil-header__name">
+        @if (user()) { {{ user()!.first_name }} {{ user()!.last_name }} }
+        @else { &nbsp; }
+      </h1>
+      <p class="perfil-header__meta">
+        @if (user()) {
+          <span class="role-badge">{{ roleLabel(user()!.user_type) }}</span>
+          <span class="perfil-header__email">{{ user()!.email }}</span>
+        }
+      </p>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="skeleton-wrap">
+      <div class="skeleton skeleton--block"></div>
+      <div class="skeleton skeleton--block"></div>
+    </div>
+  }
+
+  @if (profileError()) {
+    <div class="banner banner--error">{{ profileError() }}</div>
+  }
+
+  @if (!loading() && !profileError()) {
+    <div class="perfil-grid">
+
+      <!-- ── Datos personales ────────────────────────────────── -->
+      <section class="card">
+        <h2 class="card__title">Datos personales</h2>
+
+        <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="form">
+
+          <div class="form-row">
+            <div class="field">
+              <label class="field__label">Nombre</label>
+              <input class="field__input" formControlName="first_name" type="text" placeholder="Nombre" />
+              @if (profileForm.get('first_name')?.invalid && profileForm.get('first_name')?.touched) {
+                <span class="field__error">Campo requerido</span>
+              }
+            </div>
+            <div class="field">
+              <label class="field__label">Apellido</label>
+              <input class="field__input" formControlName="last_name" type="text" placeholder="Apellido" />
+              @if (profileForm.get('last_name')?.invalid && profileForm.get('last_name')?.touched) {
+                <span class="field__error">Campo requerido</span>
+              }
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field__label">Nombre de usuario</label>
+            <input class="field__input" formControlName="username" type="text" placeholder="username" />
+            @if (profileForm.get('username')?.errors?.['required'] && profileForm.get('username')?.touched) {
+              <span class="field__error">Campo requerido</span>
+            }
+            @if (profileForm.get('username')?.errors?.['minlength'] && profileForm.get('username')?.touched) {
+              <span class="field__error">Mínimo 3 caracteres</span>
+            }
+          </div>
+
+          <div class="field">
+            <label class="field__label">Correo electrónico</label>
+            <input class="field__input field__input--readonly" [value]="user()?.email ?? ''" type="email" readonly />
+            <span class="field__hint">El correo no se puede cambiar.</span>
+          </div>
+
+          <div class="field">
+            <label class="field__label">Teléfono <span class="field__optional">(opcional)</span></label>
+            <input class="field__input" formControlName="phone" type="tel" placeholder="+52 55 0000 0000" />
+          </div>
+
+          @if (profileSaveError()) {
+            <div class="banner banner--error">{{ profileSaveError() }}</div>
+          }
+          @if (profileSuccess()) {
+            <div class="banner banner--success">Cambios guardados correctamente.</div>
+          }
+
+          <button
+            type="submit"
+            class="btn-gold"
+            [disabled]="profileForm.invalid || profileSaving()"
+          >
+            @if (profileSaving()) { <span class="spinner"></span> Guardando… } @else { Guardar cambios }
+          </button>
+        </form>
+      </section>
+
+      <!-- ── Cambiar contraseña ──────────────────────────────── -->
+      <section class="card">
+        <h2 class="card__title">Cambiar contraseña</h2>
+
+        <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" class="form">
+
+          <div class="field">
+            <label class="field__label">Contraseña actual</label>
+            <div class="field__input-wrap">
+              <input
+                class="field__input"
+                formControlName="current_password"
+                [type]="showPasswords() ? 'text' : 'password'"
+                placeholder="••••••••"
+              />
+            </div>
+            @if (passwordForm.get('current_password')?.invalid && passwordForm.get('current_password')?.touched) {
+              <span class="field__error">Campo requerido</span>
+            }
+          </div>
+
+          <div class="field">
+            <label class="field__label">Nueva contraseña</label>
+            <input
+              class="field__input"
+              formControlName="new_password"
+              [type]="showPasswords() ? 'text' : 'password'"
+              placeholder="Mínimo 8 caracteres"
+            />
+            @if (passwordForm.get('new_password')?.errors?.['required'] && passwordForm.get('new_password')?.touched) {
+              <span class="field__error">Campo requerido</span>
+            }
+            @if (passwordForm.get('new_password')?.errors?.['minlength'] && passwordForm.get('new_password')?.touched) {
+              <span class="field__error">Mínimo 8 caracteres</span>
+            }
+          </div>
+
+          <div class="field">
+            <label class="field__label">Confirmar nueva contraseña</label>
+            <input
+              class="field__input"
+              formControlName="confirm_password"
+              [type]="showPasswords() ? 'text' : 'password'"
+              placeholder="Repite la contraseña"
+            />
+            @if (passwordForm.errors?.['mismatch'] && passwordForm.get('confirm_password')?.touched) {
+              <span class="field__error">Las contraseñas no coinciden</span>
+            }
+          </div>
+
+          <label class="toggle-label">
+            <input type="checkbox" (change)="togglePasswords()" [checked]="showPasswords()" />
+            Mostrar contraseñas
+          </label>
+
+          @if (passwordSaveError()) {
+            <div class="banner banner--error">{{ passwordSaveError() }}</div>
+          }
+          @if (passwordSuccess()) {
+            <div class="banner banner--success">Contraseña actualizada correctamente.</div>
+          }
+
+          <button
+            type="submit"
+            class="btn-gold"
+            [disabled]="passwordForm.invalid || passwordSaving()"
+          >
+            @if (passwordSaving()) { <span class="spinner"></span> Cambiando… } @else { Cambiar contraseña }
+          </button>
+        </form>
+      </section>
+
+    </div>
+  }
+</div>

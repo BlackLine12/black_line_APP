@@ -11,3 +11,5 @@ export { FooterComponent } from './footer.component';
 export { BtnComponent }    from './btn.component';
 export type { BtnVariant, BtnSize } from './btn.component';
 export { SignaturePadComponent } from './signature-pad/signature-pad.component';
+export { HealthConsentFormComponent } from './health-consent-form/health-consent-form.component';
+export { EmptyStateComponent } from './empty-state/empty-state.component';

@@ -31,11 +31,12 @@ export class ArtistService {
     return this.http.get<ArtistProfile>(`${this.baseUrl}/profiles/${id}/`);
   }
 
-  uploadProfilePhoto(file: File): Observable<ArtistProfile> {
+  uploadProfilePhoto(file: File): Observable<any> {
     const formData = new FormData();
-    formData.append('photo', file);
-    return this.http.post<ArtistProfile>(`${this.baseUrl}/profiles/me/photo/`, formData);
+    formData.append('profile_photo', file);
+    return this.http.patch<any>(`${environment.apiUrl}/auth/profile-photo/`, formData);
   }
+
 
   // ── Portfolio Images ───────────────────────────────────────
   getPortfolioImages(): Observable<PortfolioImage[]> {
@@ -55,7 +56,12 @@ export class ArtistService {
     });
   }
 
+  updatePortfolioImage(id: number, data: { description: string }): Observable<PortfolioImage> {
+    return this.http.patch<PortfolioImage>(`${this.baseUrl}/portfolio/${id}/`, data);
+  }
+
   deletePortfolioImage(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/portfolio/${id}/`);
   }
+
 }

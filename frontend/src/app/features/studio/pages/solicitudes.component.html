@@ -20,13 +20,13 @@
           <span class="sol-badge__num">{{ counterOfferCount }}</span>
           <span class="sol-badge__label">Contraofertas</span>
         </div>
-        <div class="sol-badge">
+        <div class="sol-badge sol-badge--green">
           <span class="sol-badge__num">{{ approvedCount }}</span>
           <span class="sol-badge__label">Aprobadas</span>
         </div>
         <div class="sol-badge">
           <span class="sol-badge__num">{{ appointments.length }}</span>
-          <span class="sol-badge__label">Total</span>
+          <span class="sol-badge__label">Total histórico</span>
         </div>
       </div>
     </div>
@@ -80,13 +80,24 @@
                 </div>
               </div>
               <div class="sol-card__meta">
-                <time class="sol-card__date">
-                  {{ appt.scheduled_at | date:'dd MMM yyyy · HH:mm' }}
-                </time>
+                <div class="sol-card__dates">
+                  <time class="sol-card__date">
+                    <span class="sol-card__date-label">Cita:</span>
+                    {{ appt.scheduled_at | date:'dd MMM yyyy · HH:mm' }}
+                  </time>
+                  <time class="sol-card__date sol-card__date--created">
+                    <span class="sol-card__date-label">Solicitud:</span>
+                    {{ appt.created_at | date:'dd MMM yyyy' }}
+                  </time>
+                </div>
                 <span [class]="'sol-status sol-status--' + appt.status.toLowerCase()">
                   {{ statusLabel(appt.status) }}
                 </span>
+                <a [routerLink]="['/studio/solicitudes', appt.id]" class="sol-btn-detail">
+                  Ver detalle →
+                </a>
               </div>
+
             </div>
 
             <!-- Datos de la cotización -->

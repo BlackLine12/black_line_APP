@@ -1,0 +1,22 @@
+<div class="error-page">
+  <div class="error-page__inner">
+
+    <div class="error-page__code">404</div>
+
+    <div class="error-page__glyph">◈</div>
+
+    <h1 class="error-page__title">Página no encontrada</h1>
+    <p class="error-page__subtitle">
+      La URL que buscas no existe o fue movida a otro lugar.
+    </p>
+
+    <div class="error-page__actions">
+      @if (isAuthenticated) {
+        <a [routerLink]="dashboardRoute" class="btn-gold">Ir a mi panel</a>
+      } @else {
+        <a routerLink="/" class="btn-gold">Ir al inicio</a>
+      }
+    </div>
+
+  </div>
+</div>

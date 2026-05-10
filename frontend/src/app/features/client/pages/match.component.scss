@@ -286,8 +286,34 @@ $font-body:   'Inter', sans-serif;
   color: $text-s;
 }
 
-.btn-select {
+.artist-card__btns {
+  display: flex;
+  gap: 8px;
   margin-top: 10px;
+}
+
+.btn-profile {
+  flex: 1;
+  background: transparent;
+  border: 1px solid $divider;
+  border-radius: 6px;
+  color: $text-s;
+  font-family: $font-body;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 12px;
+  text-align: center;
+  text-decoration: none;
+  transition: border-color 0.2s, color 0.2s;
+
+  &:hover {
+    border-color: $gold-border;
+    color: $text-p;
+  }
+}
+
+.btn-select {
+  flex: 1;
   background: transparent;
   border: 1px solid $gold-border;
   border-radius: 6px;
@@ -295,7 +321,7 @@ $font-body:   'Inter', sans-serif;
   font-family: $font-body;
   font-size: 13px;
   font-weight: 500;
-  padding: 8px 16px;
+  padding: 8px 12px;
   cursor: pointer;
   transition: background 0.2s, border-color 0.2s;
   text-align: center;
@@ -522,6 +548,11 @@ $font-body:   'Inter', sans-serif;
   }
 
   &::placeholder { color: $text-s; }
+
+  &::-webkit-calendar-picker-indicator {
+    filter: brightness(0) saturate(100%) invert(93%) sepia(17%) saturate(386%) hue-rotate(330deg) brightness(105%);
+    cursor: pointer;
+  }
 }
 
 textarea.input { resize: vertical; }

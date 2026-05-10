@@ -1,21 +1,23 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterModule } from '@angular/router';
 import { QuoteService } from '../../../core/services/quote.service';
 import { ArtistService, CityCount } from '../../../core/services/artist.service';
-import { ArtistMatchCard, MatchSearchParams, AppointmentCreatePayload, HealthConsentPayload } from '../../../core/models/quote';
+import { ArtistMatchCard, MatchSearchParams, AppointmentCreatePayload, Appointment, CalendarBlock } from '../../../core/models/quote';
 import { MexicanCity, filterCities } from '../../../core/data/cities-mx';
-import { SignaturePadComponent } from '../../../shared/components/signature-pad/signature-pad.component';
+import { HealthConsentFormComponent } from '../../../shared/components/health-consent-form/health-consent-form.component';
 
 @Component({
   selector: 'app-match',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, SignaturePadComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, RouterModule, HealthConsentFormComponent],
   templateUrl: './match.component.html',
   styleUrl: './match.component.scss',
 })
 export class MatchComponent implements OnInit {
+  @ViewChild(HealthConsentFormComponent) consentFormRef!: HealthConsentFormComponent;
+
   private readonly quoteService = inject(QuoteService);
   private readonly artistService = inject(ArtistService);
   private readonly router = inject(Router);
@@ -47,32 +49,13 @@ export class MatchComponent implements OnInit {
   submitting = signal(false);
   submitError = signal('');
   createdAppointmentId = signal<number | null>(null);
+  existingAppointments = signal<Appointment[]>([]);
+  artistCalendarBlocks = signal<CalendarBlock[]>([]);
+  dateConflictError = signal('');
 
   appointmentForm: FormGroup = this.fb.group({
     scheduled_at: ['', Validators.required],
   });
-
-  consentForm: FormGroup = this.fb.group({
-    has_allergies: [false],
-    allergies_detail: [''],
-    has_chronic_disease: [false],
-    chronic_disease_detail: [''],
-    takes_medication: [false],
-    medication_detail: [''],
-    is_pregnant: [false],
-    has_skin_condition: [false],
-    skin_condition_detail: [''],
-    has_hemophilia: [false],
-    hemophilia_detail: [''],
-    signature_data: ['', Validators.required],
-    terms_accepted: [false, Validators.requiredTrue],
-  });
-
-  get allHealthClear(): boolean {
-    const v = this.consentForm.value;
-    return !v.has_allergies && !v.has_chronic_disease && !v.takes_medication
-        && !v.is_pregnant && !v.has_skin_condition && !v.has_hemophilia;
-  }
 
   // ── Quote del wizard ───────────────────────────────────────────────────
   quote = computed(() => this.quoteService.lastQuote());
@@ -93,6 +76,11 @@ export class MatchComponent implements OnInit {
       error: () => { /* no crítico — el dropdown funciona sin conteos */ },
     });
 
+    this.quoteService.getAppointments().subscribe({
+      next: (appts) => this.existingAppointments.set(appts),
+      error: () => { /* silencioso — la validación del backend sigue activa */ },
+    });
+
     // lastQuote ya se restaura desde sessionStorage en QuoteService.restoreQuote()
     // Si después del restore sigue null, intentar desde API
     if (!this.quote()) {
@@ -105,6 +93,38 @@ export class MatchComponent implements OnInit {
         error: () => { /* silencioso — ya se muestra el estado "sin cotización" */ },
       });
     }
+  }
+
+  onDateChange(value: string): void {
+    if (!value) { this.dateConflictError.set(''); return; }
+    const selected = new Date(value);
+
+    // Verificar conflicto con citas propias del cliente
+    const apptConflict = this.existingAppointments().find(
+      (a) => a.status !== 'REJECTED' && new Date(a.scheduled_at).getTime() === selected.getTime()
+    );
+    if (apptConflict) {
+      this.dateConflictError.set(
+        `Ya tienes una cita con ${apptConflict.artist_name} a esa fecha y hora. Elige un horario diferente.`
+      );
+      return;
+    }
+
+    // Verificar si cae dentro de un bloqueo del artista
+    const blockConflict = this.artistCalendarBlocks().find(
+      (b) => selected >= new Date(b.start_datetime) && selected < new Date(b.end_datetime)
+    );
+    if (blockConflict) {
+      const until = new Date(blockConflict.end_datetime).toLocaleString('es-MX', {
+        day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit',
+      });
+      this.dateConflictError.set(
+        `El artista no estará disponible en esa fecha. Su próxima disponibilidad es a partir del ${until}`
+      );
+      return;
+    }
+
+    this.dateConflictError.set('');
   }
 
   /** Devuelve el conteo de artistas para la ciudad dada, o null si no hay datos */
@@ -173,17 +193,14 @@ export class MatchComponent implements OnInit {
     this.selectedArtist.set(artist);
     this.step.set('appointment');
     this.appointmentForm.reset();
-    this.consentForm.reset({
-      has_allergies: false, allergies_detail: '',
-      has_chronic_disease: false, chronic_disease_detail: '',
-      takes_medication: false, medication_detail: '',
-      is_pregnant: false,
-      has_skin_condition: false, skin_condition_detail: '',
-      has_hemophilia: false, hemophilia_detail: '',
-      signature_data: '',
-      terms_accepted: false,
-    });
+    this.consentFormRef?.reset();
     this.submitError.set('');
+    this.dateConflictError.set('');
+    this.artistCalendarBlocks.set([]);
+    this.quoteService.getArtistCalendarBlocks(artist.artist_id).subscribe({
+      next: (blocks) => this.artistCalendarBlocks.set(blocks),
+      error: () => { /* silencioso — el backend valida al crear */ },
+    });
   }
 
   closePanel(): void {
@@ -193,6 +210,7 @@ export class MatchComponent implements OnInit {
   // ── Paso 1: crear cita ─────────────────────────────────────────────────
   submitAppointment(): void {
     if (this.appointmentForm.invalid || !this.selectedArtist()) return;
+    if (this.dateConflictError()) return;
 
     this.submitting.set(true);
     this.submitError.set('');
@@ -218,12 +236,15 @@ export class MatchComponent implements OnInit {
 
   // ── Paso 2: enviar consentimiento de salud ─────────────────────────────
   submitConsent(): void {
-    if (this.consentForm.invalid || !this.createdAppointmentId()) return;
+    if (!this.consentFormRef?.isValid || !this.createdAppointmentId()) {
+      this.consentFormRef?.markAllTouched();
+      return;
+    }
 
     this.submitting.set(true);
     this.submitError.set('');
 
-    const payload: HealthConsentPayload = this.consentForm.value;
+    const payload = this.consentFormRef.getValue();
 
     this.quoteService.submitHealthConsent(this.createdAppointmentId()!, payload).subscribe({
       next: () => {

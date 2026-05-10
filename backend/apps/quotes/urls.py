@@ -29,6 +29,7 @@ from .views import (
     HealthConsentView,
     CalendarBlockListCreateView,
     CalendarBlockDeleteView,
+    ArtistCalendarBlocksPublicView,
 )
 
 app_name = "quotes"
@@ -51,4 +52,5 @@ urlpatterns = [
     # RF-7: Bloqueos de calendario
     path("calendar-blocks/", CalendarBlockListCreateView.as_view(), name="calendar-block-list-create"),
     path("calendar-blocks/<int:pk>/", CalendarBlockDeleteView.as_view(), name="calendar-block-delete"),
+    path("calendar-blocks/artist/<int:pk>/", ArtistCalendarBlocksPublicView.as_view(), name="artist-calendar-blocks-public"),
 ]

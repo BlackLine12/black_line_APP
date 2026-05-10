@@ -21,6 +21,7 @@ El proyecto está construido como un monorepo fullstack:
 
 - [Descripción funcional](#descripción-funcional)
 - [Arquitectura general](#arquitectura-general)
+- [Rutas del frontend](#rutas-del-frontend)
 - [Tecnologías](#tecnologías)
 - [Requisitos previos](#requisitos-previos)
 - [Inicio rápido con Docker](#inicio-rápido-con-docker)
@@ -31,6 +32,7 @@ El proyecto está construido como un monorepo fullstack:
 - [Estructura del repositorio](#estructura-del-repositorio)
 - [Pruebas](#pruebas)
 - [Troubleshooting](#troubleshooting)
+- [Changelog](#changelog)
 
 ## Descripción funcional
 
@@ -47,6 +49,35 @@ Roles soportados:
 - CLIENT
 - STUDIO
 - ADMIN
+
+## Rutas del frontend
+
+Todas las rutas autenticadas pasan primero por `authGuard`. Las rutas de rol usan `roleGuard`, que redirige a `/403` si el rol no coincide. El rol ADMIN tiene bypass total y puede acceder a cualquier ruta.
+
+| Ruta | Componente | Rol requerido |
+|---|---|---|
+| `/` | `LandingComponent` | público (redirige si autenticado) |
+| `/auth/login` | `LoginComponent` | público |
+| `/auth/register` | `RegisterComponent` | público |
+| `/403` | `ForbiddenComponent` | — |
+| `/404` y `**` | `NotFoundComponent` | — |
+| `/client/dashboard` | `ClientDashboardComponent` | CLIENT |
+| `/client/cotizador` | `CotizadorComponent` | CLIENT |
+| `/client/cotizaciones` | `MisCotizacionesComponent` | CLIENT |
+| `/client/match` | `MatchComponent` | CLIENT |
+| `/client/mis-citas` | `MisCitasComponent` | CLIENT |
+| `/client/citas/:id` | `CitaDetalleComponent` | CLIENT |
+| `/client/artistas/:id` | `ArtistaPerfilComponent` | CLIENT |
+| `/client/perfil` | `PerfilComponent` | CLIENT (ADMIN también) |
+| `/studio/dashboard` | `DashboardComponent` | STUDIO |
+| `/studio/solicitudes` | `SolicitudesComponent` | STUDIO |
+| `/studio/solicitudes/:id` | `SolicitudDetalleComponent` | STUDIO |
+| `/studio/agenda` | `AgendaComponent` | STUDIO |
+| `/studio/portafolio` | `PortafolioComponent` | STUDIO |
+| `/admin/dashboard` | `AdminDashboardComponent` | ADMIN |
+| `/admin/estilos` | `AdminStylesComponent` | ADMIN |
+
+---
 
 ## Arquitectura general
 
@@ -294,4 +325,161 @@ npm test
 
 ---
 
-Si necesitas, puedo agregar una sección de flujo por rol (CLIENT/STUDIO) y un diagrama de estado de citas directamente en este README.
+## Changelog
+
+### Branch `BL-corrections-arturo` — Mayo 2026
+
+#### Componentes compartidos refactorizados
+
+**`HealthConsentFormComponent`** (`shared/components/health-consent-form/`)
+- Extraído de `MatchComponent` y `MisCitasComponent` donde estaba duplicado.
+- Implementa `ControlValueAccessor` + `Validator` para integrarse como control de formulario estándar.
+- API pública: `isValid`, `getValue()`, `reset()`, `markAllTouched()`.
+- Los componentes padre lo consumen vía `@ViewChild`.
+
+**`EmptyStateComponent`** (`shared/components/empty-state/`)
+- Componente genérico para estados vacíos con inputs: `icon`, `title`, `subtitle`, `ctaLabel`, `ctaRoute`.
+
+#### Nuevas páginas — Cliente
+
+**`CitaDetalleComponent`** (`/client/citas/:id`)
+- Vista de detalle de una cita. Muestra datos completos, estado y cotización asociada.
+- Permite al cliente aceptar o rechazar una contraoferta del artista.
+- Panel lateral con `HealthConsentFormComponent` para firmar el consentimiento de salud si la cita fue aprobada.
+
+**`ArtistaPerfilComponent`** (`/client/artistas/:id`)
+- Perfil público del artista con galería de portafolio.
+- Lightbox para ver imágenes en tamaño completo.
+- Botón "Ver perfil" añadido en las tarjetas de resultados de búsqueda (`MatchComponent`).
+
+**`PerfilComponent`** (`/client/perfil`)
+- Edición de datos personales: nombre, apellido, username, teléfono (email de solo lectura).
+- Cambio de contraseña con validación de coincidencia y toggle mostrar/ocultar.
+- Accesible también desde el dashboard (acción rápida) y la navbar.
+
+#### Nuevas páginas — Studio
+
+**`SolicitudDetalleComponent`** (`/studio/solicitudes/:id`)
+- Detalle de una solicitud de cita entrante.
+- Acciones: aprobar, rechazar, o proponer una contraoferta con nueva fecha y nota.
+
+#### Nuevas páginas — Admin
+
+**`AdminDashboardComponent`** (`/admin/dashboard`)
+- Panel global con 4 métricas: artistas registrados, citas totales, citas pendientes, estilos de tatuaje.
+- Tabla con las 5 citas más recientes de toda la plataforma.
+- Links directos al gestor de estilos y al Django Admin nativo.
+
+**`AdminStylesComponent`** (`/admin/estilos`)
+- CRUD completo de estilos de tatuaje (`TattooStyle`).
+- Crear, editar inline por fila, y eliminar con confirmación.
+
+#### Páginas de error
+
+**`NotFoundComponent`** (`/404`, wildcard `**`)
+- Reemplaza el redirect silencioso a `/` que existía antes.
+- Detecta si el usuario está autenticado y muestra el CTA correspondiente.
+
+**`ForbiddenComponent`** (`/403`)
+- Mostrada cuando `roleGuard` detecta un rol incorrecto (antes redirigía silenciosamente al dashboard del propio usuario).
+
+#### Cambios en servicios y guards
+
+- **`ArtistService` (core):** añadido `getProfileById(id)` → `GET /api/artists/profiles/{id}/`.
+- **`QuoteService`:** añadidos `getAppointmentById(id)`, `createAppointment(payload)`, `submitHealthConsent(id, payload)`.
+- **`AgendaService` (studio):** añadido `getAppointmentById(id)`.
+- **`AuthService`:** `redirectByRole()` ahora envía al ADMIN a `/admin/dashboard` en lugar de al Django Admin directamente.
+- **`roleGuard`:** en caso de rol incorrecto redirige a `/403` en lugar del propio dashboard del usuario.
+
+#### Cambios en la navbar
+
+- Signals `isClient` e `isStudio` ya **no incluyen** al rol ADMIN para evitar mostrar links de otros roles.
+- Cada rol ve únicamente sus propios links:
+  - CLIENT: Panel · Cotizador · Cotizaciones · Match · Mis Citas · Mi Perfil
+  - STUDIO: Dashboard · Solicitudes · Portafolio · Agenda
+  - ADMIN: Panel · Estilos · Mi Perfil
+
+#### Cuenta admin de prueba
+
+Creada con el comando `python manage.py shell`. Credenciales para el entorno de desarrollo:
+
+```
+Email:      admin@blackline.mx
+Contraseña: BlackLine2024!
+```
+
+Para crear una nueva cuenta admin en cualquier entorno:
+
+```bash
+docker compose exec backend python manage.py shell -c "
+from apps.users.models import User
+User.objects.create_superuser(
+    email='admin@ejemplo.com',
+    username='admin',
+    password='TuContraseña123!',
+    first_name='Admin',
+    last_name='BlackLine',
+    user_type='ADMIN',
+)
+"
+```
+
+#### Nota técnica importante
+
+`GET /api/quotes/appointments/` devuelve un **array directo** (no paginado), a diferencia de la mayoría de endpoints que devuelven `{count, next, previous, results}`. Tenerlo en cuenta al consumir este endpoint en nuevos componentes.
+
+---
+
+### Branch `BL-CambiosSistema-Gael` — 09 de Mayo 2026
+
+#### Fix: Ícono del calendario en el selector de fecha
+
+**`match.component.scss`**
+- El ícono nativo del `<input type="datetime-local">` era oscuro e invisible sobre el fondo del tema. Se coloreó con `filter` CSS sobre `::-webkit-calendar-picker-indicator` usando el valor de `$text-p` (`#EDE0C4`).
+
+#### Fix: Fotos del portafolio no cargaban en la vista pública del artista
+
+**`artista-perfil.component.ts` / `.html`**
+- El componente asignaba las URLs crudas del backend (`http://backend:8000/media/...`) directamente al atributo `src`. El browser no puede resolver ese host.
+- Se inyectó `MediaUrlService` y se agregó el helper `resolveImg()`, aplicado a las tres imágenes del template: foto de perfil, galería del portafolio y lightbox.
+
+#### Mejora: Tab "Especialidades" del dashboard del artista — rediseño visual
+
+**`dashboard.component.html` / `.scss`**
+- Se reemplazaron los chips de texto (pill buttons) por una cuadrícula de tarjetas tipo checkbox, siguiendo el mismo diseño del cotizador del cliente: ícono de aguja centrado, nombre del estilo, borde dorado y check `✓` al seleccionar.
+- Grid de 3 columnas en desktop, 2 en móvil.
+
+#### Fix: Estilos no aparecían en el tab "Especialidades"
+
+**`dashboard.component.ts`**
+- El endpoint `GET /api/artists/styles/` devuelve respuesta paginada `{ count, results: [] }`. El dashboard asignaba el objeto completo a `this.styles`, dejando el `@for` sin array iterable. Se agregó la salvaguarda defensiva `Array.isArray(s) ? s : (s as any).results ?? []`, consistente con el patrón ya usado en el cotizador.
+
+#### Fix: Artista duplicado en resultados del Match
+
+**`backend/apps/quotes/views.py`**
+- El `annotate` de `style_match` usaba `Case(When(styles=style, ...))`, que genera un `JOIN` con la tabla M2M de estilos **después** del `.distinct()` ya existente, produciendo una fila por cada estilo adicional del artista.
+- Se reemplazó por `Exists()` con subquery: evalúa la condición sin agregar un `JOIN` a la query principal, eliminando los duplicados en origen.
+- Se agregaron `Exists` y `OuterRef` a los imports de `django.db.models`.
+
+#### Validación: Prevenir citas duplicadas en la misma fecha y hora
+
+**`backend/apps/quotes/views.py`**
+- En `AppointmentListCreateView.post()`, antes de guardar, se verifica si el cliente ya tiene una cita activa (estado distinto a `REJECTED`) con el mismo `scheduled_at`. Si existe, devuelve `HTTP 400` con mensaje descriptivo.
+
+**`match.component.ts` / `.html`**
+- Se cargan las citas existentes del cliente al inicializar el componente (`ngOnInit`).
+- El evento `(change)` del input de fecha ejecuta `onDateChange()`, que compara la hora seleccionada contra las citas activas del cliente.
+- Si hay conflicto, se muestra el nombre del artista con quien ya hay cita y el botón "Continuar" se deshabilita hasta elegir un horario libre.
+
+#### Validación: Bloqueos de calendario del artista en el Match
+
+**`backend/apps/quotes/views.py` / `urls.py`**
+- Nueva vista `ArtistCalendarBlocksPublicView` y nuevo endpoint `GET /api/quotes/calendar-blocks/artist/<pk>/` que devuelve los bloqueos futuros de un artista dado su `ArtistProfile.id`. Accesible a cualquier usuario autenticado.
+
+**`quote.ts` / `quote.service.ts`**
+- Nueva interface `CalendarBlock` con campos `id`, `start_datetime`, `end_datetime`, `reason`.
+- Nuevo método `getArtistCalendarBlocks(artistId)` en `QuoteService`.
+
+**`match.component.ts` / `.html`**
+- Al seleccionar un artista se cargan automáticamente sus bloqueos activos.
+- `onDateChange()` verifica si la fecha seleccionada cae dentro de un bloqueo y muestra el mensaje: _"El artista no estará disponible en esa fecha. Su próxima disponibilidad es a partir del [fecha fin]"_, formateado en locale `es-MX`.

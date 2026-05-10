@@ -6,10 +6,10 @@
 
     <!-- ── Brand ───────────────────────────────────────── -->
     <a routerLink="/" class="navbar__brand">
-      <span class="navbar__brand-mark"></span>
-      <span class="navbar__brand-text">
-        Black<span class="navbar__brand-line">Line</span>
-      </span>
+      <img src="/images/blackline_logo_no_bg_dark.png"
+           srcset="/images/blackline_logo_no_bg_dark.png 1x, /images/blackline_logo_no_bg_dark.png 2x"
+           alt="BlackLine"
+           class="navbar__brand-img">
     </a>
 
     <!-- ── Desktop nav links ────────────────────────────── -->
@@ -17,9 +17,6 @@
 
       <!-- Studio links -->
       @if (isStudio()) {
-        @if (isAdmin()) {
-          <span class="navbar__role-tag navbar__role-tag--studio">Studio</span>
-        }
         <a routerLink="/studio/dashboard"
            routerLinkActive="navbar__link--active"
            class="navbar__link">Dashboard</a>
@@ -34,15 +31,8 @@
            class="navbar__link">Agenda</a>
       }
 
-      @if (isAdmin()) {
-        <span class="navbar__divider"></span>
-      }
-
       <!-- Client links -->
       @if (isClient()) {
-        @if (isAdmin()) {
-          <span class="navbar__role-tag navbar__role-tag--client">Cliente</span>
-        }
         <a routerLink="/client/dashboard"
            routerLinkActive="navbar__link--active"
            class="navbar__link">Panel</a>
@@ -59,16 +49,31 @@
            routerLinkActive="navbar__link--active"
            class="navbar__link">Mis Citas</a>
       }
+
+      <!-- Admin links -->
+      @if (isAdmin()) {
+        <a routerLink="/admin/dashboard"
+           routerLinkActive="navbar__link--active"
+           class="navbar__link navbar__link--admin">Panel</a>
+        <a routerLink="/admin/estilos"
+           routerLinkActive="navbar__link--active"
+           class="navbar__link navbar__link--admin">Estilos</a>
+      }
     </div>
 
     <!-- ── Right: usuario + logout + hamburger ──────────── -->
     <div class="navbar__right">
       @if (userName()) {
         <div class="navbar__user">
-          <span class="navbar__user-avatar">{{ userName().charAt(0).toUpperCase() }}</span>
+          @if (userPhoto()) {
+            <img [src]="userPhoto()" alt="Avatar" class="navbar__user-img" />
+          } @else {
+            <span class="navbar__user-avatar">{{ userName().charAt(0).toUpperCase() }}</span>
+          }
           <span class="navbar__user-name">{{ userName() }}</span>
         </div>
       }
+
 
       <button id="btn-logout" (click)="logout()" class="navbar__logout">
         <svg xmlns="http://www.w3.org/2000/svg" class="navbar__logout-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -101,9 +106,6 @@
     <div class="navbar__mobile animate-slide-down">
 
       @if (isStudio()) {
-        @if (isAdmin()) {
-          <span class="navbar__mobile-label navbar__mobile-label--studio">Studio</span>
-        }
         <a routerLink="/studio/dashboard"   (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Dashboard</a>
         <a routerLink="/studio/solicitudes" (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Solicitudes</a>
         <a routerLink="/studio/portafolio"  (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Portafolio</a>
@@ -111,13 +113,16 @@
       }
 
       @if (isClient()) {
-        @if (isAdmin()) {
-          <span class="navbar__mobile-label navbar__mobile-label--client">Cliente</span>
-        }
-        <a routerLink="/client/cotizador"   (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Cotizador</a>
+        <a routerLink="/client/dashboard"    (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Panel</a>
+        <a routerLink="/client/cotizador"    (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Cotizador</a>
         <a routerLink="/client/cotizaciones" (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Cotizaciones</a>
-        <a routerLink="/client/match"       (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Match</a>
-        <a routerLink="/client/mis-citas"   (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Mis Citas</a>
+        <a routerLink="/client/match"        (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Match</a>
+        <a routerLink="/client/mis-citas"    (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Mis Citas</a>
+      }
+
+      @if (isAdmin()) {
+        <a routerLink="/admin/dashboard" (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link navbar__mobile-link--admin">Panel</a>
+        <a routerLink="/admin/estilos"   (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link navbar__mobile-link--admin">Estilos</a>
       }
 
       <div class="navbar__mobile-footer">

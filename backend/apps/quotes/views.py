@@ -41,6 +41,8 @@ from django.db.models import (
     When,
     DecimalField,
     ExpressionWrapper,
+    Exists,
+    OuterRef,
 )
 from django.db.models.functions import Greatest
 
@@ -229,11 +231,14 @@ class ArtistMatchView(APIView):
                     F("minimum_setup_fee"),
                     output_field=DecimalField(max_digits=12, decimal_places=2),
                 ),
-                # Artistas que dominan el estilo exacto aparecen primero
-                style_match=Case(
-                    When(styles=style, then=Value(True)),
-                    default=Value(False),
-                    output_field=BooleanField(),
+                # Artistas que dominan el estilo exacto aparecen primero.
+                # Se usa Exists() en lugar de When(styles=...) para evitar
+                # el JOIN extra en la M2M que generaba artistas duplicados.
+                style_match=Exists(
+                    ArtistProfile.objects.filter(
+                        pk=OuterRef("pk"),
+                        styles=style,
+                    )
                 ),
             )
         )
@@ -301,6 +306,18 @@ class AppointmentListCreateView(APIView):
             )
         serializer = AppointmentCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
+        scheduled_at = serializer.validated_data.get("scheduled_at")
+        conflict = Appointment.objects.filter(
+            client=request.user,
+            scheduled_at=scheduled_at,
+        ).exclude(status="REJECTED").exists()
+        if conflict:
+            return Response(
+                {"detail": "Ya tienes una cita activa para esa fecha y hora. Elige un horario diferente."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         appointment = serializer.save(client=request.user)
         return Response(
             AppointmentReadSerializer(appointment).data,
@@ -324,7 +341,7 @@ class AppointmentStatusUpdateView(APIView):
     PATCH /api/quotes/appointments/<pk>/status/
     Máquina de estados:
       PENDING       → APPROVED | REJECTED | COUNTER_OFFER  (artista)
-      COUNTER_OFFER → APPROVED                              (cliente)
+      COUNTER_OFFER → APPROVED | REJECTED                  (cliente)
     """
     permission_classes = [IsAuthenticated]
 
@@ -349,9 +366,9 @@ class AppointmentStatusUpdateView(APIView):
                     {"detail": "Solo el cliente puede responder a la contraoferta."},
                     status=status.HTTP_403_FORBIDDEN,
                 )
-            if new_status != Appointment.Status.APPROVED:
+            if new_status not in (Appointment.Status.APPROVED, Appointment.Status.REJECTED):
                 return Response(
-                    {"detail": "Desde COUNTER_OFFER solo puede pasar a APPROVED."},
+                    {"detail": "Desde COUNTER_OFFER solo puede pasar a APPROVED o REJECTED."},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
         else:
@@ -487,3 +504,20 @@ class CalendarBlockDeleteView(APIView):
 
         block.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ArtistCalendarBlocksPublicView(APIView):
+    """
+    GET /api/quotes/calendar-blocks/artist/<pk>/
+    Devuelve los bloqueos futuros de un artista específico.
+    Accesible a clientes autenticados para validar disponibilidad antes de agendar.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        from django.utils import timezone
+        blocks = CalendarBlock.objects.filter(
+            artist__id=pk,
+            end_datetime__gte=timezone.now(),
+        ).order_by("start_datetime")
+        return Response(CalendarBlockSerializer(blocks, many=True).data)

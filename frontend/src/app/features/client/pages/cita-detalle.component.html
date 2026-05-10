@@ -1,0 +1,187 @@
+<div class="cita-detalle">
+
+  <!-- ── Breadcrumb ─────────────────────────────────────────────────── -->
+  <div class="breadcrumb">
+    <button class="breadcrumb__back" (click)="back()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+      </svg>
+      Mis Citas
+    </button>
+  </div>
+
+  <!-- ── Loading ───────────────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="skeleton-wrap">
+      <div class="skeleton skeleton--title"></div>
+      <div class="skeleton skeleton--block"></div>
+      <div class="skeleton skeleton--block"></div>
+    </div>
+  }
+
+  <!-- ── Error ─────────────────────────────────────────────────────── -->
+  @if (error()) {
+    <div class="error-banner">{{ error() }}</div>
+  }
+
+  <!-- ── Contenido ─────────────────────────────────────────────────── -->
+  @if (appointment(); as appt) {
+    <div class="detail-layout">
+
+      <!-- ── Panel principal ────────────────────────────────────────── -->
+      <div class="main-panel">
+
+        <!-- Header -->
+        <div class="main-panel__header">
+          <div>
+            <h1 class="artist-name">{{ appt.artist_name }}</h1>
+            <p class="artist-city">{{ appt.artist_city }}</p>
+          </div>
+          <span class="status-badge" [class]="statusClass(appt.status)">
+            {{ appt.status_display }}
+          </span>
+        </div>
+
+        <!-- Detalles de la cita -->
+        <div class="info-section">
+          <h2 class="info-section__title">Detalles de la cita</h2>
+
+          <div class="info-grid">
+            <div class="info-row">
+              <span class="info-row__label">Fecha solicitada</span>
+              <span class="info-row__value">{{ formatDate(appt.scheduled_at) }}</span>
+            </div>
+
+            <div class="info-row">
+              <span class="info-row__label">Registrada el</span>
+              <span class="info-row__value">{{ formatDate(appt.created_at) }}</span>
+            </div>
+
+            <div class="info-row">
+              <span class="info-row__label">Cuestionario de salud</span>
+              <span class="info-row__value" [class.text-ok]="appt.has_health_consent" [class.text-warn]="!appt.has_health_consent">
+                {{ appt.has_health_consent ? 'Enviado ✓' : 'Pendiente' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detalle de cotización -->
+        @if (appt.quote_detail) {
+          <div class="info-section">
+            <h2 class="info-section__title">Cotización asociada</h2>
+            <div class="quote-chips">
+              <div class="quote-chip">
+                <span class="quote-chip__label">Estilo</span>
+                <span class="quote-chip__value">{{ appt.quote_detail.style_name }}</span>
+              </div>
+              <div class="quote-chip">
+                <span class="quote-chip__label">Zona</span>
+                <span class="quote-chip__value">{{ appt.quote_detail.body_part_display }}</span>
+              </div>
+              <div class="quote-chip">
+                <span class="quote-chip__label">Tamaño</span>
+                <span class="quote-chip__value">{{ appt.quote_detail.size_cm }} cm</span>
+              </div>
+              <div class="quote-chip">
+                <span class="quote-chip__label">Color</span>
+                <span class="quote-chip__value">{{ appt.quote_detail.is_color ? 'A color' : 'Blanco y negro' }}</span>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Contraoferta -->
+        @if (appt.status === 'COUNTER_OFFER') {
+          <div class="counteroffer-section">
+            <div class="counteroffer-section__eyebrow">Contraoferta del artista</div>
+            <div class="info-grid">
+              <div class="info-row info-row--highlight">
+                <span class="info-row__label">Nueva fecha propuesta</span>
+                <span class="info-row__value">{{ formatDate(appt.counter_offer_datetime) }}</span>
+              </div>
+              @if (appt.counter_offer_note) {
+                <div class="info-row">
+                  <span class="info-row__label">Nota del artista</span>
+                  <span class="info-row__value">{{ appt.counter_offer_note }}</span>
+                </div>
+              }
+            </div>
+
+            @if (actionSuccess()) {
+              <div class="success-banner">{{ actionSuccess() }}</div>
+            } @else {
+              <div class="counteroffer-actions">
+                <p class="counteroffer-actions__question">¿Aceptas la nueva fecha?</p>
+                <div class="counteroffer-actions__btns">
+                  <button class="btn-accept" (click)="accept()" [disabled]="actionLoading()">
+                    @if (actionLoading()) { Procesando… } @else { Aceptar nueva fecha }
+                  </button>
+                  <button class="btn-reject" (click)="reject()" [disabled]="actionLoading()">
+                    Rechazar
+                  </button>
+                </div>
+              </div>
+            }
+
+            @if (actionError()) {
+              <div class="error-banner">{{ actionError() }}</div>
+            }
+          </div>
+        }
+
+        @if (actionSuccess() && appt.status !== 'COUNTER_OFFER') {
+          <div class="success-banner">{{ actionSuccess() }}</div>
+        }
+
+      </div>
+
+      <!-- ── Panel lateral: cuestionario de salud ───────────────────── -->
+      <div class="side-panel">
+        <div class="side-panel__inner">
+          <h2 class="side-panel__title">Cuestionario de salud</h2>
+
+          @if (appt.has_health_consent) {
+            <div class="consent-done">
+              <span class="consent-done__icon">✓</span>
+              <p>Cuestionario completado</p>
+            </div>
+          } @else {
+            <p class="side-panel__hint">
+              Requerido antes de tu cita. La información es confidencial (LFPDPPP).
+            </p>
+            @if (!showConsent()) {
+              <button class="btn-gold-full" (click)="openConsent()">
+                Completar cuestionario
+              </button>
+            }
+
+            @if (showConsent()) {
+              @if (consentSuccess()) {
+                <div class="consent-done">
+                  <span class="consent-done__icon">✓</span>
+                  <p>Enviado correctamente</p>
+                </div>
+              } @else {
+                <app-health-consent-form></app-health-consent-form>
+
+                @if (consentError()) {
+                  <p class="error-text">{{ consentError() }}</p>
+                }
+
+                <div class="consent-actions">
+                  <button class="btn-gold-full" (click)="submitConsent()" [disabled]="consentSending()">
+                    @if (consentSending()) { Enviando… } @else { Enviar cuestionario }
+                  </button>
+                  <button class="btn-ghost" (click)="closeConsent()">Cancelar</button>
+                </div>
+              }
+            }
+          }
+        </div>
+      </div>
+
+    </div>
+  }
+
+</div>

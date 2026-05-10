@@ -49,6 +49,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
                 "last_name": user.last_name,
                 "user_type": user.user_type,
                 "phone": getattr(user, "phone", None),
+                "profile_photo": user.profile_photo.url if getattr(user, "profile_photo", None) else None,
                 "is_active": user.is_active,
                 "created_at": user.created_at.isoformat(),
                 "updated_at": user.updated_at.isoformat(),
@@ -74,8 +75,15 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'username', 'first_name', 'last_name', 'user_type', 'phone', 'is_active', 'created_at', 'updated_at']
+        fields = ['id', 'email', 'username', 'first_name', 'last_name', 'user_type', 'phone', 'profile_photo', 'is_active', 'created_at', 'updated_at']
         read_only_fields = ['id', 'email', 'user_type', 'is_active', 'created_at', 'updated_at']
+
+    def validate_username(self, value):
+        """Validar que el username no esté en uso por otro usuario."""
+        user = self.context['request'].user
+        if User.objects.exclude(pk=user.pk).filter(username__iexact=value).exists():
+            raise serializers.ValidationError("Este nombre de usuario ya está en uso.")
+        return value
 
 class RegisterSerializer(serializers.ModelSerializer):
     """

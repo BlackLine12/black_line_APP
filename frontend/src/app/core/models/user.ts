@@ -6,6 +6,7 @@ export interface User {
   last_name: string;
   user_type: 'CLIENT' | 'STUDIO' | 'ADMIN';
   phone?: string;
+  profile_photo?: string | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;

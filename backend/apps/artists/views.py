@@ -86,10 +86,18 @@ class ArtistProfileViewSet(viewsets.ModelViewSet):
             return Response({"detail": "La imagen no puede superar 5 MB."}, status=status.HTTP_400_BAD_REQUEST)
 
         profile, _ = ArtistProfile.objects.get_or_create(user=request.user)
+        
+        # Sincronizar con el modelo User para que el navbar y otros componentes lo vean
+        user = request.user
+        user.profile_photo = file
+        user.save(update_fields=["profile_photo"])
+
+        # Guardar en el perfil de artista (redundante pero mantenemos compatibilidad)
         if profile.profile_photo:
             profile.profile_photo.delete(save=False)
         profile.profile_photo = file
         profile.save(update_fields=["profile_photo"])
+
         serializer = self.get_serializer(profile)
         return Response(serializer.data)
 
@@ -179,6 +187,12 @@ class PortfolioImageViewSet(viewsets.ModelViewSet):
                 image = image_map[image_id]
                 image.position = total - index
                 image.save(update_fields=["position"])
+
+        # Devolver la lista actualizada en el orden persistido
+        updated = list(self.get_queryset())
+        serializer = self.get_serializer(updated, many=True)
+        return Response(serializer.data)
+
 
 
 # ---------------------------------------------------------------------------

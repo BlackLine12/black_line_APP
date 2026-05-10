@@ -1,22 +1,22 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { QuoteService } from '../../../core/services/quote.service';
-import { Appointment, AppointmentStatusPayload, HealthConsentPayload } from '../../../core/models/quote';
-import { SignaturePadComponent } from '../../../shared/components/signature-pad/signature-pad.component';
+import { Appointment, AppointmentStatusPayload } from '../../../core/models/quote';
+import { HealthConsentFormComponent } from '../../../shared/components/health-consent-form/health-consent-form.component';
 
 @Component({
   selector: 'app-mis-citas',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, SignaturePadComponent],
+  imports: [CommonModule, RouterLink, HealthConsentFormComponent],
   templateUrl: './mis-citas.component.html',
   styleUrl: './mis-citas.component.scss',
 })
 export class MisCitasComponent implements OnInit {
+  @ViewChild(HealthConsentFormComponent) consentFormRef!: HealthConsentFormComponent;
+
   private readonly quoteService = inject(QuoteService);
   private readonly router = inject(Router);
-  private readonly fb = inject(FormBuilder);
 
   appointments = signal<Appointment[]>([]);
   loading = signal(true);
@@ -29,28 +29,6 @@ export class MisCitasComponent implements OnInit {
   consentSubmitting = signal(false);
   consentError = signal('');
   consentSuccess = signal(false);
-
-  consentForm: FormGroup = this.fb.group({
-    has_allergies: [false],
-    allergies_detail: [''],
-    has_chronic_disease: [false],
-    chronic_disease_detail: [''],
-    takes_medication: [false],
-    medication_detail: [''],
-    is_pregnant: [false],
-    has_skin_condition: [false],
-    skin_condition_detail: [''],
-    has_hemophilia: [false],
-    hemophilia_detail: [''],
-    signature_data: ['', Validators.required],
-    terms_accepted: [false, Validators.requiredTrue],
-  });
-
-  get allHealthClear(): boolean {
-    const v = this.consentForm.value;
-    return !v.has_allergies && !v.has_chronic_disease && !v.takes_medication
-        && !v.is_pregnant && !v.has_skin_condition && !v.has_hemophilia;
-  }
 
   ngOnInit(): void {
     this.load();
@@ -88,27 +66,31 @@ export class MisCitasComponent implements OnInit {
     });
   }
 
+  rejectCounterOffer(appt: Appointment): void {
+    this.actionLoading.set(appt.id);
+    this.actionError.set('');
+    const payload: AppointmentStatusPayload = { status: 'REJECTED' };
+    this.quoteService.updateAppointmentStatus(appt.id, payload).subscribe({
+      next: (updated) => {
+        this.appointments.update((list) =>
+          list.map((a) => (a.id === updated.id ? updated : a))
+        );
+        this.actionLoading.set(null);
+      },
+      error: (err) => {
+        this.actionError.set(err.error?.detail ?? 'Error al rechazar la contraoferta.');
+        this.actionLoading.set(null);
+      },
+    });
+  }
+
   // ── Health consent modal ───────────────────────────────────────────────────
 
   openConsentModal(appt: Appointment): void {
     this.consentAppointmentId.set(appt.id);
     this.consentError.set('');
     this.consentSuccess.set(false);
-    this.consentForm.reset({
-      has_allergies: false,
-      allergies_detail: '',
-      has_chronic_disease: false,
-      chronic_disease_detail: '',
-      takes_medication: false,
-      medication_detail: '',
-      is_pregnant: false,
-      has_skin_condition: false,
-      skin_condition_detail: '',
-      has_hemophilia: false,
-      hemophilia_detail: '',
-      signature_data: '',
-      terms_accepted: false,
-    });
+    this.consentFormRef?.reset();
   }
 
   closeConsentModal(): void {
@@ -117,13 +99,16 @@ export class MisCitasComponent implements OnInit {
   }
 
   submitConsent(): void {
-    if (this.consentForm.invalid || this.consentSubmitting()) return;
+    if (!this.consentFormRef?.isValid || this.consentSubmitting()) {
+      this.consentFormRef?.markAllTouched();
+      return;
+    }
     const apptId = this.consentAppointmentId();
     if (!apptId) return;
 
     this.consentSubmitting.set(true);
     this.consentError.set('');
-    const payload: HealthConsentPayload = this.consentForm.value;
+    const payload = this.consentFormRef.getValue();
 
     this.quoteService.submitHealthConsent(apptId, payload).subscribe({
       next: () => {
