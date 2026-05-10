@@ -212,9 +212,13 @@
                 formControlName="scheduled_at"
                 [min]="minDatetime"
                 class="input"
+                (change)="onDateChange($any($event.target).value)"
               />
               @if (appointmentForm.get('scheduled_at')?.invalid && appointmentForm.get('scheduled_at')?.touched) {
                 <span class="field-error">Selecciona una fecha válida</span>
+              }
+              @if (dateConflictError()) {
+                <span class="field-error">{{ dateConflictError() }}</span>
               }
             </div>
 
@@ -222,7 +226,7 @@
               <div class="form-error">{{ submitError() }}</div>
             }
 
-            <button type="submit" class="btn-gold btn-full" [disabled]="appointmentForm.invalid || submitting()">
+            <button type="submit" class="btn-gold btn-full" [disabled]="appointmentForm.invalid || submitting() || !!dateConflictError()">
               @if (submitting()) { <span class="spinner"></span> Enviando… } @else { Continuar → }
             </button>
           </form>

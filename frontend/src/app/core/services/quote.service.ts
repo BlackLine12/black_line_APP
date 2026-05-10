@@ -10,6 +10,7 @@ import {
   AppointmentCreatePayload,
   AppointmentStatusPayload,
   Appointment,
+  CalendarBlock,
   HealthConsentPayload,
 } from '../models/quote';
 
@@ -89,5 +90,10 @@ export class QuoteService {
   /** RF-6: Enviar cuestionario de salud */
   submitHealthConsent(appointmentId: number, payload: HealthConsentPayload): Observable<unknown> {
     return this.http.post(`${this.base}/appointments/${appointmentId}/health-consent/`, payload);
+  }
+
+  /** RF-7: Bloqueos futuros de un artista (para validar disponibilidad) */
+  getArtistCalendarBlocks(artistId: number): Observable<CalendarBlock[]> {
+    return this.http.get<CalendarBlock[]>(`${this.base}/calendar-blocks/artist/${artistId}/`);
   }
 }
