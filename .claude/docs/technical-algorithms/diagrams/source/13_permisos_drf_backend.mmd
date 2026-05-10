@@ -1,0 +1,40 @@
+flowchart TD
+    REQ([Request: método + endpoint + user]) --> AUTH{¿IsAuthenticated?\n¿JWT válido?}
+    AUTH -->|No 🔒| E401[/401 Unauthorized/]
+    AUTH -->|Sí ✔| ROLE{¿Qué rol\ntiene el usuario?}
+
+    ROLE --> CLIENT_R[user_type = CLIENT]
+    ROLE --> STUDIO_R[user_type = STUDIO]
+    ROLE --> ADMIN_R[user_type = ADMIN]
+
+    CLIENT_R --> C1["✅ POST /api/quotes/\n    Crear QuoteRequest"]
+    CLIENT_R --> C2["✅ GET /api/quotes/appointments/\n    Ver sus propias citas"]
+    CLIENT_R --> C3["✅ POST /api/quotes/appointments/\n    Crear Appointment"]
+    CLIENT_R --> C4["✅ PATCH /api/.../status/ {APPROVED}\n    Aceptar COUNTER_OFFER"]
+    CLIENT_R --> C5["✅ POST /api/.../health-consent/\n    Enviar cuestionario de salud"]
+    CLIENT_R --> C6["❌ PATCH /api/.../status/ {COUNTER_OFFER|REJECTED}\n    Solo artista puede desde PENDING"]
+
+    STUDIO_R --> S1["✅ PATCH /api/.../status/ {APPROVED|REJECTED|COUNTER_OFFER}\n    Responder a citas PENDING propias"]
+    STUDIO_R --> S2["✅ GET/POST /api/quotes/calendar-blocks/\n    Gestionar su calendario"]
+    STUDIO_R --> S3["✅ DELETE /api/quotes/calendar-blocks/{id}/\n    Eliminar sus propios bloques"]
+    STUDIO_R --> S4["❌ POST /api/quotes/appointments/\n    Solo el cliente puede crear citas"]
+    STUDIO_R --> S5["❌ PATCH /api/.../status/ de otro artista\n    403 Sin acceso"]
+
+    ADMIN_R --> A1["✅ GET /api/quotes/calendar-blocks/\n    Ver todos los bloques"]
+    ADMIN_R --> A2["✅ Acceso a todos los módulos\n    vía Django Admin + roleGuard bypass"]
+
+    subgraph HELPER["🔑 _get_appointment_or_403"]
+        H["CLIENT: appointment.client == request.user\nSTUDIO: appointment.artist.user == request.user\n→ 403 si no coincide"]
+    end
+
+    style REQ fill:#1a1a2e,color:#d4a843,stroke:#d4a843
+    style E401 fill:#4a0000,color:#ff6b6b,stroke:#ff4444
+    style AUTH fill:#2a1a00,color:#fbbf24,stroke:#f59e0b
+    style ROLE fill:#2a1a00,color:#fbbf24,stroke:#f59e0b
+    style CLIENT_R fill:#1a1a2e,color:#93c5fd,stroke:#3b82f6
+    style STUDIO_R fill:#1a1a2e,color:#c4b5fd,stroke:#7c3aed
+    style ADMIN_R fill:#1a1a2e,color:#d4a843,stroke:#d4a843
+    style HELPER fill:#0d2b1e,color:#4ade80,stroke:#22c55e
+    style C6 fill:#4a0000,color:#ff6b6b,stroke:#ff4444
+    style S4 fill:#4a0000,color:#ff6b6b,stroke:#ff4444
+    style S5 fill:#4a0000,color:#ff6b6b,stroke:#ff4444

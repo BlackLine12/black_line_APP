@@ -1,0 +1,84 @@
+erDiagram
+    USERS_USER {
+        int id PK
+        string email UK
+        string user_type "CLIENT|STUDIO|ADMIN"
+        string first_name
+        string last_name
+        boolean is_active
+        datetime date_joined
+    }
+
+    ARTISTS_ARTIST_PROFILE {
+        int id PK
+        int user_id FK
+        string city
+        decimal base_hourly_rate
+        decimal minimum_setup_fee
+        text bio
+        boolean is_available
+    }
+
+    ARTISTS_TATTOO_STYLE {
+        int id PK
+        string name UK
+        string slug
+    }
+
+    ARTISTS_PORTFOLIO_IMAGE {
+        int id PK
+        int artist_id FK
+        string image_url
+        string caption
+        datetime uploaded_at
+    }
+
+    QUOTES_QUOTE_REQUEST {
+        int id PK
+        int client_id FK
+        int tattoo_style_id FK
+        string body_part
+        decimal size_cm
+        boolean is_color
+        text description
+        string city
+        datetime created_at
+    }
+
+    QUOTES_APPOINTMENT {
+        int id PK
+        int quote_request_id FK
+        int artist_id FK
+        string status "PENDING|APPROVED|REJECTED|COUNTER_OFFER"
+        datetime scheduled_at
+        decimal final_price
+        datetime created_at
+    }
+
+    QUOTES_HEALTH_CONSENT {
+        int id PK
+        int appointment_id FK
+        boolean q1_allergies
+        boolean q2_medications
+        boolean q3_conditions
+        text signature_data
+        datetime signed_at
+    }
+
+    QUOTES_CALENDAR_BLOCK {
+        int id PK
+        int artist_id FK
+        datetime start_at
+        datetime end_at
+        string reason
+    }
+
+    USERS_USER ||--o| ARTISTS_ARTIST_PROFILE : "tiene (STUDIO)"
+    USERS_USER ||--o{ QUOTES_QUOTE_REQUEST : "realiza (CLIENT)"
+    ARTISTS_ARTIST_PROFILE }o--o{ ARTISTS_TATTOO_STYLE : "domina"
+    ARTISTS_ARTIST_PROFILE ||--o{ ARTISTS_PORTFOLIO_IMAGE : "tiene"
+    ARTISTS_ARTIST_PROFILE ||--o{ QUOTES_CALENDAR_BLOCK : "bloquea"
+    QUOTES_QUOTE_REQUEST ||--o{ QUOTES_APPOINTMENT : "genera"
+    ARTISTS_ARTIST_PROFILE ||--o{ QUOTES_APPOINTMENT : "atiende"
+    QUOTES_APPOINTMENT ||--o| QUOTES_HEALTH_CONSENT : "requiere"
+    ARTISTS_TATTOO_STYLE ||--o{ QUOTES_QUOTE_REQUEST : "referencia"

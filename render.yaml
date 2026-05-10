@@ -29,3 +29,10 @@ services:
         value: "False"
       - key: EMAIL_BACKEND
         value: "django.core.mail.backends.smtp.EmailBackend"
+      - key: CLOUDINARY_CLOUD_NAME
+        # Obténlo en cloudinary.com → Dashboard → Cloud name
+        value: ""
+      - key: CLOUDINARY_API_KEY
+        value: ""
+      - key: CLOUDINARY_API_SECRET
+        value: ""

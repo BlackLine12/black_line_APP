@@ -1,0 +1,41 @@
+flowchart TD
+    NAV([Usuario navega a ruta]) --> NG{noAuthGuard?\n¿Ruta pública?}
+
+    NG -->|Sí: ruta pública| A{¿Sesión activa?}
+    A -->|Sí| RDR[redirectByRole:\nSTUDIO→/studio/dashboard\nCLIENT→/client/dashboard\nADMIN→/admin/]
+    A -->|No| PUB[/Muestra página pública\n landing · login · register/]
+
+    NG -->|No: ruta protegida| AG{authGuard:\n¿Token JWT vigente\ny user cargado?}
+
+    AG -->|No 🔒| LOGIN[Redirige a /auth/login\n?returnUrl=ruta_original]
+    AG -->|Sí ✔| RG{roleGuard:\n¿user_type está en\nallowedRoles?}
+
+    RG -->|ADMIN → siempre| OK[/✅ Acceso concedido/]
+
+    RG -->|Role correcto ✔| OK
+
+    RG -->|Role incorrecto ❌| WRONG{¿Cuál es\nel rol real?}
+    WRONG -->|STUDIO| SD[Redirige a\n/studio/dashboard]
+    WRONG -->|CLIENT| CD[Redirige a\n/client/dashboard]
+
+    subgraph RUTAS["🗺️ Árbol de Rutas Protegidas"]
+        direction LR
+        R1["/client/**\nroleGuard('CLIENT')"]
+        R2["/studio/**\nroleGuard('STUDIO')"]
+    end
+
+    OK --> RUTAS
+
+    style NAV fill:#1a1a2e,color:#d4a843,stroke:#d4a843
+    style OK fill:#0d2b1e,color:#4ade80,stroke:#22c55e
+    style PUB fill:#0d2b1e,color:#4ade80,stroke:#22c55e
+    style LOGIN fill:#4a0000,color:#ff6b6b,stroke:#ff4444
+    style RDR fill:#2a1a00,color:#fbbf24,stroke:#f59e0b
+    style SD fill:#2a1a00,color:#fbbf24,stroke:#f59e0b
+    style CD fill:#2a1a00,color:#fbbf24,stroke:#f59e0b
+    style NG fill:#2a1a00,color:#fbbf24,stroke:#f59e0b
+    style AG fill:#2a1a00,color:#fbbf24,stroke:#f59e0b
+    style RG fill:#2a1a00,color:#fbbf24,stroke:#f59e0b
+    style WRONG fill:#2a1a00,color:#fbbf24,stroke:#f59e0b
+    style A fill:#2a1a00,color:#fbbf24,stroke:#f59e0b
+    style RUTAS fill:#1a1a2e,color:#93c5fd,stroke:#3b82f6

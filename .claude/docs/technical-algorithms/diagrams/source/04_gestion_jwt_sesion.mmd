@@ -1,0 +1,46 @@
+sequenceDiagram
+    actor Usuario
+    participant Angular as Angular App
+    participant Interceptor as JwtInterceptor
+    participant AuthService as AuthService
+    participant SessionStorage as sessionStorage
+    participant API as Django REST API
+
+    Usuario->>Angular: Ingresa credenciales
+    Angular->>API: POST /api/auth/token/
+    activate API
+    API-->>Angular: { access: JWT, refresh: JWT }
+    deactivate API
+
+    Angular->>AuthService: setTokens(access, refresh)
+    AuthService->>SessionStorage: setItem('access_token', JWT)
+    AuthService->>SessionStorage: setItem('refresh_token', JWT)
+    Note over SessionStorage: NUNCA localStorage<br/>Política de seguridad OWASP
+
+    loop Cada petición autenticada
+        Angular->>Interceptor: HTTP Request
+        activate Interceptor
+        Interceptor->>SessionStorage: getItem('access_token')
+        SessionStorage-->>Interceptor: JWT token
+
+        alt Token vigente
+            Interceptor->>API: Request + Authorization: Bearer JWT
+            API-->>Interceptor: Response 200
+            Interceptor-->>Angular: Response
+        else Token expirado (401)
+            Interceptor->>SessionStorage: getItem('refresh_token')
+            SessionStorage-->>Interceptor: refresh JWT
+            Interceptor->>API: POST /api/auth/token/refresh/
+            API-->>Interceptor: { access: nuevo JWT }
+            Interceptor->>SessionStorage: setItem('access_token', nuevo JWT)
+            Interceptor->>API: Reintenta request original
+            API-->>Interceptor: Response 200
+            Interceptor-->>Angular: Response
+        end
+        deactivate Interceptor
+    end
+
+    Usuario->>Angular: Cierra sesión
+    Angular->>AuthService: logout()
+    AuthService->>SessionStorage: clear()
+    AuthService->>API: POST /api/auth/logout/ (blacklist refresh)

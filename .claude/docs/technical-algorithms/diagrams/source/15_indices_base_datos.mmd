@@ -1,0 +1,52 @@
+flowchart TD
+    subgraph QR["📋 QuoteRequest"]
+        direction TB
+        QR1["client_id (FK)"]
+        QR2["created_at (timestamp)"]
+        QR3["tattoo_style_id (FK)"]
+        QR_IDX["🔑 Índice recomendado:\nINDEX(client_id, created_at DESC)\n→ Acelera: listado de cotizaciones del cliente"]
+        QR1 & QR2 --> QR_IDX
+    end
+
+    subgraph AP["📅 Appointment"]
+        direction TB
+        AP1["artist_id (FK)"]
+        AP2["status (PENDING|APPROVED|...)"]
+        AP3["scheduled_at (timestamp)"]
+        AP_IDX1["🔑 Índice recomendado:\nINDEX(artist_id, status, scheduled_at)\n→ Acelera: agenda del artista por estado"]
+        AP_IDX2["🔑 Índice parcial recomendado:\nINDEX(artist_id, scheduled_at)\nWHERE status = 'APPROVED'\n→ Acelera: validación de solapamiento"]
+        AP1 & AP2 & AP3 --> AP_IDX1
+        AP1 & AP3 --> AP_IDX2
+    end
+
+    subgraph CB["🗓️ CalendarBlock"]
+        direction TB
+        CB1["artist_id (FK)"]
+        CB2["start_datetime"]
+        CB3["end_datetime"]
+        CB_IDX["🔑 Índice recomendado:\nINDEX(artist_id, start_datetime, end_datetime)\n→ Acelera: detección de solapamientos"]
+        CB1 & CB2 & CB3 --> CB_IDX
+    end
+
+    subgraph MATCH["🔍 Query de Match (más crítica)"]
+        direction TB
+        MP1["ArtistProfile.city (text)"]
+        MP2["ArtistProfile → styles (M:N)"]
+        MP_IDX["🔑 Índice recomendado:\nINDEX(city)\n(actualmente: filtro city__iexact sin índice)"]
+        MP1 --> MP_IDX
+    end
+
+    DJANGO["🐍 Cómo agregar en Django:\nclass Meta:\n    indexes = [\n        models.Index(fields=['client', '-created_at'],\n            name='qr_client_created_idx'),\n        models.Index(fields=['artist', 'status', 'scheduled_at'],\n            name='appt_artist_status_idx'),\n    ]"]
+
+    QR_IDX & AP_IDX1 & AP_IDX2 & CB_IDX & MP_IDX --> DJANGO
+
+    style QR fill:#1a1a2e,color:#93c5fd,stroke:#3b82f6
+    style AP fill:#1a1a2e,color:#c4b5fd,stroke:#7c3aed
+    style CB fill:#1a1a2e,color:#4ade80,stroke:#22c55e
+    style MATCH fill:#2a1a00,color:#fbbf24,stroke:#f59e0b
+    style DJANGO fill:#0d0d0d,color:#d4a843,stroke:#d4a843
+    style QR_IDX fill:#0d2b1e,color:#4ade80,stroke:#22c55e
+    style AP_IDX1 fill:#0d2b1e,color:#4ade80,stroke:#22c55e
+    style AP_IDX2 fill:#0d2b1e,color:#4ade80,stroke:#22c55e
+    style CB_IDX fill:#0d2b1e,color:#4ade80,stroke:#22c55e
+    style MP_IDX fill:#0d2b1e,color:#4ade80,stroke:#22c55e

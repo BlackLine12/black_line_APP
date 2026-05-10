@@ -1,0 +1,33 @@
+flowchart TD
+    A([GET /api/quotes/cities/]) --> B{¿En caché Redis?\nTTL: 1 hora}
+    B -->|Sí ✔| CACHE[/"Retorna lista del caché\n(sin hit a la BD)"/]
+    B -->|No / Expiró| C["ArtistProfile.objects\n.filter(user__is_active=True,\n        base_hourly_rate__gt=0)\n.values_list('city', flat=True)\n.distinct()\n.order_by('city')"]
+
+    C --> D["Intersectar con catálogo\ncities-mx.ts (frontend)\npara garantizar normalización"]
+
+    D --> E["Guardar resultado en Redis\ncon TTL = 3600 s"]
+
+    E --> F[/"200 · {cities: ['Ciudad de México',\n'Guadalajara', 'Monterrey', ...]}"/]
+
+    CACHE --> G([Fin])
+    F --> G
+
+    subgraph USE["Integración con autocomplete Match"]
+        direction LR
+        UI["CitiesAutocomplete\n(input del usuario)"]
+        FILTER["Filtra cities-mx.ts\ncon la lista del endpoint"]
+        RESULT["Solo muestra ciudades\ncon artistas activos"]
+        UI --> FILTER --> RESULT
+    end
+
+    F -.->|alimenta| USE
+
+    style A fill:#1a1a2e,color:#d4a843,stroke:#d4a843
+    style G fill:#1a1a2e,color:#d4a843,stroke:#d4a843
+    style CACHE fill:#0d2b1e,color:#4ade80,stroke:#22c55e
+    style F fill:#0d2b1e,color:#4ade80,stroke:#22c55e
+    style B fill:#2a1a00,color:#fbbf24,stroke:#f59e0b
+    style C fill:#1a1a2e,color:#93c5fd,stroke:#3b82f6
+    style D fill:#1a1a2e,color:#93c5fd,stroke:#3b82f6
+    style E fill:#1a1a2e,color:#c4b5fd,stroke:#7c3aed
+    style USE fill:#0d0d0d,color:#d4a843,stroke:#d4a843

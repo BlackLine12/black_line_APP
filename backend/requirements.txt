@@ -10,3 +10,6 @@ django-filter==24.3
 gunicorn==23.0.0
 whitenoise==6.8.2
 dj-database-url==2.3.0
+# Almacenamiento de imágenes
+cloudinary==1.41.0
+django-cloudinary-storage==0.3.0

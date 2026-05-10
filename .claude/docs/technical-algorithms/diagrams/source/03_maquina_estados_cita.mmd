@@ -1,0 +1,29 @@
+stateDiagram-v2
+    direction LR
+    [*] --> PENDING : Cliente crea cita\nPOST /api/quotes/appointments/
+
+    PENDING --> APPROVED : Artista aprueba\nPATCH .../status/ {status: APPROVED}
+    PENDING --> REJECTED : Artista rechaza\nPATCH .../status/ {status: REJECTED}
+    PENDING --> COUNTER_OFFER : Artista contraoferta\nPATCH .../status/ {status: COUNTER_OFFER,\nprice|date}
+
+    COUNTER_OFFER --> APPROVED : Cliente acepta contraoferta
+    COUNTER_OFFER --> REJECTED : Cliente rechaza contraoferta
+
+    APPROVED --> [*] : Cita confirmada\n(genera HealthConsent)
+    REJECTED --> [*] : Cita cancelada
+
+    PENDING : PENDING
+    PENDING : Esperando respuesta del artista
+    PENDING : Solo artista puede cambiar estado
+
+    APPROVED : APPROVED
+    APPROVED : Cita programada
+    APPROVED : Se solicita cuestionario de salud
+
+    REJECTED : REJECTED
+    REJECTED : Cita rechazada
+    REJECTED : No hay acción posterior
+
+    COUNTER_OFFER : COUNTER_OFFER
+    COUNTER_OFFER : Artista propone nuevo precio o fecha
+    COUNTER_OFFER : Cliente debe responder

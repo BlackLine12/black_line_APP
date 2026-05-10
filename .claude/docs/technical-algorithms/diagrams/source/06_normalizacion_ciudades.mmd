@@ -1,0 +1,27 @@
+flowchart TD
+    A([Usuario ingresa ciudad\nen Cotizador]) --> B[AutocompleteInput\ncon cities-mx.ts]
+    B --> C{¿Ciudad en catálogo?}
+    C -->|Sí| D[Seleccionar ciudad\nnormalizada del catálogo]
+    C -->|No| E[Mostrar sugerencias\nfiltradas del catálogo]
+    E --> F{¿Usuario selecciona\nsugerencia?}
+    F -->|Sí| D
+    F -->|No| G[/Error: ciudad no válida\nNo se permite texto libre/]
+
+    D --> H[POST /api/quotes/\ncity = valor exacto del catálogo]
+    H --> I[Backend: ArtistProfile.city\ncomparado con city__iexact]
+    I --> J[Coincidencia exacta\ngarantizada por catálogo]
+    J --> K[GET /api/quotes/match/\n?city=Guadalajara&style=1]
+    K --> L[BD: WHERE city ILIKE 'guadalajara']
+    L --> M[/Artistas encontrados en ciudad/]
+
+    subgraph Catálogo ["cities-mx.ts (frontend/src/app/core/data/)"]
+        N["['Ciudad de México', 'Guadalajara',\n'Monterrey', 'Puebla', ...]"]
+    end
+
+    B -.->|carga| Catálogo
+
+    style A fill:#1a1a2e,color:#d4a843,stroke:#d4a843
+    style G fill:#4a0000,color:#ff6b6b,stroke:#ff4444
+    style M fill:#0d2b1e,color:#4ade80,stroke:#22c55e
+    style J fill:#0d2b1e,color:#4ade80,stroke:#22c55e
+    style Catálogo fill:#2a2a3e,color:#a0a0c0,stroke:#6060a0

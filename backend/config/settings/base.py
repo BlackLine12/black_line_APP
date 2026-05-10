@@ -19,6 +19,8 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
     "django_filters",
+    "cloudinary_storage",
+    "cloudinary",
     # Local apps
     "apps.users",
     "apps.artists",

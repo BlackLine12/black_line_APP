@@ -1,0 +1,36 @@
+flowchart TD
+    A([Usuario completa paso 3 del Cotizador]) --> B["Lee: body_part, size_cm, is_color\ndel formulario reactivo"]
+
+    B --> C["ZONE_MULTIPLIERS\n(copia local del frontend)\nBRAZO=1.00 · COSTILLAS=1.50 · etc."]
+
+    C --> D{is_color?}
+    D -->|Sí| E[color_mult = 1.20]
+    D -->|No| F[color_mult = 1.00]
+
+    E --> G["price = BASE_RATE_MXN × size_cm × zone_mult × color_mult\n\nBASE_RATE_MXN = 150 MXN/cm\n(tarifa de mercado promedio · NO es tarifa real del artista)"]
+    F --> G
+
+    G --> H["Redondear a múltiplo de 10:\nprice = Math.round(price / 10) × 10"]
+
+    H --> I["Calcular rango:\nmin = price\nmax = Math.round(price × 1.35 / 10) × 10"]
+
+    I --> J[/"Muestra: 'Tu tatuaje podría costar entre\n$X,XXX y $X,XXX MXN'"/]
+
+    J --> K{Cliente elige artista\nen el Match}
+
+    K --> L["Backend recalcula con tarifa REAL\ndel artista (base_hourly_rate):\nestimated_price = GREATEST(...)"]
+
+    L --> M[/"Artista muestra precio definitivo\nen tarjeta del Match"\neste precio reemplaza al estimado/]
+
+    M --> N([Fin: precio backend es la fuente de verdad])
+
+    style A fill:#1a1a2e,color:#d4a843,stroke:#d4a843
+    style N fill:#1a1a2e,color:#d4a843,stroke:#d4a843
+    style J fill:#2a1a00,color:#fbbf24,stroke:#f59e0b
+    style M fill:#0d2b1e,color:#4ade80,stroke:#22c55e
+    style D fill:#2a1a00,color:#fbbf24,stroke:#f59e0b
+    style K fill:#2a1a00,color:#fbbf24,stroke:#f59e0b
+    style G fill:#1a1a2e,color:#93c5fd,stroke:#3b82f6
+    style H fill:#1a1a2e,color:#93c5fd,stroke:#3b82f6
+    style I fill:#1a1a2e,color:#93c5fd,stroke:#3b82f6
+    style L fill:#1a1a2e,color:#c4b5fd,stroke:#7c3aed
