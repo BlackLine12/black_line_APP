@@ -1,0 +1,39 @@
+flowchart TD
+    A([Inicio: Artista crea CalendarBlock]) --> B[Recibe: start_datetime, end_datetime, reason]
+    B --> C{start_datetime < end_datetime?}
+    C -->|No ❌| D[/Error 400: Fin debe ser posterior al inicio/]
+    C -->|Sí ✔| E[Buscar bloques existentes del artista]
+
+    E --> F["Query: CalendarBlock.objects.filter(
+        artist=artist,
+        start_datetime__lt=end_datetime,
+        end_datetime__gt=start_datetime
+    )"]
+
+    F --> G{¿Existe solapamiento\ncon CalendarBlock?}
+    G -->|Sí ❌| H[/Error 400: Rango se solapa con un bloqueo existente/]
+    G -->|No ✔| I["Query: Appointment.objects.filter(
+        artist=artist,
+        status=APPROVED,
+        scheduled_at__gte=start_datetime,
+        scheduled_at__lt=end_datetime
+    )"]
+
+    I --> J{¿Existe cita APPROVED\nen ese rango?}
+    J -->|Sí ⚠️| K[/Error 400: Existe una cita confirmada en ese horario/]
+    J -->|No ✔| L[CalendarBlock.full_clean → valida rango]
+    L --> M[CalendarBlock.save]
+    M --> N[/Respuesta 201: Bloqueo creado exitosamente/]
+    N --> O([Fin])
+
+    style A fill:#1a1a2e,color:#d4a843,stroke:#d4a843
+    style O fill:#1a1a2e,color:#d4a843,stroke:#d4a843
+    style D fill:#4a0000,color:#ff6b6b,stroke:#ff4444
+    style H fill:#4a0000,color:#ff6b6b,stroke:#ff4444
+    style K fill:#4a2200,color:#fbbf24,stroke:#f59e0b
+    style N fill:#0d2b1e,color:#4ade80,stroke:#22c55e
+    style C fill:#2a1a00,color:#fbbf24,stroke:#f59e0b
+    style G fill:#2a1a00,color:#fbbf24,stroke:#f59e0b
+    style J fill:#2a1a00,color:#fbbf24,stroke:#f59e0b
+    style F fill:#1a1a2e,color:#93c5fd,stroke:#3b82f6
+    style I fill:#1a1a2e,color:#93c5fd,stroke:#3b82f6

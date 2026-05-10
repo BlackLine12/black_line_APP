@@ -1,0 +1,52 @@
+sequenceDiagram
+    actor Cliente
+    participant Cotizador as Cotizador (Angular)
+    participant QuoteService as QuoteService (Signal)
+    participant Match as Match Component
+    participant API as Django REST API
+    participant BD as PostgreSQL
+
+    Cliente->>Cotizador: Completa 4 pasos del formulario
+    Note over Cotizador: Paso 1: estilo + descripción<br/>Paso 2: parte del cuerpo + tamaño<br/>Paso 3: ciudad<br/>Paso 4: resumen + precio estimado
+
+    Cotizador->>API: POST /api/quotes/
+    activate API
+    API->>BD: INSERT QuoteRequest
+    BD-->>API: QuoteRequest (id, status=PENDING)
+    API-->>Cotizador: { data: QuoteRequest }
+    deactivate API
+
+    Cotizador->>QuoteService: setLastQuote(quote)
+    Note over QuoteService: Escribe Signal +<br/>sessionStorage atómicamente
+
+    Cotizador->>Match: Navega a /match
+
+    activate Match
+    Match->>QuoteService: lastQuote()
+    alt Signal en memoria
+        QuoteService-->>Match: QuoteRequest (in-memory)
+    else Signal vacío
+        Match->>API: GET /api/quotes/
+        API-->>Match: Lista de quotes
+        Match->>QuoteService: setLastQuote(quotes[0])
+    end
+
+    Match->>API: GET /api/quotes/match/?city=X&style=Y
+    activate API
+    API->>BD: SELECT ArtistProfile WHERE city ILIKE :city AND styles IN (:styles)
+    BD-->>API: Lista artistas filtrados
+    API-->>Match: { data: [ArtistProfile...] }
+    deactivate API
+
+    Match-->>Cliente: Muestra panel con artistas disponibles
+    deactivate Match
+
+    Cliente->>Match: Selecciona artista y agenda cita
+    Match->>API: POST /api/quotes/appointments/
+    activate API
+    API->>BD: INSERT Appointment (status=PENDING)
+    BD-->>API: Appointment creada
+    API-->>Match: { data: Appointment }
+    deactivate API
+
+    Match-->>Cliente: Redirige a cuestionario de salud

@@ -1,0 +1,26 @@
+flowchart TD
+    A([Inicio: Solicitud de cotización]) --> B[Obtener parámetros\nsize_cm, body_part, is_color]
+    B --> C[Obtener perfil del artista\nbase_hourly_rate, minimum_setup_fee]
+    C --> D{body_part válido?}
+    D -->|No| E[/Error: zona inválida/]
+    D -->|Sí| F[Obtener zone_multiplier\nde BODY_PART_MULTIPLIERS]
+    F --> G{is_color?}
+    G -->|Sí| H[color_multiplier = 1.20]
+    G -->|No| I[color_multiplier = 1.00]
+    H --> J[Calcular precio_base\n= size_cm × base_hourly_rate\n× zone_multiplier × color_multiplier]
+    I --> J
+    J --> K{precio_base ≥\nminimum_setup_fee?}
+    K -->|Sí| L[estimated_price = precio_base]
+    K -->|No| M[estimated_price = minimum_setup_fee]
+    L --> N[Calcular rango para cliente\nprice_min = estimated_price\nprice_max = estimated_price × 1.35]
+    M --> N
+    N --> O[/Retornar: precio estimado\ncon rango de mercado/]
+    O --> P([Fin])
+
+    style A fill:#1a1a2e,color:#d4a843,stroke:#d4a843
+    style P fill:#1a1a2e,color:#d4a843,stroke:#d4a843
+    style E fill:#4a0000,color:#ff6b6b,stroke:#ff4444
+    style O fill:#0d2b1e,color:#4ade80,stroke:#22c55e
+    style K fill:#2a1a00,color:#fbbf24,stroke:#f59e0b
+    style G fill:#2a1a00,color:#fbbf24,stroke:#f59e0b
+    style D fill:#2a1a00,color:#fbbf24,stroke:#f59e0b

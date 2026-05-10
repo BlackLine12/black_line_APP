@@ -1,0 +1,36 @@
+%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#1a1a2e', 'primaryTextColor': '#d4a843', 'primaryBorderColor': '#d4a843', 'lineColor': '#d4a843', 'secondaryColor': '#2a2a2a', 'tertiaryColor': '#0d0d0d', 'background': '#0d0d0d', 'noteBkgColor': '#2a1a00', 'noteTextColor': '#fbbf24', 'actorBkg': '#1a1a2e', 'actorBorder': '#d4a843', 'actorTextColor': '#d4a843', 'actorLineColor': '#d4a843'}}}%%
+sequenceDiagram
+    autonumber
+    participant C as Cliente
+    participant FE as Angular Frontend
+    participant API as Backend API
+
+    Note over C,API: Prerrequisito: Appointment en estado APPROVED
+
+    C->>FE: Navega a Mis Citas - selecciona cita aprobada
+    FE->>API: GET /api/quotes/appointments/id/health-consent/
+    API-->>FE: 404 - Cuestionario no registrado
+
+    FE-->>C: Muestra formulario HealthConsent
+
+    Note over C,FE: Cliente responde preguntas medicas:<br/>alergias, enfermedades cronicas, medicamentos,<br/>embarazo, condiciones de piel, hemofilia
+
+    C->>FE: Completa preguntas y acepta terminos LFPDPPP
+    C->>FE: Dibuja firma en SignaturePad canvas HTML5
+
+    FE->>FE: SignaturePad.toDataURL genera base64 PNG<br/>Formato validado como data image png base64
+
+    FE->>API: POST /api/quotes/appointments/id/health-consent/<br/>has_allergies, chronic_disease, takes_medication,<br/>is_pregnant, has_skin_condition, has_hemophilia,<br/>signature_data base64, terms_accepted true
+
+    API->>API: Valida actor = CLIENT dueno de cita<br/>Verifica que NO exista health_consent previo<br/>Valida terms_accepted = true (LFPDPPP)<br/>Valida signature_data formato imagen valido
+
+    alt Datos validos
+        API-->>FE: 201 - HealthConsent creado
+        FE-->>C: Cuestionario enviado correctamente
+    else Ya existe un cuestionario
+        API-->>FE: 400 - Ya existe un cuestionario para esta cita
+    else terms_accepted es false
+        API-->>FE: 400 - Debe aceptar los terminos de privacidad
+    else signature_data invalida o vacia
+        API-->>FE: 400 - La firma digital es obligatoria
+    end

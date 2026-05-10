@@ -1,0 +1,46 @@
+flowchart LR
+    subgraph BACKEND["🐍 Backend (Django REST)"]
+        direction TB
+        M["models.py\n(ORM fields)"]
+        S["serializers.py\n(fields, validation)"]
+        V["views.py\n(endpoints, permisos)"]
+        SCH["backend/schema.yml\n(OpenAPI 3.0)"]
+        M --> S --> V
+        V --> SCH
+    end
+
+    subgraph CMD["⚙️ Comandos de Sincronización"]
+        direction TB
+        C1["python manage.py spectacular\n--file schema.yml"]
+        C2["npx openapi-typescript\nbackend/schema.yml\n-o frontend/src/app/core/api/types.ts"]
+        C1 --> C2
+    end
+
+    subgraph FRONTEND["🅰️ Frontend (Angular 19)"]
+        direction TB
+        T["core/api/types.ts\n(TypeScript types)"]
+        SVC["services/*.service.ts\n(HttpClient tipado)"]
+        COMP["components/*.ts\n(UI, validación)"]
+        T --> SVC --> COMP
+    end
+
+    SCH --> C1
+    C2 --> T
+
+    subgraph CHECK["🔍 Detección de Drift"]
+        DIFF["git diff schema.yml\nantes del PR"]
+    end
+
+    SCH -.->|verificar antes PR| CHECK
+
+    style BACKEND fill:#1a1a2e,color:#d4a843,stroke:#d4a843
+    style FRONTEND fill:#0d2b1e,color:#4ade80,stroke:#22c55e
+    style CMD fill:#2a1a00,color:#fbbf24,stroke:#f59e0b
+    style CHECK fill:#2a0a0a,color:#ff6b6b,stroke:#ef4444
+    style M fill:#0d0d0d,color:#93c5fd,stroke:#3b82f6
+    style S fill:#0d0d0d,color:#93c5fd,stroke:#3b82f6
+    style V fill:#0d0d0d,color:#93c5fd,stroke:#3b82f6
+    style SCH fill:#0d0d0d,color:#d4a843,stroke:#d4a843
+    style T fill:#0d0d0d,color:#4ade80,stroke:#22c55e
+    style SVC fill:#0d0d0d,color:#4ade80,stroke:#22c55e
+    style COMP fill:#0d0d0d,color:#4ade80,stroke:#22c55e

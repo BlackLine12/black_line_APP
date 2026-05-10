@@ -1,0 +1,62 @@
+flowchart TD
+    A([Inicio: GET /api/quotes/match/]) --> B[Validar params con MatchSearchSerializer\ncity · style_id · size_cm · body_part · is_color · max_price]
+    B --> C{Params validos?}
+    C -->|No| ERR[/400 - Errores de validacion/]
+    C -->|Si| D["FILTRO 1 - Perfil activo
+    user is_active = True
+    base_hourly_rate mayor a 0
+    minimum_setup_fee mayor a 0"]
+
+    D --> E["FILTRO 2 - Tiene estilos registrados
+    styles isnull = False
+    distinct para evitar duplicados"]
+
+    E --> F["FILTRO 3 - Ciudad del artista
+    city iexact = city
+    case-insensitive garantizado por catalogo"]
+
+    F --> G["ANNOTATE estimated_price en SQL
+    GREATEST(
+      size_cm x base_hourly_rate
+      x zone_multiplier x color_multiplier,
+      minimum_setup_fee
+    )"]
+
+    G --> H["ANNOTATE style_match booleano
+    CASE WHEN styles = style_id THEN True
+    ELSE False END"]
+
+    H --> I{max_price proporcionado?}
+    I -->|Si| J["Filtro adicional:
+    estimated_price menor o igual a max_price"]
+    I -->|No| K
+
+    J --> K["ORDENAMIENTO:
+    -style_match primero
+    + estimated_price ascendente"]
+
+    K --> L["OPTIMIZACION N+1:
+    select_related user
+    prefetch_related styles portfolio_images"]
+
+    L --> M["Serializar con ArtistMatchCardSerializer
+    artist_id, artist_name, city, bio,
+    estimated_price, style_match,
+    styles, portfolio_thumbnail"]
+
+    M --> N[/"200 - count + filters_applied + results"/]
+    N --> O([Fin])
+
+    style A fill:#1a1a2e,color:#d4a843,stroke:#d4a843
+    style O fill:#1a1a2e,color:#d4a843,stroke:#d4a843
+    style ERR fill:#4a0000,color:#ff6b6b,stroke:#ff4444
+    style N fill:#0d2b1e,color:#4ade80,stroke:#22c55e
+    style C fill:#2a1a00,color:#fbbf24,stroke:#f59e0b
+    style I fill:#2a1a00,color:#fbbf24,stroke:#f59e0b
+    style D fill:#1a1a2e,color:#93c5fd,stroke:#3b82f6
+    style E fill:#1a1a2e,color:#93c5fd,stroke:#3b82f6
+    style F fill:#1a1a2e,color:#93c5fd,stroke:#3b82f6
+    style G fill:#1a1a2e,color:#c4b5fd,stroke:#7c3aed
+    style H fill:#1a1a2e,color:#c4b5fd,stroke:#7c3aed
+    style K fill:#1a1a2e,color:#93c5fd,stroke:#3b82f6
+    style L fill:#1a1a2e,color:#93c5fd,stroke:#3b82f6

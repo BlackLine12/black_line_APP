@@ -16,6 +16,10 @@ RUN pip install --upgrade pip && \
 
 COPY . .
 
+RUN chmod +x start.sh
+
 EXPOSE 8000
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Producción: start.sh corre migrate + collectstatic + gunicorn con $PORT.
+# El docker-compose sobreescribe con runserver para dev local.
+CMD ["./start.sh"]

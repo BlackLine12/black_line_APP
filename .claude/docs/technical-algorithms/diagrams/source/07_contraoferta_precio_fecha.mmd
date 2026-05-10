@@ -1,0 +1,29 @@
+%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#1a1a2e', 'primaryTextColor': '#d4a843', 'primaryBorderColor': '#d4a843', 'lineColor': '#d4a843', 'secondaryColor': '#2a2a2a', 'tertiaryColor': '#0d0d0d', 'background': '#0d0d0d', 'noteBkgColor': '#2a1a00', 'noteTextColor': '#fbbf24', 'activationBkgColor': '#1a1a2e', 'sequenceNumberColor': '#d4a843', 'actorBkg': '#1a1a2e', 'actorBorder': '#d4a843', 'actorTextColor': '#d4a843', 'actorLineColor': '#d4a843'}}}%%
+sequenceDiagram
+    autonumber
+    participant C as 👤 Cliente
+    participant API as ⚙️ Backend API
+    participant A as 🎨 Artista
+
+    C->>API: POST /api/quotes/appointments/<br/>{artist_id, quote_id, scheduled_at}
+    API-->>C: 201 · Appointment {status: PENDING}
+
+    Note over A,API: Artista recibe nueva cita en su panel
+
+    A->>API: PATCH /api/quotes/appointments/{id}/status/<br/>{status: COUNTER_OFFER,<br/>counter_offer_datetime,<br/>counter_offer_note}
+
+    API->>API: Valida: status=PENDING ✔<br/>Actor = STUDIO dueño de cita ✔<br/>counter_offer_datetime requerida ✔
+
+    API-->>A: 200 · Appointment {status: COUNTER_OFFER}
+
+    Note over C,API: Cliente ve la contraoferta en "Mis Citas"
+
+    alt ✅ Cliente acepta la contraoferta
+        C->>API: PATCH /api/quotes/appointments/{id}/status/<br/>{status: APPROVED}
+        API->>API: Valida: status=COUNTER_OFFER ✔<br/>Actor = CLIENT dueño ✔<br/>nuevo status = APPROVED ✔
+        API-->>C: 200 · Appointment {status: APPROVED}
+        Note over C: Cita confirmada → puede enviar HealthConsent
+    else ❌ Estado inválido (REJECTED desde COUNTER_OFFER)
+        C->>API: PATCH /api/quotes/appointments/{id}/status/<br/>{status: REJECTED}
+        API-->>C: 400 · "Desde COUNTER_OFFER solo puede pasar a APPROVED."
+    end

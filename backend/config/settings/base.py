@@ -2,12 +2,9 @@ from pathlib import Path
 from decouple import config
 from datetime import timedelta
 
-
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 SECRET_KEY = config("SECRET_KEY", default="django-insecure-default")
-DEBUG = config("DEBUG", default=True, cast=bool)
-ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="localhost,127.0.0.1,backend,0.0.0.0").split(",")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -22,6 +19,8 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
     "django_filters",
+    "cloudinary_storage",
+    "cloudinary",
     # Local apps
     "apps.users",
     "apps.artists",
@@ -59,17 +58,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": config("DB_NAME"),
-        "USER": config("DB_USER"),
-        "PASSWORD": config("DB_PASSWORD"),
-        "HOST": config("DB_HOST"),
-        "PORT": config("DB_PORT"),
-    }
-}
-
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -92,10 +80,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", default="http://localhost:4200").split(",")
 CORS_ALLOW_CREDENTIALS = True
 
-# Custom User Model
 AUTH_USER_MODEL = "users.User"
 
-# Django REST Framework
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -109,8 +95,6 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,
 }
-
-# Simple JWT Settings
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(
@@ -133,9 +117,6 @@ SIMPLE_JWT = {
     "TOKEN_TYPE_CLAIM": "token_type",
 }
 
-# ── Email (RF-9) ──────────────────────────────────────────────────────────
-# En desarrollo usa 'console' para ver los correos en el log del contenedor.
-# En producción cambia a 'smtp.EmailBackend' y configura las variables SMTP.
 EMAIL_BACKEND = config(
     "EMAIL_BACKEND",
     default="django.core.mail.backends.console.EmailBackend",
@@ -147,5 +128,4 @@ EMAIL_HOST_USER     = config("EMAIL_HOST_USER",     default="")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
 DEFAULT_FROM_EMAIL  = config("DEFAULT_FROM_EMAIL",  default="BlackLine <noreply@blackline.mx>")
 
-# URL base del frontend (se incluye en los links de los correos)
 FRONTEND_URL = config("FRONTEND_URL", default="http://localhost:4200")

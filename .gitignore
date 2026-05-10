@@ -1,18 +1,70 @@
+# ──────────────────────────────────────────
+# Python / Django
+# ──────────────────────────────────────────
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+*.egg-info/
 venv/
-.env
-*.log
+.venv/
 db.sqlite3
+*.log
+
+# Tests
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Django generated
 media/
 staticfiles/
+
+# ──────────────────────────────────────────
+# Node / Angular
+# ──────────────────────────────────────────
+node_modules/
+
+# ──────────────────────────────────────────
+# Entorno y secretos
+# ──────────────────────────────────────────
+.env
+*.pem
+*.key
+
+# ──────────────────────────────────────────
+# IDEs
+# ──────────────────────────────────────────
 .vscode/*.code-workspace
 .idea/
 .DS_Store
-node_modules/
-.claude/
+Thumbs.db
+
+# ──────────────────────────────────────────
+# Claude Code — solo configuración local del usuario
+# agents/, skills/, commands/, scripts/, docs/ → se versionan
+# ──────────────────────────────────────────
+.claude/settings.local.json
+
+# Artefactos LaTeX generados (los fuentes .tex y PDFs sí se versionan)
+.claude/docs/technical-algorithms/outputs/*.aux
+.claude/docs/technical-algorithms/outputs/*.log
+.claude/docs/technical-algorithms/outputs/*.out
+.claude/docs/technical-algorithms/outputs/*.toc
+
+# ──────────────────────────────────────────
+# Archivos de diseño encriptados
+# ──────────────────────────────────────────
+blackline.pen
+
+# ──────────────────────────────────────────
+# Imágenes binarias no esenciales (excepto las del repo)
+# ──────────────────────────────────────────
 images/
 !frontend/public/images/
-blackline.pen
-CLAUDE.md
+!.claude/docs/
+
+# ──────────────────────────────────────────
+# Git worktrees temporales
+# ──────────────────────────────────────────
 .worktrees/
