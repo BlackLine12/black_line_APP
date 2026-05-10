@@ -90,11 +90,15 @@
           <input
             id="credential"
             class="auth-field__input"
+            [class.auth-field__input--error]="loginForm.get('credential')?.invalid && loginForm.get('credential')?.touched"
             formControlName="credential"
             type="text"
             autocomplete="username"
             placeholder="tu@email.com"
           />
+          @if (loginForm.get('credential')?.invalid && loginForm.get('credential')?.touched) {
+            <span class="auth-field__error">Ingresa tu email o nombre de usuario.</span>
+          }
         </div>
 
         <div class="auth-field">
@@ -102,18 +106,22 @@
           <input
             id="password"
             class="auth-field__input"
+            [class.auth-field__input--error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
             formControlName="password"
             type="password"
             autocomplete="current-password"
             placeholder="••••••••"
           />
+          @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+            <span class="auth-field__error">Ingresa tu contraseña.</span>
+          }
         </div>
 
         <div class="auth-remember">
           <label class="auth-remember__check">
             <input type="checkbox" /> Recuérdame
           </label>
-          <a class="auth-remember__forgot" routerLink="/auth/login">¿Olvidaste tu contraseña?</a>
+          <span class="auth-remember__forgot auth-remember__forgot--disabled">¿Olvidaste tu contraseña?</span>
         </div>
 
         <button

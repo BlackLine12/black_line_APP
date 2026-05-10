@@ -63,10 +63,14 @@ export class RegisterComponent implements OnInit {
       },
       error: (err) => {
         this.loading = false;
-        const errors = err.error;
-        if (typeof errors === 'object') {
-          const messages = Object.values(errors).flat();
-          this.errorMessage = (messages as string[]).join(' ');
+        const body = err.error;
+        if (err.status === 0) {
+          this.errorMessage = 'No se puede conectar con el servidor. Verifica tu conexión.';
+        } else if (body && typeof body === 'object' && !Array.isArray(body)) {
+          const messages = (Object.values(body) as (string | string[])[])
+            .flat()
+            .filter((m): m is string => typeof m === 'string');
+          this.errorMessage = messages.length ? messages.join(' ') : 'Error al crear la cuenta. Intenta de nuevo.';
         } else {
           this.errorMessage = 'Error al crear la cuenta. Intenta de nuevo.';
         }

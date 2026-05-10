@@ -95,21 +95,36 @@
         <div class="auth-fields-row">
           <div class="auth-field">
             <label class="auth-field__label" for="first_name">Nombre</label>
-            <input id="first_name" class="auth-field__input" formControlName="first_name"
-              type="text" placeholder="Juan" autocomplete="given-name" />
+            <input id="first_name" class="auth-field__input"
+              [class.auth-field__input--error]="registerForm.get('first_name')?.invalid && registerForm.get('first_name')?.touched"
+              formControlName="first_name" type="text" placeholder="Juan" autocomplete="given-name" />
+            @if (registerForm.get('first_name')?.invalid && registerForm.get('first_name')?.touched) {
+              <span class="auth-field__error">El nombre es requerido.</span>
+            }
           </div>
           <div class="auth-field">
             <label class="auth-field__label" for="last_name">Apellido</label>
-            <input id="last_name" class="auth-field__input" formControlName="last_name"
-              type="text" placeholder="Pérez" autocomplete="family-name" />
+            <input id="last_name" class="auth-field__input"
+              [class.auth-field__input--error]="registerForm.get('last_name')?.invalid && registerForm.get('last_name')?.touched"
+              formControlName="last_name" type="text" placeholder="Pérez" autocomplete="family-name" />
+            @if (registerForm.get('last_name')?.invalid && registerForm.get('last_name')?.touched) {
+              <span class="auth-field__error">El apellido es requerido.</span>
+            }
           </div>
         </div>
 
         <div class="auth-fields-row">
           <div class="auth-field">
             <label class="auth-field__label" for="username">Nombre de usuario</label>
-            <input id="username" class="auth-field__input" formControlName="username"
-              type="text" placeholder="juanperez" autocomplete="username" />
+            <input id="username" class="auth-field__input"
+              [class.auth-field__input--error]="registerForm.get('username')?.invalid && registerForm.get('username')?.touched"
+              formControlName="username" type="text" placeholder="juanperez" autocomplete="username" />
+            @if (registerForm.get('username')?.errors?.['required'] && registerForm.get('username')?.touched) {
+              <span class="auth-field__error">El usuario es requerido.</span>
+            }
+            @if (registerForm.get('username')?.errors?.['minlength'] && registerForm.get('username')?.touched) {
+              <span class="auth-field__error">Mínimo 3 caracteres.</span>
+            }
           </div>
 
           <div class="auth-field">
@@ -122,8 +137,15 @@
         <!-- Email -->
         <div class="auth-field">
           <label class="auth-field__label" for="reg_email">Correo electrónico</label>
-          <input id="reg_email" class="auth-field__input" formControlName="email"
-            type="email" placeholder="tu@email.com" autocomplete="email" />
+          <input id="reg_email" class="auth-field__input"
+            [class.auth-field__input--error]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
+            formControlName="email" type="email" placeholder="tu@email.com" autocomplete="email" />
+          @if (registerForm.get('email')?.errors?.['required'] && registerForm.get('email')?.touched) {
+            <span class="auth-field__error">El correo es requerido.</span>
+          }
+          @if (registerForm.get('email')?.errors?.['email'] && registerForm.get('email')?.touched) {
+            <span class="auth-field__error">Ingresa un correo válido.</span>
+          }
         </div>
 
         <!-- Tipo de cuenta -->
@@ -161,13 +183,27 @@
         <div class="auth-fields-row">
           <div class="auth-field">
             <label class="auth-field__label" for="reg_password">Contraseña</label>
-            <input id="reg_password" class="auth-field__input" formControlName="password"
-              type="password" placeholder="••••••••" autocomplete="new-password" />
+            <input id="reg_password" class="auth-field__input"
+              [class.auth-field__input--error]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
+              formControlName="password" type="password" placeholder="••••••••" autocomplete="new-password" />
+            @if (registerForm.get('password')?.errors?.['required'] && registerForm.get('password')?.touched) {
+              <span class="auth-field__error">La contraseña es requerida.</span>
+            }
+            @if (registerForm.get('password')?.errors?.['minlength'] && registerForm.get('password')?.touched) {
+              <span class="auth-field__error">Mínimo 8 caracteres.</span>
+            }
+            @if (registerForm.get('password')?.touched && !registerForm.get('password')?.errors) {
+              <span class="auth-field__hint">Usa letras, números y símbolos para mayor seguridad.</span>
+            }
           </div>
           <div class="auth-field">
             <label class="auth-field__label" for="reg_confirm">Confirmar</label>
-            <input id="reg_confirm" class="auth-field__input" formControlName="password_confirm"
-              type="password" placeholder="••••••••" autocomplete="new-password" />
+            <input id="reg_confirm" class="auth-field__input"
+              [class.auth-field__input--error]="registerForm.get('password_confirm')?.touched && registerForm.get('password')?.value !== registerForm.get('password_confirm')?.value"
+              formControlName="password_confirm" type="password" placeholder="••••••••" autocomplete="new-password" />
+            @if (registerForm.get('password_confirm')?.touched && registerForm.get('password')?.value !== registerForm.get('password_confirm')?.value) {
+              <span class="auth-field__error">Las contraseñas no coinciden.</span>
+            }
           </div>
         </div>
 
