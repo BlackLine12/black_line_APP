@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: blackline-backend
+    runtime: python
+    rootDir: backend
+    region: oregon
+    plan: free
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
+    startCommand: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.production
+      - key: PYTHON_VERSION
+        value: "3.12.0"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        # Pega aquí el connection string de Neon (postgresql://user:pass@host/db?sslmode=require)
+        value: ""
+      - key: ALLOWED_HOSTS
+        # Reemplaza con el dominio que Render asigne, ej: blackline-backend.onrender.com
+        value: "blackline-backend.onrender.com"
+      - key: CORS_ALLOWED_ORIGINS
+        # Reemplaza con el dominio de Cloudflare Pages, ej: https://blackline.pages.dev
+        value: "https://blackline.pages.dev"
+      - key: FRONTEND_URL
+        value: "https://blackline.pages.dev"
+      - key: DEBUG
+        value: "False"
+      - key: EMAIL_BACKEND
+        value: "django.core.mail.backends.smtp.EmailBackend"
