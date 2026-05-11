@@ -1,7 +1,6 @@
-import { Component, inject, computed, signal, OnInit, effect } from '@angular/core';
+import { Component, inject, computed, signal, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
-import { ArtistService } from '../../features/studio/services/artist.service';
 import { MediaUrlService } from '../../core/services/media-url.service';
 
 
@@ -16,9 +15,12 @@ export class NavbarComponent implements OnInit {
   readonly authService = inject(AuthService);
   private readonly mediaUrl = inject(MediaUrlService);
   readonly mobileMenuOpen = signal(false);
+
   readonly isAdmin  = computed(() => this.authService.userType() === 'ADMIN');
   readonly isStudio = computed(() => this.authService.userType() === 'STUDIO');
   readonly isClient = computed(() => this.authService.userType() === 'CLIENT');
+  readonly isGuest  = computed(() => !this.authService.isAuthenticated());
+
   readonly userName = computed(() => {
     const u = this.authService.user();
     if (!u) return '';
@@ -32,12 +34,15 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit(): void {}
 
-
   logout(): void {
     this.authService.logout();
   }
 
   toggleMenu(): void {
     this.mobileMenuOpen.update((v) => !v);
+  }
+
+  goToDashboard(): void {
+    this.authService.redirectByRole();
   }
 }

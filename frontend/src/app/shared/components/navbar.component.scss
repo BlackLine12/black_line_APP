@@ -144,6 +144,46 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
   flex-shrink: 0;
 }
 
+// Guest CTA buttons
+.navbar__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  padding: 6px 16px;
+  border-radius: 4px;
+  font-family: $font-sans;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  white-space: nowrap;
+
+  &--outline {
+    background: transparent;
+    color: $muted;
+    border: 1px solid rgba($cream, 0.2);
+
+    &:hover {
+      border-color: $gold;
+      color: $gold;
+    }
+  }
+
+  &--gold {
+    background: $gold;
+    color: $bg;
+    border: 1px solid $gold;
+
+    &:hover {
+      background: color.adjust($gold, $lightness: 8%);
+      border-color: color.adjust($gold, $lightness: 8%);
+    }
+  }
+}
+
 // User avatar + name
 .navbar__user {
   display: flex;
@@ -300,8 +340,10 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
 
 .navbar__mobile-footer {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
   margin-top: 12px;
   padding-top: 12px;
   border-top: 1px solid rgba($cream, 0.06);
@@ -309,5 +351,17 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
   .navbar__user-name {
     font-size: 13px;
     color: $muted;
+    flex: 1 0 100%;
+  }
+
+  .navbar__btn {
+    flex: 1;
+    height: 32px;
+    padding: 4px 12px;
+    font-size: 12px;
+  }
+
+  .navbar__logout {
+    flex: 0 0 auto;
   }
 }

@@ -1,11 +1,13 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { NavbarComponent } from '../../shared/components/navbar.component';
+import { FooterComponent } from '../../shared/components/footer.component';
 
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, NavbarComponent, FooterComponent],
   templateUrl: './landing.component.html',
   styleUrl: './landing.component.scss',
 })

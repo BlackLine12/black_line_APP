@@ -1,30 +1,7 @@
 <div class="landing">
 
-  <!-- ── NAVBAR ─────────────────────────────────────────────────────────── -->
-  <nav class="navbar">
-    <div class="navbar__logo" routerLink="/" style="cursor:pointer;">
-      <img src="/images/blackline_logo_no_bg_dark.png"
-           srcset="/images/blackline_logo_no_bg_dark.png 1x, /images/blackline_logo_no_bg_dark.png 2x"
-           alt="BlackLine"
-           class="navbar__logo-img">
-    </div>
-
-    <div class="navbar__links">
-      <a class="navbar__link" href="#artistas">Artistas</a>
-      <a class="navbar__link" href="#estilos">Estilos</a>
-      <a class="navbar__link" href="#como-funciona">Cómo funciona</a>
-    </div>
-
-    <div class="navbar__ctas">
-      @if (authService.isAuthenticated()) {
-        <a class="btn btn--outline" routerLink="/auth/login" [queryParams]="{ force: '1' }">Cambiar cuenta</a>
-        <button class="btn btn--outline" (click)="goToDashboard()">Mi Panel</button>
-      } @else {
-        <a class="btn btn--outline" routerLink="/auth/login">Iniciar Sesión</a>
-        <a class="btn btn--gold" routerLink="/auth/register">Registrarse</a>
-      }
-    </div>
-  </nav>
+  <!-- ── NAVBAR COMPARTIDA ─────────────────────────────────────────────── -->
+  <app-navbar></app-navbar>
 
   <!-- ── HERO ──────────────────────────────────────────────────────────── -->
   <section class="hero">
@@ -303,51 +280,6 @@
   </section>
 
   <!-- ── FOOTER ─────────────────────────────────────────────────────────── -->
-  <footer class="footer">
-    <div class="footer__top">
-      <div class="footer__col footer__col--brand">
-        <div class="footer__logo">
-          <img src="/images/blackline_logo_no_bg_dark.png"
-               srcset="/images/blackline_logo_no_bg_dark.png 1x, /images/blackline_logo_no_bg_dark.png 2x"
-               alt="BlackLine"
-               class="navbar__logo-img">
-        </div>
-        <p class="footer__brand-desc">
-          La plataforma que conecta tu piel con el artista ideal. Matchmaking inteligente para tatuajes únicos.
-        </p>
-      </div>
-      <div class="footer__col">
-        <span class="footer__col-title">Plataforma</span>
-        <a class="footer__link" href="#como-funciona">Cómo funciona</a>
-        <a class="footer__link" href="#estilos">Estilos de tatuaje</a>
-        <a class="footer__link" href="#artistas">Artistas</a>
-        <a class="footer__link" routerLink="/auth/register">Registrarse</a>
-      </div>
-      <div class="footer__col">
-        <span class="footer__col-title">Empresa</span>
-        <a class="footer__link" href="#">Sobre nosotros</a>
-        <a class="footer__link" href="#">Blog</a>
-        <a class="footer__link" href="#">Contacto</a>
-        <a class="footer__link" href="#">Trabaja con nosotros</a>
-      </div>
-      <div class="footer__col">
-        <span class="footer__col-title">Legal</span>
-        <a class="footer__link" href="#">Términos de servicio</a>
-        <a class="footer__link" href="#">Política de privacidad</a>
-        <a class="footer__link" href="#">Cookies</a>
-      </div>
-    </div>
-
-    <div class="footer__divider"></div>
-
-    <div class="footer__bottom">
-      <span class="footer__copy">&copy; 2026 BlackLine. Todos los derechos reservados.</span>
-      <div class="footer__socials">
-        <a class="footer__social" href="#">Instagram</a>
-        <a class="footer__social" href="#">Twitter</a>
-        <a class="footer__social" href="#">TikTok</a>
-      </div>
-    </div>
-  </footer>
+  <app-footer></app-footer>
 
 </div>
