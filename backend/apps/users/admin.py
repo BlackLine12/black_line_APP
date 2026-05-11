@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User
+from .models import User, SeedLog
 
 
 @admin.register(User)
@@ -29,3 +29,15 @@ class UserAdmin(BaseUserAdmin):
             'fields': ('username', 'email', 'password1', 'password2', 'user_type'),
         }),
     )
+
+
+@admin.register(SeedLog)
+class SeedLogAdmin(admin.ModelAdmin):
+    list_display = ["name", "ran_at"]
+    readonly_fields = ["name", "ran_at"]
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
