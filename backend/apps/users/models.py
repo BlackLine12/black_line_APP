@@ -49,3 +49,15 @@ class User(AbstractUser):
     def full_name(self):
         """Retorna el nombre completo del usuario."""
         return f"{self.first_name} {self.last_name}".strip()
+
+
+class SeedLog(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    ran_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Registro de Seed"
+        verbose_name_plural = "Registros de Seed"
+
+    def __str__(self):
+        return f"{self.name} ({self.ran_at})"
