@@ -1,18 +1,16 @@
 import { Routes } from '@angular/router';
-import { authGuard }   from './core/guards/auth.guard';
-import { noAuthGuard } from './core/guards/no-auth.guard';
-import { roleGuard }   from './core/guards/role.guard';
+import { authGuard } from './core/guards/auth.guard';
+import { roleGuard } from './core/guards/role.guard';
 import { LandingComponent }   from './features/landing/landing.component';
 import { LayoutComponent }    from './shared/layout/layout.component';
 import { NotFoundComponent }  from './features/errors/not-found.component';
 import { ForbiddenComponent } from './features/errors/forbidden.component';
 
 export const routes: Routes = [
-  // ── Pública: redirige al panel si ya hay sesión ────────
+  // ── Landing: accesible a guest y usuarios autenticados ──
   {
     path: '',
     component: LandingComponent,
-    canActivate: [noAuthGuard],
   },
   {
     path: 'auth',

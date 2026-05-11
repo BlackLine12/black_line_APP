@@ -15,6 +15,13 @@
     <!-- ── Desktop nav links ────────────────────────────── -->
     <div class="navbar__links">
 
+      <!-- Guest links (landing) -->
+      @if (isGuest()) {
+        <a href="#artistas" class="navbar__link">Artistas</a>
+        <a href="#estilos" class="navbar__link">Estilos</a>
+        <a href="#como-funciona" class="navbar__link">Cómo funciona</a>
+      }
+
       <!-- Studio links -->
       @if (isStudio()) {
         <a routerLink="/studio/dashboard"
@@ -61,8 +68,19 @@
       }
     </div>
 
-    <!-- ── Right: usuario + logout + hamburger ──────────── -->
+    <!-- ── Right: usuario + logout + guest CTAs + hamburger ──────────---- -->
     <div class="navbar__right">
+      <!-- Guest CTAs (landing) -->
+      @if (isGuest()) {
+        <a routerLink="/auth/login" class="navbar__btn navbar__btn--outline">
+          Iniciar Sesión
+        </a>
+        <a routerLink="/auth/register" class="navbar__btn navbar__btn--gold">
+          Registrarse
+        </a>
+      }
+
+      <!-- Authenticated user -->
       @if (userName()) {
         <div class="navbar__user">
           @if (userPhoto()) {
@@ -72,15 +90,21 @@
           }
           <span class="navbar__user-name">{{ userName() }}</span>
         </div>
+
+        <button (click)="goToDashboard()" class="navbar__btn navbar__btn--outline">
+          Mi Panel
+        </button>
       }
 
-
-      <button id="btn-logout" (click)="logout()" class="navbar__logout">
-        <svg xmlns="http://www.w3.org/2000/svg" class="navbar__logout-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"/>
-        </svg>
-        <span class="navbar__logout-label">Salir</span>
-      </button>
+      <!-- Logout button (only for authenticated users) -->
+      @if (userName()) {
+        <button id="btn-logout" (click)="logout()" class="navbar__logout">
+          <svg xmlns="http://www.w3.org/2000/svg" class="navbar__logout-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"/>
+          </svg>
+          <span class="navbar__logout-label">Salir</span>
+        </button>
+      }
 
       <!-- Hamburger mobile -->
       <button
@@ -105,6 +129,13 @@
   @if (mobileMenuOpen()) {
     <div class="navbar__mobile animate-slide-down">
 
+      <!-- Guest links (landing) -->
+      @if (isGuest()) {
+        <a href="#artistas"       (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Artistas</a>
+        <a href="#estilos"        (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Estilos</a>
+        <a href="#como-funciona"  (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Cómo funciona</a>
+      }
+
       @if (isStudio()) {
         <a routerLink="/studio/dashboard"   (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Dashboard</a>
         <a routerLink="/studio/solicitudes" (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link">Solicitudes</a>
@@ -125,15 +156,27 @@
         <a routerLink="/admin/estilos"   (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link navbar__mobile-link--admin">Estilos</a>
       }
 
-      <div class="navbar__mobile-footer">
-        <span class="navbar__user-name">{{ userName() }}</span>
-        <button (click)="logout()" class="navbar__logout">
-          <svg xmlns="http://www.w3.org/2000/svg" class="navbar__logout-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"/>
-          </svg>
-          Salir
-        </button>
-      </div>
+      <!-- Guest CTAs (mobile) -->
+      @if (isGuest()) {
+        <div class="navbar__mobile-footer">
+          <a routerLink="/auth/login" (click)="mobileMenuOpen.set(false)" class="navbar__btn navbar__btn--outline">Iniciar Sesión</a>
+          <a routerLink="/auth/register" (click)="mobileMenuOpen.set(false)" class="navbar__btn navbar__btn--gold">Registrarse</a>
+        </div>
+      }
+
+      <!-- Authenticated user footer -->
+      @if (userName()) {
+        <div class="navbar__mobile-footer">
+          <span class="navbar__user-name">{{ userName() }}</span>
+          <button (click)="goToDashboard(); mobileMenuOpen.set(false)" class="navbar__btn navbar__btn--outline">Mi Panel</button>
+          <button (click)="logout()" class="navbar__logout">
+            <svg xmlns="http://www.w3.org/2000/svg" class="navbar__logout-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"/>
+            </svg>
+            Salir
+          </button>
+        </div>
+      }
     </div>
   }
 </nav>
