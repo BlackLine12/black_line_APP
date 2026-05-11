@@ -1,0 +1,157 @@
+<app-navbar />
+
+<main class="legal-page">
+
+  <!-- ── Hero ─────────────────────────────────────────────────── -->
+  <section class="legal-hero">
+    <div class="legal-hero__label">Documento legal · BlackLine</div>
+    <h1 class="legal-hero__title">Términos de Servicio</h1>
+    <span class="legal-hero__badge">Última actualización: {{ ultimaActualizacion }}</span>
+    <p class="legal-hero__sub">
+      Al acceder o utilizar la plataforma BlackLine aceptas quedar vinculado por los presentes términos.
+      Léelos detenidamente antes de continuar.
+    </p>
+    <div class="legal-hero__divider"></div>
+  </section>
+
+  <!-- ── Layout ─────────────────────────────────────────────────── -->
+  <div class="legal-layout">
+
+    <!-- Sidebar índice -->
+    <aside class="legal-sidebar">
+      <span class="legal-sidebar__title">Contenido</span>
+      <nav class="legal-sidebar__nav">
+        @for (s of secciones(); track s.id) {
+          <button class="legal-sidebar__link" (click)="scrollTo(s.id)">
+            <span class="legal-sidebar__num">{{ s.numero }}</span>
+            <span>{{ s.titulo }}</span>
+          </button>
+        }
+      </nav>
+    </aside>
+
+    <!-- Contenido -->
+    <article class="legal-content">
+
+      <section class="legal-section" id="aceptacion">
+        <h2 class="legal-section__title"><span class="legal-section__num">§1</span> Aceptación de los términos</h2>
+        <p>Al registrarte, acceder o utilizar BlackLine (en adelante, "la Plataforma"), declaras haber leído, comprendido y aceptado los presentes Términos de Servicio en su totalidad. Si no estás de acuerdo con alguna de las disposiciones aquí contenidas, debes abstenerte de utilizar la Plataforma.</p>
+        <p>Estos términos constituyen un acuerdo legal vinculante entre tú (el "Usuario") y el equipo de desarrollo de BlackLine, integrado por estudiantes de la Universidad Autónoma de Ciudad Juárez.</p>
+      </section>
+
+      <div class="legal-divider"></div>
+
+      <section class="legal-section" id="servicio">
+        <h2 class="legal-section__title"><span class="legal-section__num">§2</span> Descripción del servicio</h2>
+        <p>BlackLine es una plataforma de <strong>matchmaking</strong> que conecta a personas interesadas en tatuajes ("Clientes") con artistas y estudios de tatuaje ("Estudios"). La Plataforma facilita la búsqueda, cotización y agendamiento de citas, pero <strong>no actúa como intermediario de pago</strong> ni garantiza la prestación de los servicios artísticos.</p>
+        <p>BlackLine se encuentra en fase de desarrollo académico y puede experimentar interrupciones, cambios de funcionalidad o periodos de mantenimiento sin previo aviso.</p>
+      </section>
+
+      <div class="legal-divider"></div>
+
+      <section class="legal-section" id="registro">
+        <h2 class="legal-section__title"><span class="legal-section__num">§3</span> Registro y cuenta de usuario</h2>
+        <p>Para acceder a las funciones principales de la Plataforma es necesario crear una cuenta. Al registrarte te comprometes a:</p>
+        <ul class="legal-list">
+          <li>Proporcionar información veraz, completa y actualizada.</li>
+          <li>Mantener la confidencialidad de tus credenciales de acceso.</li>
+          <li>Notificar de inmediato cualquier uso no autorizado de tu cuenta.</li>
+          <li>Ser mayor de 18 años o contar con autorización de un tutor legal.</li>
+        </ul>
+        <p>Nos reservamos el derecho de suspender o eliminar cuentas que incumplan estas condiciones.</p>
+      </section>
+
+      <div class="legal-divider"></div>
+
+      <section class="legal-section" id="roles">
+        <h2 class="legal-section__title"><span class="legal-section__num">§4</span> Roles de usuario</h2>
+        <p>La Plataforma distingue dos tipos de usuario:</p>
+        <ul class="legal-list">
+          <li><strong>Cliente:</strong> puede buscar artistas, enviar solicitudes de cotización y agendar citas.</li>
+          <li><strong>Estudio / Artista:</strong> puede gestionar su perfil, portafolio, disponibilidad y responder solicitudes de cita.</li>
+        </ul>
+        <p>Cada rol tiene acceso a funciones específicas y asume las responsabilidades correspondientes a su actividad dentro de la Plataforma.</p>
+      </section>
+
+      <div class="legal-divider"></div>
+
+      <section class="legal-section" id="citas">
+        <h2 class="legal-section__title"><span class="legal-section__num">§5</span> Citas y cotizaciones</h2>
+        <p>Las cotizaciones generadas por la Plataforma son estimaciones basadas en parámetros como tamaño, estilo y zona corporal. El precio final es acordado directamente entre el Cliente y el Estudio.</p>
+        <p>BlackLine no es parte del acuerdo entre Cliente y Estudio, ni asume responsabilidad por:</p>
+        <ul class="legal-list">
+          <li>Cancelaciones o cambios de cita.</li>
+          <li>Diferencias entre el precio estimado y el precio final.</li>
+          <li>La calidad del servicio artístico prestado.</li>
+          <li>Daños derivados de procedimientos de tatuaje.</li>
+        </ul>
+      </section>
+
+      <div class="legal-divider"></div>
+
+      <section class="legal-section" id="contenido">
+        <h2 class="legal-section__title"><span class="legal-section__num">§6</span> Contenido del usuario</h2>
+        <p>Los Estudios son responsables de todo el contenido que suban a la Plataforma (imágenes de portafolio, descripciones, tarifas). Al subir contenido declaras que:</p>
+        <ul class="legal-list">
+          <li>Eres titular de los derechos o cuentas con autorización para publicarlo.</li>
+          <li>El contenido no infringe derechos de terceros ni la legislación vigente.</li>
+          <li>El contenido no es obsceno, ofensivo o contrario a las buenas costumbres.</li>
+        </ul>
+        <p>BlackLine puede eliminar contenido que viole estas condiciones sin previo aviso.</p>
+      </section>
+
+      <div class="legal-divider"></div>
+
+      <section class="legal-section" id="conducta">
+        <h2 class="legal-section__title"><span class="legal-section__num">§7</span> Conducta prohibida</h2>
+        <p>Queda expresamente prohibido:</p>
+        <ul class="legal-list">
+          <li>Suplantar la identidad de otro usuario o de BlackLine.</li>
+          <li>Usar la Plataforma para actividades ilegales o fraudulentas.</li>
+          <li>Enviar comunicaciones no solicitadas (spam).</li>
+          <li>Intentar acceder a cuentas o datos de otros usuarios.</li>
+          <li>Realizar ingeniería inversa, descompilar o modificar la Plataforma.</li>
+          <li>Publicar contenido que promueva la discriminación, el odio o la violencia.</li>
+        </ul>
+      </section>
+
+      <div class="legal-divider"></div>
+
+      <section class="legal-section" id="responsabilidad">
+        <h2 class="legal-section__title"><span class="legal-section__num">§8</span> Limitación de responsabilidad</h2>
+        <p>La Plataforma se proporciona "tal cual" y "según disponibilidad". BlackLine no garantiza que el servicio sea ininterrumpido, libre de errores o adecuado para un propósito específico.</p>
+        <p>En ningún caso el equipo de BlackLine será responsable por daños indirectos, incidentales, especiales o consecuentes derivados del uso o la imposibilidad de uso de la Plataforma.</p>
+      </section>
+
+      <div class="legal-divider"></div>
+
+      <section class="legal-section" id="modificaciones">
+        <h2 class="legal-section__title"><span class="legal-section__num">§9</span> Modificaciones</h2>
+        <p>Nos reservamos el derecho de modificar estos Términos en cualquier momento. Los cambios entrarán en vigor desde su publicación en la Plataforma. El uso continuado de BlackLine tras la publicación de cambios implica la aceptación de los nuevos términos.</p>
+        <p>Te recomendamos revisar esta página periódicamente.</p>
+      </section>
+
+      <div class="legal-divider"></div>
+
+      <section class="legal-section" id="legislacion">
+        <h2 class="legal-section__title"><span class="legal-section__num">§10</span> Legislación aplicable</h2>
+        <p>Los presentes Términos se rigen por las leyes de los Estados Unidos Mexicanos. Para la resolución de cualquier controversia derivada del uso de la Plataforma, las partes se someten a la jurisdicción de los tribunales competentes de la ciudad de <strong>Ciudad Juárez, Chihuahua, México</strong>, renunciando a cualquier otro fuero que pudiera corresponderles.</p>
+      </section>
+
+      <!-- CTA -->
+      <div class="legal-cta">
+        <p>¿Tienes dudas sobre estos términos?</p>
+        <a routerLink="/contacto" class="legal-cta__btn">Contáctanos</a>
+        <div class="legal-cta__links">
+          <a routerLink="/privacidad" class="legal-cta__link">Política de privacidad</a>
+          <span class="legal-cta__sep">·</span>
+          <a routerLink="/cookies" class="legal-cta__link">Política de cookies</a>
+        </div>
+      </div>
+
+    </article>
+  </div>
+
+</main>
+
+<app-footer />

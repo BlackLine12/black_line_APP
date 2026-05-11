@@ -1,0 +1,179 @@
+<app-navbar />
+
+<main class="legal-page">
+
+  <!-- ── Hero ─────────────────────────────────────────────────── -->
+  <section class="legal-hero">
+    <div class="legal-hero__label">Documento legal · BlackLine</div>
+    <h1 class="legal-hero__title">Política de Privacidad</h1>
+    <span class="legal-hero__badge">Última actualización: {{ ultimaActualizacion }}</span>
+    <p class="legal-hero__sub">
+      Tu privacidad es importante para nosotros. Esta política explica qué datos recopilamos,
+      cómo los usamos y cuáles son tus derechos conforme a la LFPDPPP.
+    </p>
+    <div class="legal-hero__divider"></div>
+  </section>
+
+  <!-- ── Layout ─────────────────────────────────────────────────── -->
+  <div class="legal-layout">
+
+    <!-- Sidebar índice -->
+    <aside class="legal-sidebar">
+      <span class="legal-sidebar__title">Contenido</span>
+      <nav class="legal-sidebar__nav">
+        @for (s of secciones(); track s.id) {
+          <button class="legal-sidebar__link" (click)="scrollTo(s.id)">
+            <span class="legal-sidebar__num">{{ s.numero }}</span>
+            <span>{{ s.titulo }}</span>
+          </button>
+        }
+      </nav>
+    </aside>
+
+    <!-- Contenido -->
+    <article class="legal-content">
+
+      <section class="legal-section" id="responsable">
+        <h2 class="legal-section__title"><span class="legal-section__num">§1</span> Responsable del tratamiento</h2>
+        <p>El responsable del tratamiento de tus datos personales es el equipo de desarrollo de <strong>BlackLine</strong>, conformado por estudiantes de la Universidad Autónoma de Ciudad Juárez (UACJ), Instituto de Ingeniería y Tecnología.</p>
+        <div class="legal-info-box">
+          <div class="legal-info-box__row"><span class="legal-info-box__label">Proyecto:</span><span>BlackLine — Proyecto Integrador UACJ</span></div>
+          <div class="legal-info-box__row"><span class="legal-info-box__label">Institución:</span><span>Universidad Autónoma de Ciudad Juárez</span></div>
+          <div class="legal-info-box__row"><span class="legal-info-box__label">Contacto:</span><a href="mailto:al215510@alumnos.uacj.mx" class="legal-link">al215510&#64;alumnos.uacj.mx</a></div>
+          <div class="legal-info-box__row"><span class="legal-info-box__label">Ubicación:</span><span>Ciudad Juárez, Chihuahua, México</span></div>
+        </div>
+      </section>
+
+      <div class="legal-divider"></div>
+
+      <section class="legal-section" id="datos">
+        <h2 class="legal-section__title"><span class="legal-section__num">§2</span> Datos que recopilamos</h2>
+        <p>Recopilamos únicamente los datos necesarios para el funcionamiento de la Plataforma:</p>
+        <div class="legal-table-wrap">
+          <table class="legal-table">
+            <thead>
+              <tr>
+                <th>Dato</th>
+                <th>Quién lo proporciona</th>
+                <th>Propósito</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Nombre completo</td><td>Cliente / Estudio</td><td>Identificación en la plataforma</td></tr>
+              <tr><td>Correo electrónico</td><td>Cliente / Estudio</td><td>Autenticación y comunicaciones</td></tr>
+              <tr><td>Tipo de usuario</td><td>Sistema</td><td>Control de acceso por roles</td></tr>
+              <tr><td>Ciudad</td><td>Cliente / Estudio</td><td>Matchmaking por ubicación</td></tr>
+              <tr><td>Imágenes de portafolio</td><td>Estudio</td><td>Mostrar trabajo artístico</td></tr>
+              <tr><td>Historial de cotizaciones</td><td>Sistema</td><td>Gestión de solicitudes de cita</td></tr>
+              <tr><td>Cuestionario de salud</td><td>Cliente</td><td>Seguridad en procedimientos de tatuaje</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="legal-divider"></div>
+
+      <section class="legal-section" id="finalidad">
+        <h2 class="legal-section__title"><span class="legal-section__num">§3</span> Finalidad del tratamiento</h2>
+        <p>Tus datos se utilizan exclusivamente para:</p>
+        <ul class="legal-list">
+          <li>Crear y gestionar tu cuenta de usuario.</li>
+          <li>Facilitar el matchmaking entre Clientes y Estudios.</li>
+          <li>Gestionar solicitudes de cotización y citas.</li>
+          <li>Comunicar actualizaciones relevantes del servicio.</li>
+          <li>Mejorar la experiencia y funcionalidades de la Plataforma.</li>
+        </ul>
+        <p>No utilizamos tus datos para publicidad de terceros ni los cedemos a empresas externas con fines comerciales.</p>
+      </section>
+
+      <div class="legal-divider"></div>
+
+      <section class="legal-section" id="sensibles">
+        <h2 class="legal-section__title"><span class="legal-section__num">§4</span> Datos sensibles</h2>
+        <p>El cuestionario de salud (<em>Health Consent</em>) recopila información sobre condiciones médicas relevantes para la seguridad del procedimiento de tatuaje. Estos datos son considerados <strong>datos sensibles</strong> conforme a la LFPDPPP y su tratamiento se realiza bajo las siguientes bases:</p>
+        <ul class="legal-list">
+          <li><strong>Consentimiento expreso:</strong> el Cliente firma el cuestionario de forma explícita antes de cada cita.</li>
+          <li><strong>Acceso restringido:</strong> solo el Estudio involucrado en la cita tiene acceso a esta información.</li>
+          <li><strong>Finalidad única:</strong> los datos de salud se utilizan exclusivamente para garantizar la seguridad del procedimiento.</li>
+        </ul>
+      </section>
+
+      <div class="legal-divider"></div>
+
+      <section class="legal-section" id="transferencia">
+        <h2 class="legal-section__title"><span class="legal-section__num">§5</span> Transferencia de datos</h2>
+        <p>BlackLine <strong>no vende, arrienda ni transfiere</strong> tus datos personales a terceros, salvo en los siguientes supuestos:</p>
+        <ul class="legal-list">
+          <li>Cuando sea requerido por autoridad competente mediante orden judicial.</li>
+          <li>Cuando sea necesario para proteger los derechos o la seguridad de los usuarios.</li>
+        </ul>
+        <p>Los datos compartidos entre Clientes y Estudios dentro de la Plataforma se limitan a los necesarios para concretar la cita.</p>
+      </section>
+
+      <div class="legal-divider"></div>
+
+      <section class="legal-section" id="arco">
+        <h2 class="legal-section__title"><span class="legal-section__num">§6</span> Derechos ARCO</h2>
+        <p>Conforme a la LFPDPPP, tienes derecho a:</p>
+        <ul class="legal-list">
+          <li><strong>Acceso:</strong> conocer qué datos personales tenemos sobre ti y cómo los usamos.</li>
+          <li><strong>Rectificación:</strong> solicitar la corrección de datos inexactos o incompletos.</li>
+          <li><strong>Cancelación:</strong> pedir la eliminación de tus datos cuando ya no sean necesarios.</li>
+          <li><strong>Oposición:</strong> oponerte al tratamiento de tus datos para fines específicos.</li>
+        </ul>
+        <p>Para ejercer cualquiera de estos derechos, envía un correo a <a href="mailto:al215510@alumnos.uacj.mx" class="legal-link">al215510&#64;alumnos.uacj.mx</a> indicando tu nombre, la solicitud específica y los datos involucrados. Responderemos en un plazo máximo de <strong>20 días hábiles</strong>.</p>
+      </section>
+
+      <div class="legal-divider"></div>
+
+      <section class="legal-section" id="cookies">
+        <h2 class="legal-section__title"><span class="legal-section__num">§7</span> Cookies y tecnologías de rastreo</h2>
+        <p>BlackLine utiliza <code>sessionStorage</code> del navegador para almacenar tokens de autenticación y datos de sesión. No utilizamos cookies de rastreo publicitario ni tecnologías de seguimiento entre sitios.</p>
+        <p>Consulta nuestra <a routerLink="/cookies" class="legal-link">Política de Cookies</a> para más detalle.</p>
+      </section>
+
+      <div class="legal-divider"></div>
+
+      <section class="legal-section" id="retencion">
+        <h2 class="legal-section__title"><span class="legal-section__num">§8</span> Retención de datos</h2>
+        <p>Conservamos tus datos mientras tu cuenta permanezca activa o mientras sean necesarios para los fines descritos en esta política. Al solicitar la eliminación de tu cuenta, procederemos a suprimir o anonimizar tus datos en un plazo de <strong>30 días hábiles</strong>, salvo obligación legal de conservarlos.</p>
+      </section>
+
+      <div class="legal-divider"></div>
+
+      <section class="legal-section" id="seguridad">
+        <h2 class="legal-section__title"><span class="legal-section__num">§9</span> Seguridad</h2>
+        <p>Implementamos medidas técnicas y organizativas para proteger tus datos:</p>
+        <ul class="legal-list">
+          <li>Tokens JWT almacenados en <code>sessionStorage</code> (no en <code>localStorage</code> ni cookies).</li>
+          <li>Comunicaciones cifradas mediante HTTPS.</li>
+          <li>Control de acceso por roles (Cliente, Estudio, Admin).</li>
+          <li>Contraseñas almacenadas con hash seguro (nunca en texto plano).</li>
+        </ul>
+        <p>Ningún sistema es completamente infalible. En caso de detectar una brecha de seguridad que afecte tus datos, lo notificaremos en el menor tiempo posible.</p>
+      </section>
+
+      <div class="legal-divider"></div>
+
+      <section class="legal-section" id="cambios">
+        <h2 class="legal-section__title"><span class="legal-section__num">§10</span> Cambios a esta política</h2>
+        <p>Podemos actualizar esta Política de Privacidad para reflejar cambios en la Plataforma o en la legislación aplicable. Te notificaremos los cambios sustanciales por correo electrónico o mediante un aviso destacado en la Plataforma. La fecha de "Última actualización" al inicio de este documento indica cuándo se realizó la revisión más reciente.</p>
+      </section>
+
+      <!-- CTA -->
+      <div class="legal-cta">
+        <p>¿Tienes preguntas sobre el manejo de tus datos?</p>
+        <a routerLink="/contacto" class="legal-cta__btn">Contáctanos</a>
+        <div class="legal-cta__links">
+          <a routerLink="/terminos" class="legal-cta__link">Términos de servicio</a>
+          <span class="legal-cta__sep">·</span>
+          <a routerLink="/cookies" class="legal-cta__link">Política de cookies</a>
+        </div>
+      </div>
+
+    </article>
+  </div>
+
+</main>
+
+<app-footer />

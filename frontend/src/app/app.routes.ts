@@ -33,6 +33,27 @@ export const routes: Routes = [
         m => m.ContactoComponent
       ),
   },
+  {
+    path: 'terminos',
+    loadComponent: () =>
+      import('./features/empresa/pages/terminos/terminos.component').then(
+        m => m.TerminosComponent
+      ),
+  },
+  {
+    path: 'privacidad',
+    loadComponent: () =>
+      import('./features/empresa/pages/privacidad/privacidad.component').then(
+        m => m.PrivacidadComponent
+      ),
+  },
+  {
+    path: 'cookies',
+    loadComponent: () =>
+      import('./features/empresa/pages/cookies/cookies.component').then(
+        m => m.CookiesComponent
+      ),
+  },
 
   // ── Páginas de error ───────────────────────────────────
   { path: '403', component: ForbiddenComponent },
