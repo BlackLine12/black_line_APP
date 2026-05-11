@@ -18,6 +18,22 @@ export const routes: Routes = [
       import('./features/auth/pages/auth.routes').then(m => m.AUTH_ROUTES),
   },
 
+  // ── Páginas públicas de empresa ───────────────────────
+  {
+    path: 'sobre-nosotros',
+    loadComponent: () =>
+      import('./features/empresa/pages/sobre-nosotros/sobre-nosotros.component').then(
+        m => m.SobreNosotrosComponent
+      ),
+  },
+  {
+    path: 'contacto',
+    loadComponent: () =>
+      import('./features/empresa/pages/contacto/contacto.component').then(
+        m => m.ContactoComponent
+      ),
+  },
+
   // ── Páginas de error ───────────────────────────────────
   { path: '403', component: ForbiddenComponent },
   { path: '404', component: NotFoundComponent  },

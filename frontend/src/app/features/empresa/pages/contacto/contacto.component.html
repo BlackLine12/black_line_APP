@@ -1,0 +1,175 @@
+<app-navbar />
+
+<main class="ct-page">
+
+  <!-- ── Hero ─────────────────────────────────────────────────── -->
+  <section class="ct-hero">
+    <div class="ct-hero__label">Equipo BlackLine · UACJ</div>
+    <h1 class="ct-hero__title">Hablemos</h1>
+    <p class="ct-hero__sub">
+      ¿Tienes una pregunta, propuesta de colaboración o simplemente quieres saber más sobre el proyecto?
+      Escríbenos, respondemos en días hábiles.
+    </p>
+    <div class="ct-hero__divider"></div>
+  </section>
+
+  <!-- ── Contenido principal ───────────────────────────────────── -->
+  <section class="ct-section">
+    <div class="ct-section__inner">
+
+      <!-- Formulario -->
+      <div class="ct-form-wrap">
+        <span class="ct-label">001 / Formulario de contacto</span>
+
+        @if (enviado()) {
+          <div class="ct-success">
+            <span class="ct-success__icon">✓</span>
+            <h3>¡Mensaje listo para enviar!</h3>
+            <p>Se abrió tu cliente de correo con el mensaje pre-llenado. Si no se abrió, escríbenos directamente a <strong>al215510&#64;alumnos.uacj.mx</strong></p>
+            <button class="ct-btn-outline" (click)="enviado.set(false)">Enviar otro mensaje</button>
+          </div>
+        } @else {
+          <form [formGroup]="form" (ngSubmit)="enviar()" class="ct-form" novalidate>
+
+            <div class="ct-field">
+              <label class="ct-field__label" for="nombre">Nombre completo *</label>
+              <input
+                id="nombre"
+                type="text"
+                class="ct-field__input"
+                formControlName="nombre"
+                placeholder="Tu nombre completo"
+                [class.ct-field__input--error]="form.get('nombre')?.invalid && form.get('nombre')?.touched"
+              />
+              @if (form.get('nombre')?.invalid && form.get('nombre')?.touched) {
+                <span class="ct-field__error">Ingresa tu nombre (mínimo 2 caracteres)</span>
+              }
+            </div>
+
+            <div class="ct-field">
+              <label class="ct-field__label" for="correo">Correo electrónico *</label>
+              <input
+                id="correo"
+                type="email"
+                class="ct-field__input"
+                formControlName="correo"
+                placeholder="tu@correo.com"
+                [class.ct-field__input--error]="form.get('correo')?.invalid && form.get('correo')?.touched"
+              />
+              @if (form.get('correo')?.invalid && form.get('correo')?.touched) {
+                <span class="ct-field__error">Ingresa un correo electrónico válido</span>
+              }
+            </div>
+
+            <div class="ct-field">
+              <label class="ct-field__label" for="asunto">Asunto *</label>
+              <select
+                id="asunto"
+                class="ct-field__input ct-field__select"
+                formControlName="asunto"
+              >
+                <option value="soporte">Soporte técnico</option>
+                <option value="colaboracion">Propuesta de colaboración</option>
+                <option value="artista">Unirme como artista</option>
+                <option value="prensa">Prensa / medios</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+
+            <div class="ct-field">
+              <label class="ct-field__label" for="mensaje">
+                Mensaje *
+                <span class="ct-field__counter">{{ mensajeLength }}/500</span>
+              </label>
+              <textarea
+                id="mensaje"
+                class="ct-field__input ct-field__textarea"
+                formControlName="mensaje"
+                placeholder="Cuéntanos en qué podemos ayudarte..."
+                rows="6"
+                [class.ct-field__input--error]="form.get('mensaje')?.invalid && form.get('mensaje')?.touched"
+              ></textarea>
+              @if (form.get('mensaje')?.invalid && form.get('mensaje')?.touched) {
+                <span class="ct-field__error">El mensaje debe tener entre 10 y 500 caracteres</span>
+              }
+            </div>
+
+            <button type="submit" class="ct-btn-primary" [disabled]="enviando()">
+              @if (enviando()) {
+                Enviando…
+              } @else {
+                Enviar mensaje →
+              }
+            </button>
+
+          </form>
+        }
+      </div>
+
+      <!-- Info lateral -->
+      <aside class="ct-info">
+        <span class="ct-label">002 / Información</span>
+
+        <div class="ct-info-card">
+          <div class="ct-info-card__icon">✉</div>
+          <div>
+            <div class="ct-info-card__title">Correo</div>
+            <a href="mailto:al215510@alumnos.uacj.mx" class="ct-info-card__val">
+              al215510&#64;alumnos.uacj.mx
+            </a>
+          </div>
+        </div>
+
+        <div class="ct-info-card">
+          <div class="ct-info-card__icon">◎</div>
+          <div>
+            <div class="ct-info-card__title">Ubicación</div>
+            <span class="ct-info-card__val">Ciudad Juárez, Chihuahua, México</span>
+          </div>
+        </div>
+
+        <div class="ct-info-card">
+          <div class="ct-info-card__icon">◷</div>
+          <div>
+            <div class="ct-info-card__title">Horario de respuesta</div>
+            <span class="ct-info-card__val">Lunes – Viernes, 9:00 – 18:00 CST</span>
+          </div>
+        </div>
+
+        <div class="ct-info-card">
+          <div class="ct-info-card__icon">◈</div>
+          <div>
+            <div class="ct-info-card__title">Universidad</div>
+            <span class="ct-info-card__val">UACJ · Instituto de Ingeniería y Tecnología</span>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </section>
+
+  <!-- ── FAQ ───────────────────────────────────────────────────── -->
+  <section class="ct-section ct-faq-section">
+    <div class="ct-section__inner ct-faq__inner">
+      <span class="ct-label">003 / Preguntas frecuentes</span>
+      <h2 class="ct-heading">Respuestas rápidas</h2>
+
+      <div class="ct-faq-list">
+        @for (faq of faqs(); track faq.pregunta; let i = $index) {
+          <div class="ct-faq-item" [class.ct-faq-item--open]="faq.abierto">
+            <button class="ct-faq-item__question" (click)="toggleFaq(i)">
+              <span>{{ faq.pregunta }}</span>
+              <span class="ct-faq-item__arrow">{{ faq.abierto ? '−' : '+' }}</span>
+            </button>
+            @if (faq.abierto) {
+              <div class="ct-faq-item__answer">{{ faq.respuesta }}</div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<app-footer />
