@@ -17,7 +17,7 @@ interface Seccion {
   styleUrl: './terminos.component.scss',
 })
 export class TerminosComponent {
-  readonly ultimaActualizacion = 'Mayo 2025';
+  readonly ultimaActualizacion = 'Mayo 2026';
 
   readonly secciones = signal<Seccion[]>([
     { id: 'aceptacion',      numero: '§1',  titulo: 'Aceptación de los términos' },
