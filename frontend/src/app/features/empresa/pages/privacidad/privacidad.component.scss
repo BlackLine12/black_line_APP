@@ -1,0 +1,365 @@
+:host {
+  display: block;
+  background: var(--bl-bg-primary, #0C0A08);
+  color: var(--bl-text-primary, #EDE0C4);
+  font-family: 'Inter', sans-serif;
+}
+
+// ── Hero ──────────────────────────────────────────────────────────
+.legal-hero {
+  padding: 7rem 1.5rem 5rem;
+  text-align: center;
+  background: linear-gradient(180deg, #111110 0%, #0C0A08 100%);
+  border-bottom: 1px solid #2A2420;
+
+  &__label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--bl-gold, #C9A84C);
+    margin-bottom: 1.25rem;
+  }
+
+  &__title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 700;
+    color: var(--bl-text-primary, #EDE0C4);
+    line-height: 1.05;
+    margin: 0 0 1.25rem;
+  }
+
+  &__badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--bl-gold, #C9A84C);
+    background: rgba(201, 168, 76, 0.08);
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    border-radius: 20px;
+    padding: 4px 14px;
+    letter-spacing: 0.04em;
+    margin-bottom: 1.5rem;
+  }
+
+  &__sub {
+    max-width: 580px;
+    margin: 0 auto 3rem;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--bl-text-secondary, #8A7E72);
+  }
+
+  &__divider {
+    width: 60px;
+    height: 1px;
+    background: var(--bl-gold, #C9A84C);
+    margin: 0 auto;
+    opacity: 0.4;
+  }
+}
+
+// ── Layout ────────────────────────────────────────────────────────
+.legal-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 0;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem 6rem;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Sidebar ───────────────────────────────────────────────────────
+.legal-sidebar {
+  padding-right: 2.5rem;
+  position: sticky;
+  top: 80px;
+  align-self: start;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+
+  @media (max-width: 900px) {
+    position: static;
+    padding: 0 0 2rem;
+    border-bottom: 1px solid #2A2420;
+    margin-bottom: 2.5rem;
+  }
+
+  &__title {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--bl-text-muted, #5A5248);
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #2A2420;
+  }
+
+  &__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+
+    @media (max-width: 900px) {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+  }
+
+  &__link {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    background: none;
+    border: none;
+    padding: 0.5rem 0.6rem;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: left;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    color: var(--bl-text-secondary, #8A7E72);
+    transition: color 0.15s, background 0.15s;
+    width: 100%;
+
+    &:hover {
+      color: var(--bl-text-primary, #EDE0C4);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    @media (max-width: 900px) {
+      width: auto;
+      border: 1px solid #2A2420;
+    }
+  }
+
+  &__num {
+    font-size: 0.7rem;
+    color: var(--bl-gold, #C9A84C);
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+}
+
+// ── Contenido ─────────────────────────────────────────────────────
+.legal-content {
+  border-left: 1px solid #2A2420;
+  padding-left: 3rem;
+  min-width: 0;
+
+  @media (max-width: 900px) {
+    border-left: none;
+    padding-left: 0;
+  }
+}
+
+// ── Sección ───────────────────────────────────────────────────────
+.legal-section {
+  padding: 0.5rem 0 2rem;
+
+  &__title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--bl-text-primary, #EDE0C4);
+    margin: 0 0 1.25rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+  }
+
+  &__num {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--bl-gold, #C9A84C);
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+  }
+
+  p {
+    font-size: 0.93rem;
+    line-height: 1.8;
+    color: var(--bl-text-secondary, #8A7E72);
+    margin: 0 0 1rem;
+
+    strong { color: var(--bl-text-primary, #EDE0C4); font-weight: 500; }
+    em { color: var(--bl-text-primary, #EDE0C4); font-style: italic; }
+
+    code {
+      font-family: 'Courier New', monospace;
+      font-size: 0.85em;
+      background: rgba(201, 168, 76, 0.07);
+      border: 1px solid rgba(201, 168, 76, 0.15);
+      border-radius: 3px;
+      padding: 1px 6px;
+      color: var(--bl-gold, #C9A84C);
+    }
+  }
+}
+
+.legal-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+
+  li {
+    font-size: 0.93rem;
+    line-height: 1.7;
+    color: var(--bl-text-secondary, #8A7E72);
+    padding-left: 1.25rem;
+    position: relative;
+
+    &::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--bl-gold, #C9A84C);
+      font-size: 0.75rem;
+    }
+
+    strong { color: var(--bl-text-primary, #EDE0C4); font-weight: 500; }
+  }
+}
+
+.legal-divider {
+  height: 1px;
+  background: #2A2420;
+  margin: 0.5rem 0 2.5rem;
+}
+
+// ── Tabla ─────────────────────────────────────────────────────────
+.legal-table-wrap {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #2A2420;
+  margin-top: 1rem;
+}
+
+.legal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+
+  th {
+    background: #111110;
+    color: var(--bl-text-primary, #EDE0C4);
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #2A2420;
+  }
+
+  td {
+    padding: 12px 16px;
+    color: var(--bl-text-secondary, #8A7E72);
+    border-bottom: 1px solid #1e1c1a;
+    vertical-align: top;
+    line-height: 1.5;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255, 255, 255, 0.015); }
+}
+
+// ── Info box ──────────────────────────────────────────────────────
+.legal-info-box {
+  background: var(--bl-bg-panel, #0F0D0B);
+  border: 1px solid #2A2420;
+  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+
+  &__row {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.88rem;
+    align-items: baseline;
+  }
+
+  &__label {
+    font-weight: 600;
+    color: var(--bl-text-primary, #EDE0C4);
+    flex-shrink: 0;
+    min-width: 90px;
+    font-size: 0.8rem;
+    letter-spacing: 0.03em;
+  }
+
+  span, a { color: var(--bl-text-secondary, #8A7E72); }
+}
+
+.legal-link {
+  color: var(--bl-gold, #C9A84C);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.3);
+  transition: border-color 0.15s;
+
+  &:hover { border-color: var(--bl-gold, #C9A84C); }
+}
+
+// ── CTA ───────────────────────────────────────────────────────────
+.legal-cta {
+  margin-top: 3rem;
+  padding: 2.5rem;
+  background: var(--bl-bg-panel, #0F0D0B);
+  border: 1px solid #2A2420;
+  border-radius: 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+
+  p { font-size: 0.95rem; color: var(--bl-text-secondary, #8A7E72); margin: 0; }
+
+  &__btn {
+    display: inline-block;
+    background: var(--bl-gold, #C9A84C);
+    color: #0C0A08;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.88rem;
+    letter-spacing: 0.04em;
+    border-radius: 6px;
+    padding: 12px 28px;
+    text-decoration: none;
+    transition: opacity 0.2s;
+
+    &:hover { opacity: 0.88; }
+  }
+
+  &__links {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  &__link {
+    font-size: 0.82rem;
+    color: var(--bl-text-muted, #5A5248);
+    text-decoration: none;
+    transition: color 0.15s;
+
+    &:hover { color: var(--bl-gold, #C9A84C); }
+  }
+
+  &__sep { color: var(--bl-text-muted, #5A5248); font-size: 0.8rem; }
+}

@@ -1,0 +1,136 @@
+<app-navbar />
+
+<main class="sn-page">
+
+  <!-- ── Hero ─────────────────────────────────────────────────── -->
+  <section class="sn-hero">
+    <div class="sn-hero__label">Universidad Autónoma de Ciudad Juárez</div>
+    <h1 class="sn-hero__title">Sobre Nosotros</h1>
+    <p class="sn-hero__sub">
+      Somos cinco estudiantes de Ingeniería de Software apasionados por el arte del tatuaje
+      y convencidos de que la tecnología puede transformar la forma en que artistas y clientes se encuentran.
+    </p>
+    <div class="sn-hero__divider"></div>
+  </section>
+
+  <!-- ── Historia ──────────────────────────────────────────────── -->
+  <section class="sn-section sn-historia">
+    <div class="sn-section__inner sn-historia__inner">
+      <div class="sn-historia__text">
+        <span class="sn-label">001 / Nuestra historia</span>
+        <h2 class="sn-heading">De un proyecto final<br>a una plataforma real</h2>
+        <p>
+          BlackLine nació en las aulas de la <strong>Universidad Autónoma de Ciudad Juárez</strong>
+          como proyecto integrador para la materia Innovación Tecnológica. Lo que comenzó como una idea en clase de
+          Ingeniería de Software se convirtió en una plataforma funcional que resuelve un problema real:
+          encontrar al artista de tatuaje ideal es difícil, y los artistas merecen herramientas
+          modernas para gestionar su trabajo.
+        </p>
+        <p>
+          Durante meses de desarrollo intensivo, construimos desde cero un sistema de matchmaking
+          inteligente que considera estilo artístico, disponibilidad, ubicación y presupuesto para
+          conectar clientes con el artista perfecto. BlackLine no es solo un proyecto académico;
+          es nuestra visión de lo que la industria del tatuaje puede ser.
+        </p>
+      </div>
+      <div class="sn-historia__stats">
+        <div class="sn-stat">
+          <span class="sn-stat__num">5</span>
+          <span class="sn-stat__label">Integrantes</span>
+        </div>
+        <div class="sn-stat">
+          <span class="sn-stat__num">~10°</span>
+          <span class="sn-stat__label">Semestre</span>
+        </div>
+        <div class="sn-stat">
+          <span class="sn-stat__num">1</span>
+          <span class="sn-stat__label">Plataforma</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Misión ─────────────────────────────────────────────────── -->
+  <section class="sn-section sn-mision">
+    <div class="sn-section__inner">
+      <span class="sn-label">002 / Misión</span>
+      <blockquote class="sn-mision__quote">
+        Democratizar el acceso al tatuaje de calidad, conectando a cada persona con el artista
+        que puede dar vida a su visión única.
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- ── Valores ─────────────────────────────────────────────────── -->
+  <section class="sn-section sn-valores">
+    <div class="sn-section__inner">
+      <span class="sn-label">003 / Valores</span>
+      <div class="sn-valores__grid">
+        @for (v of valores(); track v.titulo) {
+          <div class="sn-valor-card">
+            <span class="sn-valor-card__icon">{{ v.icono }}</span>
+            <h3 class="sn-valor-card__title">{{ v.titulo }}</h3>
+            <p class="sn-valor-card__desc">{{ v.descripcion }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Equipo ─────────────────────────────────────────────────── -->
+  <section class="sn-section sn-equipo">
+    <div class="sn-section__inner">
+      <span class="sn-label">004 / El equipo</span>
+      <h2 class="sn-heading">Las personas detrás de BlackLine</h2>
+      <div class="sn-equipo__grid">
+        @for (m of equipo(); track m.nombre) {
+          <div class="sn-member-card">
+            <div class="sn-member-card__avatar">{{ m.iniciales }}</div>
+            <div class="sn-member-card__body">
+              <h3 class="sn-member-card__name">{{ m.nombre }}</h3>
+              <span class="sn-member-card__rol">{{ m.rol }}</span>
+              <span class="sn-member-card__esp">{{ m.especialidad }} · UACJ</span>
+              <p class="sn-member-card__bio">{{ m.bio }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Universidad ───────────────────────────────────────────── -->
+  <section class="sn-section sn-uacj">
+    <div class="sn-section__inner sn-uacj__inner">
+      <div class="sn-uacj__logo-wrap">
+        <div class="sn-uacj__emblem">UACJ</div>
+      </div>
+      <div class="sn-uacj__text">
+        <span class="sn-label">005 / Institución</span>
+        <h2 class="sn-heading">Universidad Autónoma<br>de Ciudad Juárez</h2>
+        <p>
+          La UACJ es una de las universidades públicas más importantes del norte de México,
+          con sede en Ciudad Juárez, Chihuahua. El Instituto de Ingeniería y Tecnología (IIT)
+          donde cursamos nuestra carrera forma profesionistas comprometidos con la innovación
+          tecnológica y el desarrollo regional.
+        </p>
+        <p>
+          BlackLine representa el resultado de años de formación en desarrollo de software,
+          bases de datos, arquitectura de sistemas e ingeniería de usabilidad, aplicados a
+          resolver un problema real de nuestra comunidad.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA ────────────────────────────────────────────────────── -->
+  <section class="sn-section sn-cta">
+    <div class="sn-section__inner sn-cta__inner">
+      <h2 class="sn-heading">¿Tienes alguna pregunta?</h2>
+      <p>Estamos disponibles para responder cualquier duda sobre el proyecto.</p>
+      <a routerLink="/contacto" class="sn-btn-primary">Contáctanos</a>
+    </div>
+  </section>
+
+</main>
+
+<app-footer />

@@ -1,0 +1,134 @@
+<app-navbar />
+
+<main class="legal-page">
+
+  <!-- ── Hero ─────────────────────────────────────────────────── -->
+  <section class="legal-hero">
+    <div class="legal-hero__label">Documento legal · BlackLine</div>
+    <h1 class="legal-hero__title">Política de Cookies</h1>
+    <span class="legal-hero__badge">Última actualización: {{ ultimaActualizacion }}</span>
+    <p class="legal-hero__sub">
+      Explicamos qué tecnologías de almacenamiento usa BlackLine, con qué propósito
+      y cómo puedes controlarlas desde tu navegador.
+    </p>
+    <div class="legal-hero__divider"></div>
+  </section>
+
+  <!-- ── Layout ─────────────────────────────────────────────────── -->
+  <div class="legal-layout legal-layout--single">
+    <article class="legal-content legal-content--wide">
+
+      <!-- ¿Qué es una cookie? -->
+      <section class="legal-section" id="que-es">
+        <h2 class="legal-section__title">¿Qué es una cookie?</h2>
+        <p>Una cookie es un pequeño archivo de texto que los sitios web almacenan en tu navegador para recordar preferencias, mantener sesiones activas o recopilar información de uso. BlackLine utiliza principalmente <strong>sessionStorage</strong>, un mecanismo de almacenamiento local que <em>se elimina automáticamente</em> al cerrar el navegador o la pestaña, sin persistir entre sesiones.</p>
+      </section>
+
+      <div class="legal-divider"></div>
+
+      <!-- Tabla -->
+      <section class="legal-section" id="tabla">
+        <h2 class="legal-section__title">Almacenamiento que utilizamos</h2>
+        <p>A continuación se detallan todos los elementos que BlackLine almacena en tu navegador:</p>
+        <div class="legal-table-wrap">
+          <table class="legal-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>Propósito</th>
+                <th>Duración</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (c of cookiesUsadas(); track c.nombre) {
+                <tr>
+                  <td><code>{{ c.nombre }}</code></td>
+                  <td><span class="legal-badge">{{ c.tipo }}</span></td>
+                  <td>{{ c.proposito }}</td>
+                  <td>{{ c.duracion }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="legal-divider"></div>
+
+      <!-- Tipos -->
+      <section class="legal-section" id="tipos">
+        <h2 class="legal-section__title">Tipos de cookies</h2>
+        <div class="legal-tipos-grid">
+          @for (t of tipos(); track t.nombre) {
+            <div class="legal-tipo-card">
+              <span class="legal-tipo-card__icon">{{ t.icono }}</span>
+              <h3 class="legal-tipo-card__title">{{ t.nombre }}</h3>
+              <p class="legal-tipo-card__desc">{{ t.descripcion }}</p>
+            </div>
+          }
+        </div>
+      </section>
+
+      <div class="legal-divider"></div>
+
+      <!-- Control -->
+      <section class="legal-section" id="control">
+        <h2 class="legal-section__title">Cómo controlar las cookies</h2>
+        <p>Puedes gestionar o eliminar el almacenamiento local desde la configuración de tu navegador. Ten en cuenta que desactivar el almacenamiento esencial impedirá el inicio de sesión en BlackLine.</p>
+        <div class="legal-browsers">
+          @for (nav of navegadores(); track nav.nombre) {
+            <div class="legal-browser-card">
+              <span class="legal-browser-card__name">{{ nav.nombre }}</span>
+              <span class="legal-browser-card__inst">{{ nav.instruccion }}</span>
+            </div>
+          }
+        </div>
+      </section>
+
+      <div class="legal-divider"></div>
+
+      <!-- No usamos -->
+      <section class="legal-section" id="no-usamos">
+        <h2 class="legal-section__title">Lo que BlackLine NO hace</h2>
+        <div class="legal-no-list">
+          <div class="legal-no-item">
+            <span class="legal-no-item__icon">✕</span>
+            <span>Publicidad dirigida o retargeting</span>
+          </div>
+          <div class="legal-no-item">
+            <span class="legal-no-item__icon">✕</span>
+            <span>Venta o cesión de datos a anunciantes</span>
+          </div>
+          <div class="legal-no-item">
+            <span class="legal-no-item__icon">✕</span>
+            <span>Fingerprinting o rastreo entre sitios</span>
+          </div>
+          <div class="legal-no-item">
+            <span class="legal-no-item__icon">✕</span>
+            <span>Cookies persistentes de terceros</span>
+          </div>
+          <div class="legal-no-item">
+            <span class="legal-no-item__icon">✕</span>
+            <span>Almacenamiento en <code>localStorage</code> (usamos solo <code>sessionStorage</code>)</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <div class="legal-cta">
+        <p>¿Tienes preguntas sobre nuestra política de cookies?</p>
+        <a routerLink="/contacto" class="legal-cta__btn">Contáctanos</a>
+        <div class="legal-cta__links">
+          <a routerLink="/terminos" class="legal-cta__link">Términos de servicio</a>
+          <span class="legal-cta__sep">·</span>
+          <a routerLink="/privacidad" class="legal-cta__link">Política de privacidad</a>
+        </div>
+      </div>
+
+    </article>
+  </div>
+
+</main>
+
+<app-footer />

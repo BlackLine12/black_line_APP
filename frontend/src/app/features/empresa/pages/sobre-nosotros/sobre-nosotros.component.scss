@@ -1,0 +1,380 @@
+:host {
+  display: block;
+  background: var(--bl-bg-primary, #0C0A08);
+  color: var(--bl-text-primary, #EDE0C4);
+  font-family: 'Inter', sans-serif;
+}
+
+.sn-page {
+  min-height: 100vh;
+}
+
+// ── Shared tokens ──────────────────────────────────────────────────
+.sn-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bl-gold, #C9A84C);
+  margin-bottom: 1.25rem;
+}
+
+.sn-heading {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 700;
+  color: var(--bl-text-primary, #EDE0C4);
+  line-height: 1.2;
+  margin: 0 0 1.5rem;
+}
+
+.sn-section {
+  padding: 5rem 1.5rem;
+
+  &__inner {
+    max-width: 1120px;
+    margin: 0 auto;
+  }
+}
+
+// ── Hero ──────────────────────────────────────────────────────────
+.sn-hero {
+  padding: 7rem 1.5rem 5rem;
+  text-align: center;
+  background: linear-gradient(180deg, #111110 0%, #0C0A08 100%);
+  border-bottom: 1px solid #2A2420;
+
+  &__label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--bl-gold, #C9A84C);
+    margin-bottom: 1.5rem;
+  }
+
+  &__title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    font-weight: 700;
+    color: var(--bl-text-primary, #EDE0C4);
+    line-height: 1.05;
+    margin: 0 0 1.5rem;
+  }
+
+  &__sub {
+    max-width: 620px;
+    margin: 0 auto 3rem;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--bl-text-secondary, #8A7E72);
+  }
+
+  &__divider {
+    width: 60px;
+    height: 1px;
+    background: var(--bl-gold, #C9A84C);
+    margin: 0 auto;
+    opacity: 0.5;
+  }
+}
+
+// ── Historia ──────────────────────────────────────────────────────
+.sn-historia {
+  background: var(--bl-bg-secondary, #111110);
+
+  &__inner {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 5rem;
+    align-items: start;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+  }
+
+  &__text {
+    p {
+      color: var(--bl-text-secondary, #8A7E72);
+      line-height: 1.8;
+      margin: 0 0 1.25rem;
+      font-size: 0.97rem;
+
+      strong {
+        color: var(--bl-text-primary, #EDE0C4);
+        font-weight: 500;
+      }
+    }
+  }
+
+  &__stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+}
+
+.sn-stat {
+  background: var(--bl-bg-panel, #0F0D0B);
+  border: 1px solid var(--bl-divider, #2A2420);
+  border-radius: 8px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  transition: border-color 0.2s;
+
+  &:hover {
+    border-color: var(--bl-gold-muted, #C9A84C33);
+  }
+
+  &__num {
+    display: block;
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--bl-gold, #C9A84C);
+    line-height: 1;
+  }
+
+  &__label {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--bl-text-muted, #5A5248);
+    margin-top: 0.5rem;
+  }
+}
+
+// ── Misión ────────────────────────────────────────────────────────
+.sn-mision {
+  border-top: 1px solid #2A2420;
+  border-bottom: 1px solid #2A2420;
+
+  &__quote {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.4rem, 2.5vw, 2rem);
+    font-style: italic;
+    color: var(--bl-text-primary, #EDE0C4);
+    line-height: 1.5;
+    margin: 0;
+    padding-left: 2rem;
+    border-left: 2px solid var(--bl-gold, #C9A84C);
+  }
+}
+
+// ── Valores ───────────────────────────────────────────────────────
+.sn-valores {
+  background: var(--bl-bg-secondary, #111110);
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 2rem;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+.sn-valor-card {
+  background: var(--bl-bg-panel, #0F0D0B);
+  border: 1px solid var(--bl-divider, #2A2420);
+  border-radius: 8px;
+  padding: 2rem 1.75rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    border-color: var(--bl-gold-muted, #C9A84C33);
+    box-shadow: 0 4px 24px rgba(201, 168, 76, 0.07);
+  }
+
+  &__icon {
+    display: block;
+    font-size: 1.5rem;
+    color: var(--bl-gold, #C9A84C);
+    margin-bottom: 1.25rem;
+  }
+
+  &__title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--bl-text-primary, #EDE0C4);
+    margin: 0 0 0.75rem;
+  }
+
+  &__desc {
+    font-size: 0.9rem;
+    color: var(--bl-text-secondary, #8A7E72);
+    line-height: 1.7;
+    margin: 0;
+  }
+}
+
+// ── Equipo ────────────────────────────────────────────────────────
+.sn-equipo {
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-top: 2.5rem;
+
+    @media (max-width: 640px) {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+.sn-member-card {
+  display: flex;
+  gap: 1.25rem;
+  background: var(--bl-bg-panel, #0F0D0B);
+  border: 1px solid var(--bl-divider, #2A2420);
+  border-radius: 8px;
+  padding: 1.75rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    border-color: var(--bl-gold-muted, #C9A84C33);
+    box-shadow: 0 4px 20px rgba(201, 168, 76, 0.06);
+  }
+
+  &__avatar {
+    flex-shrink: 0;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(201, 168, 76, 0.1);
+    border: 1px solid rgba(201, 168, 76, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--bl-gold, #C9A84C);
+    letter-spacing: 0.05em;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  &__name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--bl-text-primary, #EDE0C4);
+    margin: 0;
+  }
+
+  &__rol {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--bl-gold, #C9A84C);
+    letter-spacing: 0.04em;
+  }
+
+  &__esp {
+    font-size: 0.75rem;
+    color: var(--bl-text-muted, #5A5248);
+    letter-spacing: 0.03em;
+    margin-bottom: 0.5rem;
+  }
+
+  &__bio {
+    font-size: 0.85rem;
+    color: var(--bl-text-secondary, #8A7E72);
+    line-height: 1.65;
+    margin: 0;
+  }
+}
+
+// ── UACJ ──────────────────────────────────────────────────────────
+.sn-uacj {
+  background: var(--bl-bg-secondary, #111110);
+  border-top: 1px solid #2A2420;
+
+  &__inner {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 4rem;
+    align-items: center;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+  }
+
+  &__logo-wrap {
+    display: flex;
+    justify-content: center;
+  }
+
+  &__emblem {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 2px solid rgba(201, 168, 76, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--bl-gold, #C9A84C);
+    letter-spacing: 0.08em;
+    background: rgba(201, 168, 76, 0.05);
+  }
+
+  &__text {
+    p {
+      color: var(--bl-text-secondary, #8A7E72);
+      line-height: 1.8;
+      font-size: 0.95rem;
+      margin: 0 0 1rem;
+    }
+  }
+}
+
+// ── CTA ───────────────────────────────────────────────────────────
+.sn-cta {
+  border-top: 1px solid #2A2420;
+
+  &__inner {
+    text-align: center;
+
+    p {
+      color: var(--bl-text-secondary, #8A7E72);
+      margin: 0 0 2.5rem;
+    }
+  }
+}
+
+.sn-btn-primary {
+  display: inline-block;
+  background: var(--bl-gold, #C9A84C);
+  color: #0C0A08;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  border: none;
+  border-radius: 6px;
+  padding: 14px 32px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.88;
+  }
+}
