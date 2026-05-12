@@ -17,7 +17,7 @@ interface Seccion {
   styleUrl: './privacidad.component.scss',
 })
 export class PrivacidadComponent {
-  readonly ultimaActualizacion = 'Mayo 2025';
+  readonly ultimaActualizacion = 'Mayo 2026';
 
   readonly secciones = signal<Seccion[]>([
     { id: 'responsable',   numero: '§1',  titulo: 'Responsable del tratamiento' },
