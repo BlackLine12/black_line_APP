@@ -1,6 +1,5 @@
 import { Component, signal, inject } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { NavbarComponent } from '../../../../shared/components/navbar.component';
 import { FooterComponent } from '../../../../shared/components/footer.component';
 
@@ -13,7 +12,7 @@ interface Faq {
 @Component({
   selector: 'app-contacto',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule, NavbarComponent, FooterComponent],
+  imports: [ReactiveFormsModule, NavbarComponent, FooterComponent],
   templateUrl: './contacto.component.html',
   styleUrl: './contacto.component.scss',
 })
