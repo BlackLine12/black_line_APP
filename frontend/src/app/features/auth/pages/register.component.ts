@@ -30,6 +30,8 @@ export class RegisterComponent implements OnInit {
   loading = false;
   errorMessage = '';
   successMessage = '';
+  showPassword = false;
+  showConfirmPassword = false;
 
   ngOnInit(): void {
     const role = this.route.snapshot.queryParamMap.get('role');
@@ -52,14 +54,22 @@ export class RegisterComponent implements OnInit {
 
     this.authService.register(this.registerForm.value).subscribe({
       next: () => {
-        this.loading = false;
-        this.successMessage = 'Cuenta creada exitosamente. Redirigiendo al login…';
-        setTimeout(() => {
-          this.router.navigate(['/auth/login'], {
-            queryParams: { registered: '1' },
-            replaceUrl: true,
-          });
-        }, 1500);
+        const { email, password } = this.registerForm.value;
+        this.successMessage = 'Cuenta creada exitosamente. Iniciando sesión…';
+        this.authService.login(email, password).subscribe({
+          next: () => {
+            this.loading = false;
+            this.authService.redirectByRole();
+          },
+          error: () => {
+            this.loading = false;
+            this.errorMessage = 'Cuenta creada, pero no se pudo iniciar sesión. Intenta ingresar.';
+            this.router.navigate(['/auth/login'], {
+              queryParams: { registered: '1' },
+              replaceUrl: true,
+            });
+          },
+        });
       },
       error: (err) => {
         this.loading = false;
@@ -76,5 +86,39 @@ export class RegisterComponent implements OnInit {
         }
       },
     });
+  }
+
+  togglePassword(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleConfirmPassword(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
+  }
+
+  get passwordValue(): string {
+    return this.registerForm.get('password')?.value ?? '';
+  }
+
+  get passwordConfirmValue(): string {
+    return this.registerForm.get('password_confirm')?.value ?? '';
+  }
+
+  get passwordMinLengthOk(): boolean {
+    return this.passwordValue.length >= 8;
+  }
+
+  get passwordNotNumericOnly(): boolean {
+    if (!this.passwordValue.length) {
+      return false;
+    }
+    return !/^\d+$/.test(this.passwordValue);
+  }
+
+  get passwordsMatch(): boolean {
+    if (!this.passwordConfirmValue.length) {
+      return false;
+    }
+    return this.passwordValue === this.passwordConfirmValue;
   }
 }

@@ -355,6 +355,36 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
   }
 }
 
+.auth-field__input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.auth-field__input--with-toggle {
+  padding-right: 56px;
+}
+
+.auth-field__toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: rgba($cream, 0.6);
+  font-family: $font-mono;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 4px 6px;
+
+  &:hover {
+    color: $gold;
+  }
+}
+
 .auth-field__error {
   display: block;
   margin-top: 4px;
@@ -367,6 +397,28 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
   margin-top: 4px;
   font-size: 11px;
   color: rgba($cream, 0.4);
+}
+
+.auth-field__rules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 10px;
+  color: $muted;
+}
+
+.auth-field__rule {
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid $border;
+  background: rgba(255, 255, 255, 0.02);
+
+  &--ok {
+    color: $gold;
+    border-color: rgba($gold, 0.5);
+    background: rgba($gold, 0.08);
+  }
 }
 
 // ── Role selector ─────────────────────────────────────────────────────────

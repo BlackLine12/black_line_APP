@@ -183,9 +183,17 @@
         <div class="auth-fields-row">
           <div class="auth-field">
             <label class="auth-field__label" for="reg_password">Contraseña</label>
-            <input id="reg_password" class="auth-field__input"
-              [class.auth-field__input--error]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
-              formControlName="password" type="password" placeholder="••••••••" autocomplete="new-password" />
+            <div class="auth-field__input-wrap">
+              <input id="reg_password" class="auth-field__input auth-field__input--with-toggle"
+                [class.auth-field__input--error]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
+                formControlName="password"
+                [type]="showPassword ? 'text' : 'password'"
+                placeholder="••••••••"
+                autocomplete="new-password" />
+              <button type="button" class="auth-field__toggle" (click)="togglePassword()" [attr.aria-pressed]="showPassword">
+                {{ showPassword ? 'Ocultar' : 'Ver' }}
+              </button>
+            </div>
             @if (registerForm.get('password')?.errors?.['required'] && registerForm.get('password')?.touched) {
               <span class="auth-field__error">La contraseña es requerida.</span>
             }
@@ -195,12 +203,27 @@
             @if (registerForm.get('password')?.touched && !registerForm.get('password')?.errors) {
               <span class="auth-field__hint">Usa letras, números y símbolos para mayor seguridad.</span>
             }
+            @if (passwordValue || passwordConfirmValue) {
+              <div class="auth-field__rules">
+                <span class="auth-field__rule" [class.auth-field__rule--ok]="passwordMinLengthOk">Minimo 8 caracteres</span>
+                <span class="auth-field__rule" [class.auth-field__rule--ok]="passwordNotNumericOnly">No solo numeros</span>
+                <span class="auth-field__rule" [class.auth-field__rule--ok]="passwordsMatch">Coinciden</span>
+              </div>
+            }
           </div>
           <div class="auth-field">
             <label class="auth-field__label" for="reg_confirm">Confirmar</label>
-            <input id="reg_confirm" class="auth-field__input"
-              [class.auth-field__input--error]="registerForm.get('password_confirm')?.touched && registerForm.get('password')?.value !== registerForm.get('password_confirm')?.value"
-              formControlName="password_confirm" type="password" placeholder="••••••••" autocomplete="new-password" />
+            <div class="auth-field__input-wrap">
+              <input id="reg_confirm" class="auth-field__input auth-field__input--with-toggle"
+                [class.auth-field__input--error]="registerForm.get('password_confirm')?.touched && registerForm.get('password')?.value !== registerForm.get('password_confirm')?.value"
+                formControlName="password_confirm"
+                [type]="showConfirmPassword ? 'text' : 'password'"
+                placeholder="••••••••"
+                autocomplete="new-password" />
+              <button type="button" class="auth-field__toggle" (click)="toggleConfirmPassword()" [attr.aria-pressed]="showConfirmPassword">
+                {{ showConfirmPassword ? 'Ocultar' : 'Ver' }}
+              </button>
+            </div>
             @if (registerForm.get('password_confirm')?.touched && registerForm.get('password')?.value !== registerForm.get('password_confirm')?.value) {
               <span class="auth-field__error">Las contraseñas no coinciden.</span>
             }

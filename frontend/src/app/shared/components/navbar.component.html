@@ -65,6 +65,9 @@
         <a routerLink="/admin/estilos"
            routerLinkActive="navbar__link--active"
            class="navbar__link navbar__link--admin">Estilos</a>
+        <a routerLink="/admin/usuarios"
+          routerLinkActive="navbar__link--active"
+          class="navbar__link navbar__link--admin">Usuarios</a>
       }
     </div>
 
@@ -154,6 +157,7 @@
       @if (isAdmin()) {
         <a routerLink="/admin/dashboard" (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link navbar__mobile-link--admin">Panel</a>
         <a routerLink="/admin/estilos"   (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link navbar__mobile-link--admin">Estilos</a>
+        <a routerLink="/admin/usuarios"  (click)="mobileMenuOpen.set(false)" class="navbar__mobile-link navbar__mobile-link--admin">Usuarios</a>
       }
 
       <!-- Guest CTAs (mobile) -->

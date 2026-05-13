@@ -25,6 +25,7 @@ export class LoginComponent implements OnInit {
   loading = false;
   errorMessage = '';
   successMessage = '';
+  showPassword = false;
 
   ngOnInit(): void {
     this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
@@ -67,5 +68,17 @@ export class LoginComponent implements OnInit {
         }
       },
     });
+  }
+
+  togglePassword(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  get passwordValue(): string {
+    return this.loginForm.get('password')?.value ?? '';
+  }
+
+  get passwordMinLengthOk(): boolean {
+    return this.passwordValue.length >= 8;
   }
 }
