@@ -12,7 +12,6 @@ from .serializers import (
     RegisterSerializer,
     UserSerializer,
     ChangePasswordSerializer,
-    AdminResetPasswordSerializer,
     AdminSetPasswordSerializer,
 )
 from .permissions import IsAdminUserTypePermission

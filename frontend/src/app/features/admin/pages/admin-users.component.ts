@@ -63,9 +63,9 @@ export class AdminUsersComponent {
           this.loading.set(false);
           this.successMessage.set(res.message || 'Contrasena actualizada exitosamente.');
           this.resetUserId.set(res.user_id);
-          this.form.controls.confirm.setValue(false);
-          this.form.controls.newPassword.setValue('');
-          this.form.controls.newPasswordConfirm.setValue('');
+          this.form.reset({ userId: null, newPassword: '', newPasswordConfirm: '', confirm: false });
+          this.showNewPassword.set(false);
+          this.showConfirmPassword.set(false);
         },
         error: (err: HttpErrorResponse) => {
           this.loading.set(false);
