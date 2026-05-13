@@ -21,6 +21,9 @@ services:
       context: ./backend
     container_name: black_line_backend
     env_file: .env
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.local
+      PYTHONPATH: /app
     volumes:
       - ./backend:/app
     ports:
