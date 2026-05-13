@@ -95,4 +95,30 @@ export class RegisterComponent implements OnInit {
   toggleConfirmPassword(): void {
     this.showConfirmPassword = !this.showConfirmPassword;
   }
+
+  get passwordValue(): string {
+    return this.registerForm.get('password')?.value ?? '';
+  }
+
+  get passwordConfirmValue(): string {
+    return this.registerForm.get('password_confirm')?.value ?? '';
+  }
+
+  get passwordMinLengthOk(): boolean {
+    return this.passwordValue.length >= 8;
+  }
+
+  get passwordNotNumericOnly(): boolean {
+    if (!this.passwordValue.length) {
+      return false;
+    }
+    return !/^\d+$/.test(this.passwordValue);
+  }
+
+  get passwordsMatch(): boolean {
+    if (!this.passwordConfirmValue.length) {
+      return false;
+    }
+    return this.passwordValue === this.passwordConfirmValue;
+  }
 }

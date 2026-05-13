@@ -1,7 +1,17 @@
+from dataclasses import dataclass
+
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import User
+
+
+@dataclass(frozen=True)
+class AdminResetPasswordResult:
+    """Result for admin password reset."""
+
+    user: User
+    temporary_password: str
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     """
@@ -168,3 +178,64 @@ class ChangePasswordSerializer(serializers.Serializer):
         if not user.check_password(value):
             raise serializers.ValidationError("La contraseña anterior es incorrecta.")
         return value
+
+
+class AdminResetPasswordSerializer(serializers.Serializer):
+    """Serializer para resetear contrasenas desde admin."""
+
+    user_id = serializers.IntegerField(min_value=1)
+
+    def validate_user_id(self, value):
+        if not User.objects.filter(id=value).exists():
+            raise serializers.ValidationError("Usuario no encontrado.")
+        return value
+
+
+class AdminSetPasswordSerializer(serializers.Serializer):
+    """Serializer para que admin establezca nueva contrasena."""
+
+    user_id = serializers.IntegerField(min_value=1)
+    new_password = serializers.CharField(
+        required=True,
+        write_only=True,
+        validators=[validate_password],
+        style={'input_type': 'password'}
+    )
+    new_password_confirm = serializers.CharField(
+        required=True,
+        write_only=True,
+        style={'input_type': 'password'}
+    )
+
+    def validate_user_id(self, value):
+        if not User.objects.filter(id=value).exists():
+            raise serializers.ValidationError("Usuario no encontrado.")
+        return value
+
+    def validate(self, attrs):
+        if attrs['new_password'] != attrs['new_password_confirm']:
+            raise serializers.ValidationError({
+                "new_password": "Las contrasenas no coinciden."
+            })
+        return attrs
+
+
+class AdminResetPasswordSerializer(serializers.Serializer):
+    """Serializer for admin-only password reset."""
+
+    user_id = serializers.IntegerField(write_only=True)
+    temporary_password = serializers.CharField(read_only=True)
+
+    def validate_user_id(self, value: int) -> int:
+        if not User.objects.filter(pk=value).exists():
+            raise serializers.ValidationError("Usuario no encontrado.")
+        return value
+
+    def save(self, **kwargs) -> AdminResetPasswordResult:
+        user_id = self.validated_data["user_id"]
+        user = User.objects.get(pk=user_id)
+        temporary_password = User.objects.make_random_password(length=14)
+        # Reiniciar contraseña y devolverla solo a admins.
+        user.set_password(temporary_password)
+        user.save(update_fields=["password"])
+        return AdminResetPasswordResult(user=user, temporary_password=temporary_password)

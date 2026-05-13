@@ -120,6 +120,11 @@
           @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
             <span class="auth-field__error">Ingresa tu contraseña.</span>
           }
+          @if (passwordValue) {
+            <div class="auth-field__rules">
+              <span class="auth-field__rule" [class.auth-field__rule--ok]="passwordMinLengthOk">Minimo 8 caracteres</span>
+            </div>
+          }
         </div>
 
         <div class="auth-remember">

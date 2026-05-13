@@ -203,6 +203,13 @@
             @if (registerForm.get('password')?.touched && !registerForm.get('password')?.errors) {
               <span class="auth-field__hint">Usa letras, números y símbolos para mayor seguridad.</span>
             }
+            @if (passwordValue || passwordConfirmValue) {
+              <div class="auth-field__rules">
+                <span class="auth-field__rule" [class.auth-field__rule--ok]="passwordMinLengthOk">Minimo 8 caracteres</span>
+                <span class="auth-field__rule" [class.auth-field__rule--ok]="passwordNotNumericOnly">No solo numeros</span>
+                <span class="auth-field__rule" [class.auth-field__rule--ok]="passwordsMatch">Coinciden</span>
+              </div>
+            }
           </div>
           <div class="auth-field">
             <label class="auth-field__label" for="reg_confirm">Confirmar</label>

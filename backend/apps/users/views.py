@@ -12,7 +12,10 @@ from .serializers import (
     RegisterSerializer,
     UserSerializer,
     ChangePasswordSerializer,
+    AdminResetPasswordSerializer,
+    AdminSetPasswordSerializer,
 )
+from .permissions import IsAdminUserTypePermission
 
 User = get_user_model()
 
@@ -125,5 +128,28 @@ class LogoutView(APIView):
 
         return Response(
             {"message": "Sesión cerrada exitosamente"},
+            status=status.HTTP_200_OK,
+        )
+
+
+class AdminResetPasswordView(APIView):
+    """Admin-only: establecer nueva contrasena para un usuario."""
+
+    permission_classes = [IsAdminUserTypePermission]
+
+    def post(self, request, user_id: int):
+        payload = {**request.data, "user_id": user_id}
+        serializer = AdminSetPasswordSerializer(data=payload)
+        serializer.is_valid(raise_exception=True)
+
+        target_user = User.objects.get(id=user_id)
+        target_user.set_password(serializer.validated_data['new_password'])
+        target_user.save(update_fields=["password"])
+
+        return Response(
+            {
+                "message": "Contrasena actualizada exitosamente.",
+                "user_id": target_user.id,
+            },
             status=status.HTTP_200_OK,
         )

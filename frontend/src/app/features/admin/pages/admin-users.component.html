@@ -1,0 +1,105 @@
+<div class="adm-users">
+  <div class="adm-users__header">
+    <div class="adm-users__breadcrumb">
+      <a routerLink="/admin/dashboard" class="breadcrumb__back">← Panel admin</a>
+    </div>
+    <div class="adm-users__title-row">
+      <div>
+        <h1 class="adm-users__title">Usuarios</h1>
+        <p class="adm-users__subtitle">Reinicio seguro de contrasenas para cuentas activas.</p>
+      </div>
+      <a href="/admin/users/user/" target="_blank" class="btn-django">Django Admin ↗</a>
+    </div>
+  </div>
+
+  @if (error()) {
+    <div class="banner banner--error" role="alert">{{ error() }}</div>
+  }
+
+  @if (successMessage()) {
+    <div class="banner banner--success" role="status">{{ successMessage() }}</div>
+  }
+
+  <div class="panel">
+    <h2 class="panel__title">Cambiar contrasena</h2>
+    <p class="panel__hint">
+      Establece una nueva contrasena para el usuario seleccionado.
+    </p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="reset-form">
+      <div class="reset-form__field">
+        <label for="userId" class="reset-form__label">ID de usuario</label>
+        <input
+          id="userId"
+          class="field-input"
+          formControlName="userId"
+          type="number"
+          min="1"
+          placeholder="Ej. 128"
+        />
+        @if (form.controls.userId.invalid && form.controls.userId.touched) {
+          <span class="field-error">Ingresa un ID valido.</span>
+        }
+      </div>
+
+      <div class="reset-form__field">
+        <label for="newPassword" class="reset-form__label">Nueva contrasena</label>
+        <div class="field-input__wrap">
+          <input
+            id="newPassword"
+            class="field-input field-input--with-toggle"
+            formControlName="newPassword"
+            [type]="showNewPassword() ? 'text' : 'password'"
+            placeholder="Minimo 8 caracteres"
+          />
+          <button type="button" class="field-toggle" (click)="toggleNewPassword()" [attr.aria-pressed]="showNewPassword()">
+            {{ showNewPassword() ? 'Ocultar' : 'Ver' }}
+          </button>
+        </div>
+        @if (form.controls.newPassword.invalid && form.controls.newPassword.touched) {
+          @if (form.controls.newPassword.errors?.['required']) {
+            <span class="field-error">La contrasena es requerida.</span>
+          }
+          @if (form.controls.newPassword.errors?.['minlength']) {
+            <span class="field-error">Minimo 8 caracteres.</span>
+          }
+        }
+        @if (newPasswordValue || newPasswordConfirmValue) {
+          <div class="field-hints">
+            <span class="field-hint" [class.field-hint--ok]="newPasswordMinLengthOk">Minimo 8 caracteres</span>
+            <span class="field-hint" [class.field-hint--ok]="newPasswordNotNumericOnly">No solo numeros</span>
+            <span class="field-hint" [class.field-hint--ok]="newPasswordMatches">Coinciden</span>
+          </div>
+        }
+      </div>
+
+      <div class="reset-form__field">
+        <label for="newPasswordConfirm" class="reset-form__label">Confirmar contrasena</label>
+        <div class="field-input__wrap">
+          <input
+            id="newPasswordConfirm"
+            class="field-input field-input--with-toggle"
+            formControlName="newPasswordConfirm"
+            [type]="showConfirmPassword() ? 'text' : 'password'"
+            placeholder="Repite la contrasena"
+          />
+          <button type="button" class="field-toggle" (click)="toggleConfirmPassword()" [attr.aria-pressed]="showConfirmPassword()">
+            {{ showConfirmPassword() ? 'Ocultar' : 'Ver' }}
+          </button>
+        </div>
+      </div>
+
+      <label class="reset-form__confirm">
+        <input type="checkbox" formControlName="confirm" />
+        Confirmo que el usuario solicito el cambio y que comunicare la nueva clave de forma segura.
+      </label>
+
+      <div class="reset-form__actions">
+        <button type="submit" class="btn-gold" [disabled]="form.invalid || loading()">
+          @if (loading()) { <span class="spinner"></span> Guardando… } @else { Cambiar contrasena }
+        </button>
+        <button type="button" class="btn-ghost" (click)="clear()">Limpiar</button>
+      </div>
+    </form>
+  </div>
+</div>
