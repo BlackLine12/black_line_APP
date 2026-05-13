@@ -103,15 +103,20 @@
 
         <div class="auth-field">
           <label class="auth-field__label" for="password">Contraseña</label>
-          <input
-            id="password"
-            class="auth-field__input"
-            [class.auth-field__input--error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
-            formControlName="password"
-            type="password"
-            autocomplete="current-password"
-            placeholder="••••••••"
-          />
+          <div class="auth-field__input-wrap">
+            <input
+              id="password"
+              class="auth-field__input auth-field__input--with-toggle"
+              [class.auth-field__input--error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+              formControlName="password"
+              [type]="showPassword ? 'text' : 'password'"
+              autocomplete="current-password"
+              placeholder="••••••••"
+            />
+            <button type="button" class="auth-field__toggle" (click)="togglePassword()" [attr.aria-pressed]="showPassword">
+              {{ showPassword ? 'Ocultar' : 'Ver' }}
+            </button>
+          </div>
           @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
             <span class="auth-field__error">Ingresa tu contraseña.</span>
           }
