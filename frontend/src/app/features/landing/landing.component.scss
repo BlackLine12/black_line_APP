@@ -537,6 +537,68 @@ $font-mono:  'Geist Mono', 'Courier New', monospace;
   color: $muted;
 }
 
+// ── BETA INFO ────────────────────────────────────────────────────────────
+.beta-info-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  width: 100%;
+
+  @media (max-width: 900px) { grid-template-columns: 1fr; max-width: 480px; }
+}
+
+.beta-info-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 32px 28px;
+  border-radius: 8px;
+  border: 1px solid rgba($gold, 0.12);
+  background: $bg;
+  transition: border-color 0.2s, transform 0.2s;
+
+  &:hover { border-color: rgba($gold, 0.35); transform: translateY(-2px); }
+
+  &--center {
+    border-color: rgba($gold, 0.3);
+    background: linear-gradient(135deg, rgba($gold, 0.06) 0%, $bg 100%);
+  }
+}
+
+.beta-info-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1px solid rgba($gold, 0.25);
+  background: rgba($gold, 0.06);
+  flex-shrink: 0;
+}
+
+.beta-info-card__title {
+  font-family: $font-serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: $cream;
+  margin: 0;
+}
+
+.beta-info-card__desc {
+  font-size: 14px;
+  color: $muted;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.beta-info-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
 // ── CTA FINAL ────────────────────────────────────────────────────────────
 .cta-final {
   display: flex;

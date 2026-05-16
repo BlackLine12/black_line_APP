@@ -1,0 +1,220 @@
+<app-navbar />
+
+<main class="beta-page">
+
+  <!-- ── Banner Beta ──────────────────────────────────────────────── -->
+  <section class="beta-banner">
+    <div class="beta-banner__inner">
+      <div class="beta-banner__badge">● BETA ABIERTA</div>
+      <p class="beta-banner__text">
+        Actualmente en fase beta — Acceso completamente gratuito.
+        Regístrate ahora y sé de los primeros artistas de Ciudad Juárez en la plataforma.
+      </p>
+      <a routerLink="/auth/register" class="beta-banner__btn">Crear cuenta gratis</a>
+    </div>
+  </section>
+
+  <!-- ── Hero ──────────────────────────────────────────────────────── -->
+  <section class="beta-hero">
+    <div class="beta-hero__label">PLATAFORMA · MODELO DE ACCESO</div>
+    <h1 class="beta-hero__title">Gratis ahora.<br>Hecho para crecer contigo.</h1>
+    <p class="beta-hero__sub">
+      BlackLine es la primera plataforma digital de su tipo en Ciudad Juárez. Diseñada para conectar
+      artistas con clientes sin intermediarios. Y sí, durante esta fase beta es completamente gratis.
+    </p>
+    <div class="beta-hero__actions">
+      <a routerLink="/auth/register" class="beta-btn-primary">Registrarme gratis</a>
+      <a [routerLink]="[]" fragment="funcionalidades" class="beta-btn-secondary">Ver funcionalidades</a>
+    </div>
+    <div class="beta-hero__divider"></div>
+  </section>
+
+  <!-- ── Stats / Social Proof ──────────────────────────────────────── -->
+  <section class="beta-section beta-stats">
+    <div class="beta-section__inner">
+      <div class="beta-stats__grid">
+        @for (stat of stats(); track stat.value) {
+          <div class="beta-stat-card">
+            <span class="beta-stat-card__value">{{ stat.value }}</span>
+            <span class="beta-stat-card__label">{{ stat.label }}</span>
+          </div>
+        }
+      </div>
+      <p class="beta-stats__note">
+        Primera plataforma de su tipo en Ciudad Juárez — sin competidor digital directo local.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── ¿Quién paga? ──────────────────────────────────────────────── -->
+  <section class="beta-section beta-pricing-info">
+    <div class="beta-section__inner">
+      <span class="beta-label">¿QUIÉN PAGA?</span>
+      <h2 class="beta-heading">Un modelo que tiene sentido</h2>
+      <div class="beta-pricing-info__grid">
+        <!-- Card Artistas -->
+        <div class="beta-pricing-card">
+          <h3 class="beta-pricing-card__title">Tatuadores y Estudios</h3>
+          <div class="beta-pricing-card__price">
+            <span class="beta-pricing-card__amount">$300 MXN/mes</span>
+            <span class="beta-pricing-card__period">al lanzamiento</span>
+          </div>
+          <div class="beta-pricing-card__badge">GRATIS durante beta</div>
+          <ul class="beta-pricing-card__benefits">
+            <li>Perfil verificado con portafolio</li>
+            <li>Agenda y gestión de citas</li>
+            <li>Acceso a solicitudes de clientes</li>
+          </ul>
+        </div>
+
+        <!-- Card Clientes -->
+        <div class="beta-pricing-card beta-pricing-card--clients">
+          <h3 class="beta-pricing-card__title">Clientes Finales</h3>
+          <div class="beta-pricing-card__price">
+            <span class="beta-pricing-card__amount">Siempre gratuito</span>
+          </div>
+          <p class="beta-pricing-card__subtitle">Sin excepciones. Sin cambios planeados.</p>
+          <ul class="beta-pricing-card__benefits">
+            <li>Cotizador automático de precios</li>
+            <li>Búsqueda y filtrado de artistas</li>
+            <li>Portafolios y reseñas</li>
+            <li>Solicitud de citas directo</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Funcionalidades ──────────────────────────────────────────── -->
+  <section class="beta-section beta-features" id="funcionalidades">
+    <div class="beta-section__inner">
+      <span class="beta-label">FUNCIONALIDADES</span>
+      <h2 class="beta-heading">Todo lo que necesitas para crecer</h2>
+      <div class="beta-features__grid">
+        @for (feature of features(); track feature.title) {
+          <div class="beta-feature-card">
+            <span class="beta-feature-card__icon">{{ feature.icon }}</span>
+            <h3 class="beta-feature-card__title">{{ feature.title }}</h3>
+            <p class="beta-feature-card__desc">{{ feature.desc }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ROI ──────────────────────────────────────────────────────── -->
+  <section class="beta-section beta-roi">
+    <div class="beta-section__inner beta-roi__inner">
+      <span class="beta-label">ROI</span>
+      <h2 class="beta-heading">Por qué vale la pena</h2>
+      <blockquote class="beta-roi__quote">
+        Los tatuadores invierten entre 1 y 6 horas semanales en gestión manual vía WhatsApp
+        e Instagram. BlackLine automatiza ese proceso.
+      </blockquote>
+      <div class="beta-roi__scenarios">
+        <div class="beta-scenario">
+          <h4 class="beta-scenario__title">Escenario conservador</h4>
+          <ul class="beta-scenario__metrics">
+            <li><span class="beta-scenario__metric-label">Citas adicionales/año:</span> <strong>10–31</strong></li>
+            <li><span class="beta-scenario__metric-label">Ingreso generado:</span> <strong>$5,000–$31,000 MXN</strong></li>
+            <li><span class="beta-scenario__metric-label">Costo anual:</span> <strong>$3,600 MXN</strong></li>
+            <li><span class="beta-scenario__metric-label">ROI neto:</span> <strong>$2,600+ MXN</strong></li>
+          </ul>
+        </div>
+        <div class="beta-scenario">
+          <h4 class="beta-scenario__title">Escenario óptimo</h4>
+          <ul class="beta-scenario__metrics">
+            <li><span class="beta-scenario__metric-label">Citas adicionales/año:</span> <strong>31+</strong></li>
+            <li><span class="beta-scenario__metric-label">Ingreso generado:</span> <strong>$31,000–$108,800 MXN</strong></li>
+            <li><span class="beta-scenario__metric-label">Costo anual:</span> <strong>$3,600 MXN</strong></li>
+            <li><span class="beta-scenario__metric-label">ROI neto:</span> <strong>$105,200+ MXN</strong></li>
+          </ul>
+        </div>
+      </div>
+      <p class="beta-roi__note">
+        <strong>Nota:</strong> Precio promedio por cita en Ciudad Juárez: $500–$1,000 MXN.
+        Solo necesitas 5 citas adicionales al año para recuperar la suscripción.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── Pricing Card Central ──────────────────────────────────────– -->
+  <section class="beta-section beta-pricing">
+    <div class="beta-section__inner">
+      <div class="beta-pricing-central">
+        <div class="beta-pricing-central__grid">
+          <!-- HOY - Beta -->
+          <div class="beta-pricing-central__item">
+            <span class="beta-pricing-central__period">HOY, Fase Beta</span>
+            <div class="beta-pricing-central__price">
+              <span class="beta-pricing-central__amount-old">$300 MXN/mes</span>
+            </div>
+            <div class="beta-pricing-central__badge">GRATIS</div>
+            <p class="beta-pricing-central__desc">
+              Sin tarjeta. Sin compromisos. Acceso completo.
+            </p>
+            <a routerLink="/auth/register" class="beta-btn-primary">Crear cuenta gratis</a>
+          </div>
+
+          <!-- Al lanzamiento -->
+          <div class="beta-pricing-central__item beta-pricing-central__item--future">
+            <span class="beta-pricing-central__period">Al lanzamiento oficial</span>
+            <div class="beta-pricing-central__price">
+              <span class="beta-pricing-central__amount">$300 MXN / mes</span>
+            </div>
+            <p class="beta-pricing-central__validation">
+              Validado con 82.8% de disposición de pago
+              <br>
+              <span class="beta-pricing-central__validation-sub">(encuesta interna 2025)</span>
+            </p>
+            <p class="beta-pricing-central__desc">
+              Recibirás aviso con al menos 30 días de anticipación antes de cualquier cobro.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FAQ ──────────────────────────────────────────────────────── -->
+  <section class="beta-section beta-faq">
+    <div class="beta-section__inner">
+      <span class="beta-label">PREGUNTAS FRECUENTES</span>
+      <h2 class="beta-heading">Resolvemos tus dudas</h2>
+      <div class="beta-faq__list">
+        @for (faq of faqs(); track $index; let i = $index) {
+          <div class="beta-faq__item">
+            <button
+              class="beta-faq__button"
+              (click)="toggleFaq(i)"
+              [attr.aria-expanded]="openFaq() === i">
+              <span class="beta-faq__button-text">{{ faq.q }}</span>
+              <svg class="beta-faq__chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            @if (openFaq() === i) {
+              <div class="beta-faq__content">
+                {{ faq.a }}
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA Final ────────────────────────────────────────────────── -->
+  <section class="beta-section beta-cta">
+    <div class="beta-section__inner beta-cta__inner">
+      <h2 class="beta-heading">Sé parte de la primera generación de artistas BlackLine en Ciudad Juárez.</h2>
+      <div class="beta-cta__actions">
+        <a routerLink="/auth/register" class="beta-btn-primary">Registrarme ahora — es gratis</a>
+        <a routerLink="/contacto" class="beta-btn-secondary">Tengo preguntas</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<app-footer />
