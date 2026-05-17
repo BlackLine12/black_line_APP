@@ -5,7 +5,7 @@
       <h1 class="adm__title">Panel de Administración</h1>
       <p class="adm__subtitle">Vista global de la plataforma BlackLine</p>
     </div>
-    <a href="/admin/" target="_blank" class="btn-django">
+    <a [href]="djangoAdmin + '/'" target="_blank" class="btn-django">
       Django Admin ↗
     </a>
   </div>
@@ -95,12 +95,12 @@
         <span class="adm__link-card__desc">Ver artistas agrupados y filtrados por ciudad</span>
         <span class="adm__link-card__arrow">→</span>
       </a>
-      <a href="/admin/quotes/appointment/" target="_blank" class="adm__link-card">
+      <a [href]="djangoAdmin + '/quotes/appointment/'" target="_blank" class="adm__link-card">
         <span class="adm__link-card__title">Citas (Django Admin)</span>
         <span class="adm__link-card__desc">Gestión completa de citas en el panel nativo</span>
         <span class="adm__link-card__arrow">↗</span>
       </a>
-      <a href="/admin/users/user/" target="_blank" class="adm__link-card">
+      <a [href]="djangoAdmin + '/users/user/'" target="_blank" class="adm__link-card">
         <span class="adm__link-card__title">Usuarios (Django Admin)</span>
         <span class="adm__link-card__desc">Ver y editar cuentas de clientes y artistas</span>
         <span class="adm__link-card__arrow">↗</span>

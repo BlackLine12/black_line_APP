@@ -20,6 +20,8 @@ export class AdminDashboardComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly api = environment.apiUrl;
 
+  readonly djangoAdmin = environment.apiUrl.replace(/\/api$/, '') + '/admin';
+
   loading = signal(true);
   error   = signal('');
 

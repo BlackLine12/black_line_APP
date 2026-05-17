@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AdminResetPasswordResponse, AdminUserService } from '../../../core/services/admin-user.service';
+import { environment } from '@env/environment';
 
 @Component({
   selector: 'app-admin-users',
@@ -18,6 +19,8 @@ export class AdminUsersComponent {
   private readonly fb = inject(FormBuilder);
   private readonly adminUserService = inject(AdminUserService);
   private readonly destroyRef = inject(DestroyRef);
+
+  readonly djangoAdmin = environment.apiUrl.replace(/\/api$/, '') + '/admin';
 
   readonly loading = signal(false);
   readonly error = signal('');
