@@ -1,6 +1,12 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import TattooStyleViewSet, ArtistProfileViewSet, PortfolioImageViewSet, ArtistCityCountView
+from .views import (
+    TattooStyleViewSet,
+    ArtistProfileViewSet,
+    PortfolioImageViewSet,
+    ArtistCityCountView,
+    AdminArtistsByCityView,
+)
 
 router = DefaultRouter()
 router.register(r"styles", TattooStyleViewSet, basename="tattoo-style")
@@ -12,4 +18,5 @@ app_name = "artists"
 urlpatterns = [
     path("", include(router.urls)),
     path("cities/", ArtistCityCountView.as_view(), name="artist-cities"),
+    path("admin/artists/", AdminArtistsByCityView.as_view(), name="admin-artists-by-city"),
 ]

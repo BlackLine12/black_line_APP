@@ -1,0 +1,152 @@
+<div class="artists-page">
+
+  <!-- Header -->
+  <header class="artists-page__header">
+    <nav class="artists-page__breadcrumb">
+      <a routerLink="/admin/dashboard" class="breadcrumb__back">← Panel de Admin</a>
+    </nav>
+    <h1 class="artists-page__title">Artistas por Ciudad</h1>
+    <p class="artists-page__subtitle">Selecciona una ciudad para ver sus artistas registrados.</p>
+  </header>
+
+  <!-- Error ciudades -->
+  @if (errorCities()) {
+    <div class="banner banner--error">{{ errorCities() }}</div>
+  }
+
+  <div class="artists-layout">
+
+    <!-- Sidebar de ciudades -->
+    <aside class="cities-sidebar">
+      <p class="cities-sidebar__label">Ciudades</p>
+
+      @if (loadingCities()) {
+        <div class="skeleton-list">
+          @for (_ of [1,2,3,4,5,6]; track $index) {
+            <div class="skeleton skeleton--city"></div>
+          }
+        </div>
+      } @else {
+        <ul class="cities-list">
+          @for (c of cities(); track c.city) {
+            <li
+              class="city-item"
+              [class.city-item--active]="selectedCity() === c.city"
+              (click)="selectCity(c.city)"
+            >
+              <span class="city-item__name">{{ c.city }}</span>
+              <span class="city-item__badge">{{ c.count }}</span>
+            </li>
+          }
+        </ul>
+      }
+    </aside>
+
+    <!-- Panel de artistas -->
+    <section class="artists-panel">
+
+      @if (!selectedCity()) {
+        <div class="empty-state">
+          <div class="empty-state__icon">🗺️</div>
+          <p>Selecciona una ciudad en el panel izquierdo.</p>
+        </div>
+      }
+
+      @if (selectedCity()) {
+        <div class="panel-header">
+          <h2 class="panel-header__city">{{ selectedCity() }}</h2>
+          @if (!loadingArtists()) {
+            <span class="panel-header__count">{{ artists().length }} artista{{ artists().length !== 1 ? 's' : '' }}</span>
+          }
+        </div>
+
+        <!-- Error artistas -->
+        @if (errorArtists()) {
+          <div class="banner banner--error">{{ errorArtists() }}</div>
+        }
+
+        <!-- Loading artistas -->
+        @if (loadingArtists()) {
+          <div class="skeleton-list">
+            @for (_ of [1,2,3]; track $index) {
+              <div class="skeleton skeleton--card"></div>
+            }
+          </div>
+        }
+
+        <!-- Lista de artistas -->
+        @if (!loadingArtists() && artists().length > 0) {
+          <div class="artist-list">
+            @for (artist of artists(); track artist.id) {
+              <div class="artist-card">
+
+                <!-- Avatar + nombre -->
+                <div class="artist-card__top">
+                  <div class="artist-avatar">
+                    @if (artist.profile_photo) {
+                      <img [src]="artist.profile_photo" [alt]="fullName(artist)" class="artist-avatar__img" />
+                    } @else {
+                      <span class="artist-avatar__initials">
+                        {{ artist.first_name[0] }}{{ artist.last_name[0] }}
+                      </span>
+                    }
+                  </div>
+
+                  <div class="artist-card__info">
+                    <div class="artist-card__name-row">
+                      <span class="artist-card__name">{{ fullName(artist) }}</span>
+                      <span class="status-dot" [class.status-dot--active]="artist.is_active" [title]="artist.is_active ? 'Activo' : 'Inactivo'"></span>
+                    </div>
+                    <span class="artist-card__username">&#64;{{ artist.username }}</span>
+                  </div>
+
+                  <div class="artist-card__rates">
+                    <div class="rate-item">
+                      <span class="rate-item__label">Hora</span>
+                      <span class="rate-item__value">{{ formatRate(artist.base_hourly_rate) }}</span>
+                    </div>
+                    <div class="rate-item">
+                      <span class="rate-item__label">Setup</span>
+                      <span class="rate-item__value">{{ formatRate(artist.minimum_setup_fee) }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Contacto -->
+                <div class="artist-card__contact">
+                  <span class="contact-item">
+                    <span class="contact-item__icon">✉</span>{{ artist.email }}
+                  </span>
+                  @if (artist.phone) {
+                    <span class="contact-item">
+                      <span class="contact-item__icon">📞</span>{{ artist.phone }}
+                    </span>
+                  }
+                </div>
+
+                <!-- Estilos -->
+                @if (artist.styles.length > 0) {
+                  <div class="artist-card__styles">
+                    @for (style of artist.styles; track style) {
+                      <span class="style-tag">{{ style }}</span>
+                    }
+                  </div>
+                }
+
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Sin artistas -->
+        @if (!loadingArtists() && artists().length === 0 && !errorArtists()) {
+          <div class="empty-state">
+            <div class="empty-state__icon">🎨</div>
+            <p>No hay artistas registrados en {{ selectedCity() }}.</p>
+          </div>
+        }
+      }
+
+    </section>
+  </div>
+</div>

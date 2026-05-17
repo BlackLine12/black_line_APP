@@ -10,6 +10,7 @@ from .serializers import (
     TattooStyleSerializer,
     ArtistProfileSerializer,
     PortfolioImageSerializer,
+    AdminArtistSerializer,
 )
 from .permissions import IsArtistOwnerOrReadOnly
 
@@ -225,3 +226,48 @@ class ArtistCityCountView(APIView):
         return Response(list(rows))
 
         return Response(self.get_serializer(self.get_queryset(), many=True).data)
+
+
+class AdminArtistsByCityView(APIView):
+    """
+    Admin endpoint para listar artistas filtrados por ciudad.
+
+    GET /api/artists/admin/artists/?city=X
+    - Si viene ?city=X: devuelve artistas de esa ciudad (filtro case-insensitive)
+    - Si no viene city: devuelve lista de ciudades con conteo [{city, count}]
+    - Filtros adicionales: ?is_active=true/false
+    - Ordenado por last_name, first_name
+    """
+
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request):
+        city = request.query_params.get("city", None)
+        is_active_param = request.query_params.get("is_active", None)
+
+        if city is None:
+            # Modo: listar ciudades con conteo
+            rows = (
+                ArtistProfile.objects
+                .exclude(city="")
+                .values("city")
+                .annotate(count=Count("id"))
+                .order_by("-count", "city")
+            )
+            return Response(list(rows))
+
+        # Modo: listar artistas de una ciudad específica
+        qs = ArtistProfile.objects.select_related("user").prefetch_related(
+            "styles"
+        ).filter(city__iexact=city)
+
+        # Aplicar filtro de is_active si viene
+        if is_active_param is not None:
+            is_active_value = is_active_param.lower() in ("true", "1", "yes")
+            qs = qs.filter(user__is_active=is_active_value)
+
+        # Ordenar por last_name, first_name
+        qs = qs.order_by("user__last_name", "user__first_name")
+
+        serializer = AdminArtistSerializer(qs, many=True)
+        return Response(serializer.data)

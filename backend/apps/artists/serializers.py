@@ -8,6 +8,38 @@ class TattooStyleSerializer(serializers.ModelSerializer):
         fields = ["id", "name"]
 
 
+class AdminArtistSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField(source="user.id", read_only=True)
+    first_name = serializers.CharField(source="user.first_name", read_only=True)
+    last_name = serializers.CharField(source="user.last_name", read_only=True)
+    email = serializers.EmailField(source="user.email", read_only=True)
+    username = serializers.CharField(source="user.username", read_only=True)
+    phone = serializers.CharField(source="user.phone", read_only=True)
+    is_active = serializers.BooleanField(source="user.is_active", read_only=True)
+    styles = serializers.StringRelatedField(many=True, read_only=True)
+
+    class Meta:
+        model = ArtistProfile
+        fields = [
+            "id",
+            "user_id",
+            "first_name",
+            "last_name",
+            "email",
+            "username",
+            "phone",
+            "is_active",
+            "city",
+            "bio",
+            "base_hourly_rate",
+            "minimum_setup_fee",
+            "profile_photo",
+            "styles",
+            "created_at",
+        ]
+        read_only_fields = fields
+
+
 class PortfolioImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = PortfolioImage
