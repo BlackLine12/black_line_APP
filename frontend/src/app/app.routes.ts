@@ -54,6 +54,13 @@ export const routes: Routes = [
         m => m.CookiesComponent
       ),
   },
+  {
+    path: 'beta',
+    loadComponent: () =>
+      import('./features/empresa/pages/beta/beta.component').then(
+        m => m.BetaComponent
+      ),
+  },
 
   // ── Páginas de error ───────────────────────────────────
   { path: '403', component: ForbiddenComponent },
