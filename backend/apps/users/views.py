@@ -104,8 +104,11 @@ class UserPhotoUploadView(APIView):
             )
 
         user = request.user
-        if user.profile_photo:
-            user.profile_photo.delete(save=False)
+        try:
+            if user.profile_photo:
+                user.profile_photo.delete(save=False)
+        except Exception:
+            pass
         user.profile_photo = photo
         user.save(update_fields=["profile_photo"])
 

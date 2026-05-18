@@ -41,6 +41,16 @@ class AdminArtistSerializer(serializers.ModelSerializer):
 
 
 class PortfolioImageSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
+    def get_image(self, obj):
+        if not obj.image:
+            return None
+        try:
+            return obj.image.url
+        except Exception:
+            return None
+
     class Meta:
         model = PortfolioImage
         fields = ["id", "artist", "image", "description", "position", "created_at"]
@@ -58,6 +68,15 @@ class ArtistProfileSerializer(serializers.ModelSerializer):
     )
     username = serializers.CharField(source="user.username", read_only=True)
     portfolio_images = PortfolioImageSerializer(many=True, read_only=True)
+    profile_photo = serializers.SerializerMethodField()
+
+    def get_profile_photo(self, obj):
+        if not obj.profile_photo:
+            return None
+        try:
+            return obj.profile_photo.url
+        except Exception:
+            return None
 
     class Meta:
         model = ArtistProfile

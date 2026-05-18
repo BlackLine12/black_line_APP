@@ -50,7 +50,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
                 "last_name": user.last_name,
                 "user_type": user.user_type,
                 "phone": getattr(user, "phone", None),
-                "profile_photo": user.profile_photo.url if getattr(user, "profile_photo", None) else None,
+                "profile_photo": (user.profile_photo.url if user.profile_photo else None),
                 "is_active": user.is_active,
                 "created_at": user.created_at.isoformat(),
                 "updated_at": user.updated_at.isoformat(),
@@ -73,6 +73,15 @@ class UserSerializer(serializers.ModelSerializer):
     """
     Serializer para mostrar información del usuario.
     """
+    profile_photo = serializers.SerializerMethodField()
+
+    def get_profile_photo(self, obj):
+        if not obj.profile_photo:
+            return None
+        try:
+            return obj.profile_photo.url
+        except Exception:
+            return None
 
     class Meta:
         model = User
