@@ -87,17 +87,16 @@ class ArtistProfileViewSet(viewsets.ModelViewSet):
             return Response({"detail": "La imagen no puede superar 5 MB."}, status=status.HTTP_400_BAD_REQUEST)
 
         profile, _ = ArtistProfile.objects.get_or_create(user=request.user)
-        
-        # Sincronizar con el modelo User para que el navbar y otros componentes lo vean
-        user = request.user
-        user.profile_photo = file
-        user.save(update_fields=["profile_photo"])
 
-        # Guardar en el perfil de artista (redundante pero mantenemos compatibilidad)
         if profile.profile_photo:
             profile.profile_photo.delete(save=False)
         profile.profile_photo = file
         profile.save(update_fields=["profile_photo"])
+
+        # Sincronizar User.profile_photo usando el path ya subido (evita doble lectura del archivo)
+        user = request.user
+        user.profile_photo = profile.profile_photo.name
+        user.save(update_fields=["profile_photo"])
 
         serializer = self.get_serializer(profile)
         return Response(serializer.data)
@@ -269,5 +268,5 @@ class AdminArtistsByCityView(APIView):
         # Ordenar por last_name, first_name
         qs = qs.order_by("user__last_name", "user__first_name")
 
-        serializer = AdminArtistSerializer(qs, many=True)
+        serializer = AdminArtistSerializer(qs, many=True, context={"request": request})
         return Response(serializer.data)

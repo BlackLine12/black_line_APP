@@ -18,28 +18,30 @@ export class MediaUrlService {
   resolve(url: string | null | undefined): string | null {
     if (!url) return null;
 
-    // Si ya empieza con /, asumimos que es correcto (ya sea /media/... o /api/media/...)
-    if (url.startsWith('/')) return url;
+    if (url.startsWith('data:')) return url;
 
-    // Si es una URL completa (http...)
+    // Ya es una URL absoluta — verificar si necesita normalización de host
     try {
       const parsed = new URL(url);
-      // Si el host es 'backend' o localhost:8000, lo normalizamos
       if (parsed.host.includes('backend') || parsed.host.includes('localhost:8000')) {
         return environment.mediaUrl
           ? `${environment.mediaUrl}${parsed.pathname}`
           : parsed.pathname;
       }
-      return url; // URL externa (S3, Cloudinary, etc.)
+      // URL externa absoluta (Cloudinary, S3, etc.) — devolver tal cual
+      return url;
     } catch {
-      // Si no es una URL válida y no empieza con /, podría ser un path relativo (profiles/pic.jpg)
-      // O un data:image (que devolvemos tal cual)
-      if (url.startsWith('data:')) return url;
-      
-      const mediaPrefix = environment.mediaUrl || '/media';
-      return url.startsWith('media/') 
-        ? `${environment.mediaUrl || ''}/${url}`
-        : `${mediaPrefix}/${url}`;
+      // No es una URL absoluta válida — es un path relativo del storage backend
     }
+
+    // Path relativo que empieza con /  → devolver tal cual (proxy dev / mismo origen)
+    if (url.startsWith('/')) return url;
+
+    // Path relativo sin slash (ej. "profiles/foto.jpg" o "media/profiles/foto.jpg")
+    // En producción Cloudinary debe retornar URLs absolutas, así que este caso
+    // indica un fallback de storage local — construir URL de media correctamente.
+    const base = environment.mediaUrl || '';
+    const path = url.startsWith('media/') ? url : `media/${url}`;
+    return `${base}/${path}`;
   }
 }
