@@ -1,4 +1,4 @@
-from rest_framework import generics, status, permissions
+from rest_framework import generics, status, permissions, parsers
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -80,28 +80,34 @@ class ChangePasswordView(APIView):
 
 class UserPhotoUploadView(APIView):
     """
-    Vista para subir la foto de perfil del usuario.
+    Vista para subir la foto de perfil del usuario (clientes).
+    Para artistas usar POST /api/artists/profiles/me/photo/ que tiene validaciones adicionales.
     """
     permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [parsers.MultiPartParser, parsers.FormParser]
 
     def patch(self, request):
-        photo = request.data.get('profile_photo')
+        photo = request.FILES.get('profile_photo')
         if not photo:
             return Response({"detail": "No photo provided"}, status=status.HTTP_400_BAD_REQUEST)
-        
+
+        allowed_mime = {"image/jpeg", "image/png", "image/webp"}
+        if photo.content_type not in allowed_mime:
+            return Response(
+                {"detail": "Formato no permitido. Usa JPEG, PNG o WebP."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if photo.size > 5 * 1024 * 1024:
+            return Response(
+                {"detail": "La imagen no puede superar 5 MB."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         user = request.user
+        if user.profile_photo:
+            user.profile_photo.delete(save=False)
         user.profile_photo = photo
-        user.save()
-        
-        # Si el usuario es artista, sincronizar también su perfil de artista
-        if user.user_type == 'STUDIO':
-            from apps.artists.models import ArtistProfile
-            try:
-                artist = ArtistProfile.objects.get(user=user)
-                artist.profile_photo = photo
-                artist.save()
-            except ArtistProfile.DoesNotExist:
-                pass
+        user.save(update_fields=["profile_photo"])
 
         return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
 

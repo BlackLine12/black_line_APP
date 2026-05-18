@@ -33,8 +33,8 @@ export class ArtistService {
 
   uploadProfilePhoto(file: File): Observable<any> {
     const formData = new FormData();
-    formData.append('profile_photo', file);
-    return this.http.patch<any>(`${environment.apiUrl}/auth/profile-photo/`, formData);
+    formData.append('photo', file);
+    return this.http.post<any>(`${this.baseUrl}/profiles/me/photo/`, formData);
   }
 
 
